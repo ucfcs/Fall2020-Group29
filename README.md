@@ -1,1 +1,2 @@
-# Fall2020-Group29
+# UCF AI Advising Chatbot
+### Group #29
