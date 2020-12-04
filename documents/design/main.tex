@@ -445,6 +445,8 @@ Further stated by Verma, a chatbot is not intended to be a facsimile of the pers
 
 \subsubsection{Chatbot Personality}
 
+\textbf{Best Practices}
+
 A user interaction with a chatbot should be distinct from an interaction with a real person. One of the benefits to a chatbot is the ability to spice up a normal interaction with a bit of personality. A famous example of software incorporating a distinct personality into a user experience is Microsoft’s “Clippy”, the humanoid paper clip. In addition to “get[ting] a task done”, as previously stated, a user can be encouraged to interact with the software out of curiosity about what the chatbot will say next and what layers of personality there are to discover [2].
  
 In previous team meetings, it has been discussed how the chatbot could be exciting for the user, encouraging them to use the system. The personality of the chatbot is a contributing factor to the overall user experience. It does not have to be gimmicky, like using a wacky mascot for the “face” of the chatbot, such as previously mentioned with “Clippy”- although it could be. The personality could be sufficiently satisfying to interact with based upon other characteristics, such as consistency, clarity, efficiency, and trust.
@@ -456,6 +458,44 @@ Clarity is another essential aspect of an effective chatbot. It is necessary tha
 As Jason Amunwa says in his Telepathy article on the subject, the bot should understand “text-speak” [2]. While a student may not wish to talk to a real-life advisor in shorthand such as “k” for “okay” and “ty” for “thank you”, it may be more efficient to allow for such input from the user. In the same sense, there should be as much forgiveness as possible for grammatical errors and misspellings. If a human would be able to understand input, ideally a chatbot should be able to understand it as well. However, some typos cannot be ignored without a follow up question, such as, “My understanding is \_\_\_, is that correct?”
  
 Trust can be built up with users by providing them with accurate information and making them feel that their input is being understood. If the chatbot is constantly asking the user to clarify what they have said or if the answers given are not accurate, this will alienate the user. In this way, establishing trust is probably one of the most important parts of creating a successful chatbot. Another way to build trust is to simulate emotion that makes sense given a certain situation. If a task is successfully completed, a cheerful response from the bot might be welcomed by the user. Conversely, if a task was not able to be completed, a response that conveys that the bot empathizes with the user and their inconvenience may be appreciated [3].
+
+\textbf{Our Implementation}
+
+Why is Knugget doing this? Knugget loves to keep busy and is a very hard worker. During the work-at-home craze of 2020, he decided to pick up a job as an advising assistant, because a lot of his face-to-face jobs were limited. Knugget is a pony with a lot of spunk and style, but he knows that he needs to find a balance with being himself and being professional in his new job.
+
+Key aspects of Knugget’s personality that will be on display in the chatbot are the following:
+
+\begin{itemize}
+    \item Very confident.
+    \item Talks using a lot of horse puns, such as:
+    \begin{itemize}
+        \item “It me. The mane event."
+        \item "Yea or neigh."
+        \item "Straight from the horse's mouth."
+    \end{itemize}
+    \item Says, “it me” all the time.
+    \item Favorite food is cookies.
+    \item Birthday is 12/23/2016.
+    \item Best friend is Knightro.
+    \item Passionate about fashion.
+    \item Nervous eater.
+    \item Will eat popcorn off the ground left by “hoomans” (embarrassing).
+    \item His “hooman” is like his mom. She dresses him up and styles his hair.
+    \item He likes how he looks and does not care if you don’t- “It’s called fashion. Look it up.”
+    \item Loves pets and “boops” on his “snoot”.
+\end{itemize}
+
+Keeping these things in mind, Knugget needs to not go over the top with horse puns or misspellings. While a decent amount of Knugget personality may encourage people to use the chatbot, too much Knugget personality can alienate some people or confuse them. A happy medium needs to be found. We also need to ensure that everyone feels like they are being heard by Knugget and that he cares about what they have to say.
+
+Accuracy of answers and customer service are more important than anything else. This goes back to the research on chatbot personality in section (???), where consistency, clarity, efficiency, and trust are the most important things to focus on:
+
+\begin{itemize}
+    \item \textbf{Consistency} - Knugget will need to stay in character, which is his normal personality modified slightly to fit a professional setting.
+    \item \textbf{Clarity} - Knugget will need to be able to give a clear message to the user. Misspellings should be kept to a minimum, although Knugget is known for his misspellings on his social media accounts. A backstory for his better spelling might be the use of spellcheck software that he does not use on his social media accounts.
+    \item \textbf{Efficiency} - Knugget should be able to understand shorthand and slang, within reason. Knugget should ideally understand anything that a human advisor would understand, and possibly more.
+    \item \textbf{Trust} - The best way to build trust with the user is to provide them with accurate answers. However, because Knugget is a pre-existing entity, there may already be some trust there and expectations about how an interaction might go. Therefore, it is important that our implementation of the chatbot not abuse that existing trust.
+\end{itemize}
+
 
 \subsubsection{Examples of Existing Chatbot Systems}
 
@@ -520,7 +560,55 @@ This chatbot also makes use of buttons for certain responses, when a specific se
 
 \subsection{Front-End}
 
+After some time researching, for the front-end development, we decided to go with React. The following section goes into the reasons why.
+
+\subsubsection{What Is React?}
+
+\textbf{React} is a very popular, open source JavaScript library developed by Facebook. React allows developers to create custom UI components using JSX to mimic the look of typical HTML but with all the functionality of JavaScript. React also allows developers to easily keep track of program state within these components and automatically renders and updates only necessary components as those states change using a Virtual DOM.
+
+\subsubsection{Benefits of React}
+
+React provides a few key features which we believe will be advantageous to our team in the creation of the KnugBot:
+
+\begin{itemize}
+    \item React allows each UI component to keep track of its own state, allowing our team to more effectively keep track of where relevant information is stored and reducing unnecessary calls to the back-end.
+    \item React uses immutable data structures, which forces a style of programming which will facilitate the presence of a change history. That will be very useful for tracking conversations as they happen within the KnugBot student system.
+    \item React has a very large community of developers. This nearly ensures that if we encounter an issue in the course of development, there will likely be a developer who has solved and posted their solution to a similar issue, which will serve as a great help in our development process.
+    \item React uses JSX, a syntax extension for JavaScript which was developed specifically for React. JSX allows developers to treat UI elements as essentially additional JavaScript objects and lets developers construct their components using a mic of custom elements and standard HTML in a way that somewhat blends the syntaxes of HTML, XML, and JavaScript while still remaining very intuitive to work with.
+    \item React does not update the browser DOM directly, rather it superimposes its own virtual DOM which is updated as needed. This allows React to only re-render the specific components which need to be re-rendered, greatly improving speed and efficiency when data is changing.
+\end{itemize}
+
+\subsubsection{React vs. Other Libraries}
+
+The first, and most obvious, reason we chose to use React is that it is a JavaScript-based solution, and this project is meant to be a web-based application. While there are a number of non-JavaScript options available for building website front-ends, with very few exceptions they all work by just compiling the code you write back into JavaScript. We figured it would be easier and less stressful to just stick with a JavaScript solution for our front-end.
+
+That being said, there are a number of other JavaScript frameworks out there which we also could have chosen to work with. However, for our project and our team, React seemed to be the best fit. Below is outlined why we chose React over either Angular or Vue, two other extremely popular JavaScript front-end frameworks:
+
+\begin{enumerate}
+    \item \textbf{React vs. Angular}
+    \begin{itemize}
+        \item While React is a JavaScript library used to create and render UI components, Angular is a full Model View Controller framework. Angular includes a lot of built-in features which make front-end development easier and faster, but it also really wants you to use its tools and does not offer much in the way of flexibility.
+        \item While React does not come with as many features ready to go, the vast assortment of existing libraries built to provide React with similar functionality means, as a team, we have the freedom to pick and choose what functionality we actually need and the freedom to choose the best libraries to suit those needs.
+    \end{itemize}
+    \item \textbf{React vs. Vue}
+    \begin{itemize}
+        \item Vue is very similar to React in a number of ways. They are both JavaScript libraries rather than full frameworks, they both focus heavily on custom and reusable UI components in project development, and they both use a virtual DOM to ensure that when a component needs to be updated, only the things which need to be updated are re-rendered rather than the whole page.
+        \item Their main differences come down to the size of their communities and the way their components are created:
+        \begin{itemize}
+            \item \emph{Community}: React, having been around for much longer, has a much larger community than Vue, along with a much larger variety of available third-party libraries.
+            \item \emph{Component Structure}: As mentioned before, React uses JSX to couple the rendering logic with the greater UI logic of each component all at once. Vue, however, relies on a system of templates wherein each component has distinct and separate blocks for the HTML, styling, and JavaScript functionality. While that templating system becomes useful when migrating existing systems to Vue or when working with non-programmer designers, for our purposes React’s JSX would let us more simply create and use our components quickly and effectively.
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Connecting React to Other System Components}
+
+Our React front-end components will largely stand alone and serve as a means to display and receive information to and from the user. All computation and processing shall be done by our Flask back-end, which the React components will interface with via REST APIs. This separation was done to provide good encapsulation among our components and to allow the team to work on the front and back ends simultaneously and separately without worry of interference. Additionally, this separation allows us to use a JavaScript based front-end, something which makes building web-based applications much simpler, while keeping our back-end in Python to better make use of existing NLP libraries for the AI system. In other words, we get the best of both worlds.
+
+
 \subsection{Back-End}
+
+After researching various back-end development options, we decided to go with Flask. The following section goes into the reasons why.
 
 \subsubsection{What Is Flask?}
 
@@ -563,7 +651,7 @@ After outlining the benefits of Flask, we then turn into a discussion regarding 
 
 \end{itemize}
 
-\subsubsection{Connecting to Other System Components}
+\subsubsection{Connecting Flask to Other System Components}
 
 Flask is a very simple and flexible framework. It can be connected and used to communicate with the database system (such as MongoDB) with an import called  \emph{PyMongo}, which makes it less complicated to connect both technologies. \textbf{MongoDB} is a NoSQL and open source, non-relational database that stores data in the form of JSON packets which have a hierarchy of fields within a document instead of the usual rows holding all the data (like we see in a relational databases such as MySQL).
 
@@ -1161,8 +1249,112 @@ With further research, another interesting platform was found. BotPress, seen by
 
 Finally, like with the other platforms, we decided to no longer pursue this route.
 
+\subsection{Faculty System}
 
+The faculty system was another major component of our product that changed a lot as we designed it. The current design can be found on section (???), and below we outline various ideas we were working with at the beginning our design process.
 
+\subsubsection{Front-End}
+
+The initial prototype design we had was primarily based on the assumption of using a strictly rule-based chatbot model in terms of how it expects adding new questions to function. However, some of these items did make their way to the final design. Below are some examples of how this looked in its infancy.
+
+\textbf{Overview}
+
+The basic requirements of the front-end system included: a login authentication system that would only allow the advisors and people with authorized credentials to make an account and log in. Furthermore, we also had decided to use the UCF login credentials and use their APIs for authentication. This was then confirmed after meeting with the UCF IT team.
+
+We also needed:
+
+\begin{itemize}
+    \item A way to input new data.
+    \item A tag drop-down.
+    \item A search bar to look up relevant tags and questions.
+    \item A button for generating the statistics related to the most popular questions that have been asked by users/students.
+    \item A way to delete data or update it when needed.
+    \item An input element for responses and a checkbox for the tag names it can be associated with that are given based on the priority and correlation.
+\end{itemize}
+
+In addition, as shown in the design diagram, the advisor would be able set limitations to the input and have them do only specific tasks like generate template, send emails, etc.
+
+Another functionality that was included in the original front-end design was the infrastructure to allow or open up the opportunity for other departments to have a chatbot for their specific department. With that infrastructure in place, it would be easy for future teams to launch a design in which each departments’ advisor can add/delete/edit questions and responses for the chatbot ‘only’ for their specific department. This would really lay a concrete groundwork for the future projects to expand our idea and help our advisors and the student body efficiently. This is an idea that we fully embraced in the final design.
+
+\textbf{Landing Page}
+
+The initial landing page was be the primary location where advisors could look through, add, delete, and edit questions and their responses. This design focused on ensuring ease of use and ease of understanding for the advisors while minimizing the amount of time spent searching for specific features/functions.
+
+To avoid bombarding users with more information than they may need in a given session, advisor contact information and statistical information about the chatbot were located in their own tabs. When selecting another tab, the \emph{Categories} column remains fixed as a means of providing some manner of filtering results. However, while in the \emph{Advisor Directory} tab, the \emph{Questions} column would become the \emph{Directory} column to provide a list of existing contacts within the system, whether they be individual advisors or general departments.
+
+\begin{figure}[h]
+    \centering\includegraphics[width=1\linewidth]{images/original-landing-page.png}
+    \caption{The original landing page.}
+\end{figure}
+
+\textbf{Categories}
+
+This section of the landing page is used to filter questions by specific Category. Separating questions by Category serves several purposes:
+
+\begin{itemize}
+    \item It allows advisors to find a question they may be looking for more quickly by letting them filter out unrelated questions.
+    \item It allows the system to define a default contact for each category, thereby streamlining the process of filling in responses to new questions.
+    \item It allows for the expansion of the system beyond the CS and IT majors, as should another department wish to make use of the application for their advising office as well, all they would have to do is add a new Category for that major and begin adding new questions and responses.
+\end{itemize}
+
+Further, an example of the original design for the \emph{Categories} panel can be viewed in Figure (???).
+
+\begin{figure}[h]
+    \centering\includegraphics[width=0.5\linewidth]{images/original-categories-panel.png}
+    \caption{The original categories panel.}
+\end{figure}
+
+\subsubsection{Back-End}
+
+\textbf{Form Handling}
+
+As part of the back-end, we need a way for the advisors to constantly keep and update on the forms that students may get in response from the chatbot. To handle this specific task,  there are two ways that we were considering going about solving it:
+
+\begin{enumerate}
+    \item Advisors could upload new forms or update new forms with an upload section in the front-end which would then store the relevant form with the tag associated to it, in the database.
+    \item The chatbot never actually responds the actual/physical PDF of the form. Instead it just directs them with a link to the form where it could be found on the UCF website.
+\end{enumerate}
+
+Considering these two solutions, the first one made it easier for the user to locate a specific form, and the advisor to add a new form, as there can be cases where a particular form is nowhere to be found on the UCF website. This required further research, including about how to write these APIs and security issues that could arise with the functionality being made available to students as well as the advisors. An administrator had to have control of these things and overlook each and every action depending on the sensitivity of the subject matter. These are all things that were addressed in the final design.
+
+\textbf{Question Handling}
+
+All questions recognized by the system would appear in the \emph{Questions} column. An example of this preliminary design can be found on Figure (???). Choosing a specific category would allow advisors to narrow down the breadth of questions they’re looking through, with a search bar in the upper right-hand corner to help narrow down existing questions even further. That search bar would only ever display results from the current category, so if an advisor is searching for a specific question to update its response and they can’t find it, it may help to check a different category, or perhaps even click the \emph{All} category to see all existing questions. Once a question had been selected, the right pane of the application would be populated with the question’s information including:
+
+\begin{itemize}
+    \item If the final product followed a rule-based approach, the text of the question itself.
+    \item If the final product followed an NLP approach, some representation of the intents and entities used to make recognize the question.
+    \item The response text to be output should the chatbot recognize this question from a user.
+    \item The category this question belonged to. If this is initial question creation, rather than question editing, the question would not be submitted as one the chatbot can recognize unless it has a category. 
+    \item Whether or not the question had any potential follow-up questions. This would let the system know it should be ready to recognize related questions.
+    \item Whether or not the question is itself a follow-up question to some other question or set of questions. If this box was checked, the advisor entering the question would have to identify which questions this one was meant to follow up before the question could start being recognized. 
+    \begin{itemize}
+        \item It should be noted, the diamond next to the question meatn for our design that you were able to select both at once if you wished. As such, it was possible for a question to both be a follow-up question and to have follow-up questions of its own.
+    \end{itemize}
+    \item Whether this was a question which required that a student make direct contact with someone, whether it is a UCF CECS advisor or some other department of the university.
+    \begin{itemize}
+        \item If the diamond stating that a question required some direct communication via email is checked, there were then two possible ways for the chatbot to handle this request. This included:
+        \begin{itemize}
+            \item The chatbot could send the email on behalf of the student.
+            \item The chatbot could generate a template for an email that the student may send at their own time.
+        \end{itemize}
+        \item These options were marked as circles to denote that they were mutually exclusive. The system was either allowed to send an email on the student’s behalf or it was not. There was no in-between as far as this design is concerned.
+    \end{itemize}
+    \item Whether, in the event that an email was to be sent, an email would be sent to the default contact listed for the question’s category, or whether it had to go to some other location. The advisor could then enter the alternate email address this response would direct users to.
+    \begin{itemize}
+        \item This was included as, even in the event every question was always perfectly placed in the correct category, there could still be situations where questions would need to address someone other than the default contact for that category, and so we felt it was wise to allow some provisions for that scenario.
+    \end{itemize}
+    \item Lastly, should an email be sent, either by the chatbot itself or by a student with a template, if an email was being sent the advisor must specify what parameters, if any, would be sent in the email from the student.
+    \begin{itemize}
+        \item The first two parameters would always be \emph{Name} and \emph{UCF ID} by default, as those are the most common credentials required in order for the advisors to be capable of any substantial aid.
+        \item In the event the system is allowed to sent the email on behalf of the student, the third parameter would also be filled in by default as \emph{Reply-To Address}. This is so when whichever contact received the system’s email was ready to address the issue at hand, they would be capable of simply replying to the email and having it be sent to the student.
+    \end{itemize}
+\end{itemize}
+
+\begin{figure}[h]
+    \centering\includegraphics[width=0.75\linewidth]{images/original-questions-panel.png}
+    \caption{The original questions panel.}
+\end{figure}
 
 
 
@@ -1174,34 +1366,166 @@ Finally, like with the other platforms, we decided to no longer pursue this rout
 \subsubsection{Maya Awad}
 
 \begin{enumerate}
-    \item As far as I can tell from research, we will probably end up using Python. (Update: This does not seem to have changed, though we may have to lean on JavaScript for the front end a little.)
+    \item As far as I can tell from research, we will probably end up using Python.
+    \begin{itemize}
+        \item Update: This does not seem to have changed, though we may have to lean on JavaScript for the front end a little.
+    \end{itemize}
     \item I think we could use TensorFlow for the machine learning process.
     \item A special case for Foundation Exam questions would be neat.
     \item A student front-end (the actual chatbot) vs. faculty front-end that allows for new questions and answers to be added/deleted.
     \item Building off of the “faculty front-end,” do we need a system that auto-trains the bot on the new word or would just feeding it a bunch of examples be enough for the existing system to work off of?
-    \item Would the faculty front end be an entirely separate project? It probably doesn’t have to look nearly as nice as the front-end everyone will see. (Update: To be deliberated farther but it is becoming more likely that the faculty front end will come with this project.)
+    \item Would the faculty front end be an entirely separate project? It probably doesn’t have to look nearly as nice as the front-end everyone will see.
+    \begin{itemize}
+        \item Update: To be deliberated farther but it is becoming more likely that the faculty front end will come with this project.
+    \end{itemize}
     \item What will the front-end be written in? Will we have to brave the wastelands of JavaScript? I assume we could keep the interface super simple so it may not matter in the end.
-    \item As stated before, we will likely use at least a little bit of JavaScript
-    \item Stretch Goal: Access from the UCF mobile app? I imagine it would only have to be the front end that would have to get made from scratch, then it could just make calls to wherever the chatbot is being hosted. (Update: To be deliberated on farther, it is likely not necessary however.)
+    \begin{itemize}
+        \item As stated before, we will likely use at least a little bit of JavaScript
+    \end{itemize}
+    \item Stretch Goal: Access from the UCF mobile app? I imagine it would only have to be the front end that would have to get made from scratch, then it could just make calls to wherever the chatbot is being hosted. 
+    \begin{itemize}
+        \item Update: To be deliberated on farther, it is likely not necessary however.
+    \end{itemize}
     \item Would the chatbot have its “own” email? Would the chatbot be able to email on behalf of the student? I think that if the student must send an email, they should do it themselves so that the advisor can get back to them directly. The chatbot should provide which information should be included by the student, but the rest is up to them.
-    \item Still under deliberation, however the problem of the advisor being unable to reply directly to the student by hitting “reply” is a large downside. 
+    \begin{itemize}
+        \item Still under deliberation, however the problem of the advisor being unable to reply directly to the student by hitting “reply” is a large downside. 
+    \end{itemize}
     \item We would likely want a “this link is broken” option when the bot provides a link to a form or something, since in my experience a lot of links on the UCF website are broken.
     \item I still want it to be related to the mascot by calling the chatbot Knightroid (Knightro + Android). I would love to incorporate the Pegasus as well, but I haven’t thought of a way to do so yet. Maybe while the chatbot is working it’s the little loading symbol.
     \item In the event that two different answers get the same percent likelihood to be a relevant answer, how do we resolve the tie? Do we show both answers and let the student pick? Do we program in follow up questions?
     \item Will this chatbot be visible to everyone or just registered students? I think I would like it to just be on the CS/IT website as opposed to somewhere like WebCourses, since I believe it would be more helpful to people who haven’t even enrolled yet, though this may involve fielding an even wider array of questions.
-    \item It has been deliberated on and will likely be deliberated on farther. On one hand a very common email starts with “I just started here/got accepted” and it may be that the student does not have a login yet. On the other hand, no level of login increases the potential amount of load on the app and would potentially cost more money should we use a paid app, and this in turn would be susceptible to trolling that has a real-world monetary impact 
+    \begin{itemize}
+        \item It has been deliberated on and will likely be deliberated on farther. On one hand a very common email starts with “I just started here/got accepted” and it may be that the student does not have a login yet. On the other hand, no level of login increases the potential amount of load on the app and would potentially cost more money should we use a paid app, and this in turn would be susceptible to trolling that has a real-world monetary impact.
+    \end{itemize}
     \item In the event that a question has no match above 50\%, the chatbot may ask the user to rephrase, and after 3 attempts it will just shoo them off to a human. I would like this if we can to give suggestions to the user on what should be in the email they will hopefully send. This could be things like “please include your UCF ID and your major”.
     \item What to do when it isn’t a question. Should it treat it as a question regardless? Should it give a “could you please rephrase that?” I believe the second option would be easier to implement since it would kind of already be there, otherwise we would have to program more, extra responses for non-questions. 
     \item Sentiment analysis. While I was researching NLP, one of the projects that came up was sentiment analysis. Should we be able to tell that the user is, say, obviously typing in frustration or just yelling obscenities.
     \item Ticket/Chat Logs. Should we even keep a log of what was said and for how long? I can’t think of a good reason why someone would want to look back at exactly what was said aside for testing reasons. Additionally, quite a few chatbot interactions will simply be pointing someone in the right direction and they wouldn’t necessarily need to input any identifying information, rendering a ticket log basically useless. 
-    \item This question has been kicked back and forth quite a lot, and the answer has changed more than once. At first it was a possible breach of privacy to record everything someone typed, but then it “would be useful” 
+    \begin{itemize}
+        \item This question has been kicked back and forth quite a lot, and the answer has changed more than once. At first it was a possible breach of privacy to record everything someone typed, but then it “would be useful”.
+    \end{itemize}
     \item Statistics. I think it would be cool if we kept statistics on the most accessed questions/answers in the database, it could show where information is lacking and not reaching students as effectively as it could.
-    \item This could be another table in the database, or another column, or both. Would need to look into some sort of scheduled routine that keeps track of how often something got asked in the past month and find the most frequently asked questions of the last month and have them be suggestions for the beginning of a conversation with the chatbot
+    \begin{itemize}
+        \item This could be another table in the database, or another column, or both. Would need to look into some sort of scheduled routine that keeps track of how often something got asked in the past month and find the most frequently asked questions of the last month and have them be suggestions for the beginning of a conversation with the chatbot.
+    \end{itemize}
     \item Grab dates off of the UCF calendar page and be able to tell the user, for example, when the withdrawal deadline is.
-    \item Possible to scrape data from a site but what if the format changes?
+    \begin{itemize}
+        \item Possible to scrape data from a site but what if the format changes?
+    \end{itemize}
     \item Rating “how helpful was this” system? Similar to statistics but users could leave comments.
-
 \end{enumerate}
+
+In Assignment 3, we each created a list of 20 ideas (as seen above) that we presented to each other, reflecting back, some of these ideas can already be struck out. Many of these are ideas that rely on training a chatbot from scratch, which we have decided not to do based on professor feedback i.e. “don’t reinvent the wheel”.  2, 5, 12, 15, 16 are all ideas that are to be entirely scrapped due to this development. This includes using TensorFlow, having a separate AI for the faculty front end, the event of a tie, non-question questions, sentiment analysis. 
+
+There are also ideas that have been deliberated on more since and do not have definitive answers. 1, 6, 8, 9, 13, 17, 18, and 19 are ideas that require further investigation, some of which in this will be handled in this section.
+
+\subsubsection{Owen Brahms}
+
+\begin{enumerate}
+    \item Split questions into broad Topics and more specific Questions, to allow the system to be a bit more modular.
+    \item Each question sends a “Ticket” to the system backend. If that “Ticket” matches existing tickets, it receives the same answer. Otherwise, the system will analyze the ticket to determine the best person it should be sent to.
+    \item System uses machine learning to analyze both emails sent by advisors and emails sent by students to determine the best possible responses to a given question.
+    \item System uses machine learning on student questions to determine the most common formats of questions and how they should be split to receive their associated answers.
+    \item Randomly answer questions from a pool of potential answers.
+    \item Begin by asking if the student has any questions and let the student make the first move. Then, analyze the question asked to determine what the most accurate “Topic” is and the most accurate sub-question. Then, confirm with the student that was the question they asked.
+    \item Begin by prompting the user with the possible Topics, then with the possible sub-questions, and ask the user to pick from the available options.
+    \item Just make an FAQ with a backend to update the questions and answers.
+    \item Have a list of potential questions, but allow students to ask questions outside of that list. If the question is similar enough to another question, that answer will be given and the student will be asked if that solved their problem. If not, the student will be prompted to send an email to the person most appropriate to answer their question.
+    \item Make a mobile app or integrate system with UCF app for easy access.
+    \item Integrate system into Student Center so it can tailor its answers to the specific students’ information.
+    \item In the back-end, allow advisors to upload a copy of a specific document which should accompany a specific answer, which can be sent to a student if it is necessary for the request they are making.
+    \item Allow advisors to upload a copy of a document to give to a student, but only provide it to the student after asking if they’d like a copy of the document and they respond in the affirmative.
+    \item Begin by asking the student for their Major and using that as a basis for the initial “Topic”.
+    \item Begin by asking the student for their Major but also give a list of potential majors they can select which the system is capable of managing. If the user selects a major not on the list, the system will direct them towards the appropriate department.
+    \item When a question does not have an answer and must be sent to an advisor, add that question to the backend and request that an advisor fill in the answer.
+    \item Set up a ticketing system which can handle both the questions and the responses. If a question has a set response, that response will automatically be sent. If it does not, the appropriate advisor will be alerted to answer said question. They will then be given the option to decide if that answer should be used for any similar questions.
+    \item In addition to the above idea, advisors can also mark questions as always needing an advisor response.Responses to those questions will not be given additional options.
+    \item The system can automatically send emails to the necessary people for the specified question, given that the advisor who input the appropriate answer also gave an email address for the question to go to. There would also be fields for “required information” for any such follow-up question.
+    \item Multi-part questions. For example, asking for an override for a class, the system will ask if you already have your override form filled out. If yes, it will prompt you to send an email. If no, it will provide you with the form and explain how it should be filled out for the question you’ve asked.
+\end{enumerate}
+
+\subsubsection{Reagan Chapman}
+
+\begin{enumerate}
+    \item The bot could ask for each student’s UCF ID/Name/Major at the beginning of the conversation. 
+    \item The bot could request personal information only when required to complete a task (this is in conflict with number 1). 
+    \item If giving the bot personal information is optional, we can incentivize it when it is beneficial. For example, “If you give me your UCF ID, I can let your adviser know that I was unable to solve your problem, which will make this a high priority question for them.” 
+    \item The bot could ask at the end if the conversation solved the student’s issue. 
+    \item If we decide to have the bots send emails to advisers, we should give the students the opportunity to modify the content of the message, where they see fit. 
+    \item The bot could provide information in an email that will help the appropriate person resolve the issue as efficiently as possible. For example, if the fulfillment of a request requires confirmation that the student has things like the appropriate GPA, prerequisites met, written approval, etc., these things should be asked of the student in the conversation with the chat bot, before the email is sent. Then, the email can show the recipient that all of those things are met, saving an additional pair of emails. 
+    \item The bot could be named the “Myah” (Make Your Advisor Happy) Bot.  
+    \item There could be spellcheck in the typing interface so that there will be less of a chance that students will type a word that the bot will not understand. If what is typed will be viewed as nonsensical to the bot, it could be underlined with the traditional, red squiggly. 
+    \item If the question that the student asks seems to be off-topic, the bot could ask the student to confirm what they are saying. For example, “Is your question about Bright Futures?”, just to ensure that they are not dismissing a legitimate question by accident. 
+    \item If the question is off-topic, but the relevant information is still easily available, the bot can direct them to it. For example, in line with number 9, if the student answered, “Yes”, a response could be, “Unfortunately, that is outside of my area of expertise, but information about scholarship eligibility can be found here \_\_\_\_\_, or you can contact \_\_\_\_\_.” 
+    \item If, as the professor said, it is hard to get the bot to understand what is being asked, we can rely on a series of questions like places such as banks use when you call them on the phone. “If your call is about \_\_\_\_, press 1”. Instead of pressing one, we could just give them a series of topics and have them type in the topic that they want to discuss. We could also just say, “Type in a few words about the topic of your issue.” 
+    \item I think that swearing and “abusive language” should just be ignored. I do not think it really matters if our bot’s feelings are hurt. Definitely not worth getting the student in trouble. They could just be playing around. 
+    \item In the back end, it would be helpful if advisers could add or modify questions that they expect to be asked. 
+    \item The questions added by advisers could be parsed for essential language. For example, “Will next semester be online due to coronavirus, or will it be in person/face-to-face?” The only essential keywords may be something like “next semester online/in person/face-to-face coronavirus”.  
+    \item Each real question could then be compared to all the parsed keywords. This could be done by rating how closely that the real question and the keywords match. The best match could then be addressed by saying, “So, you would like to know about updates about our return to campus?” If the student says, “yes”, the bot could give them a link to the updates. 
+    \item We could have a metric that tells the advisers what questions are asked most often. 
+    \item We could have a metric that tells the advisers what questions receive answers that students are satisfied with and which ones do not. 
+    \item We could test Dr. Heinrich’s inbox, containing previous emails, in order to come up with metrics of email reduction. 
+    \item Metrics could include how many emails should have never been sent to the adviser in the first place. 
+    \item Metrics could include how many emails that fall into the adviser’s expertise, but can easily be solved by the bot.
+\end{enumerate}
+
+\subsubsection{Raj Patel}
+
+\begin{enumerate}
+    \item Starting from the lowest tier have a login system “depending on the requirements” then maybe have a frequently asked questions pane or questions suggestion introduction as user visits the bot at the first glance after logging in, to get an idea of what’s something the bot can answer or help with.
+    \item Use a rule-based approach and mix it up with some NLP and start from a broader list of questions and streamline them as the users responds depending upon the keywords or the predetermined word cloud from previous conversations/emails.
+    \item Use technologies and machine learning platforms such as TensorFlow to train existing models or create new ones as time progresses for more customization and adding new information for processing.
+    \item As far as the view goes we can possibly have an active assistant on the advising page for the department at all times and the student can click on it to open up the chatbot and get assistance regarding many potential issues or queries that can be solved without emailing the advisor or email them after running through the bot which potentially will be assisted by the bot.
+    \item For the names I don’t have any specifics but maybe knightron (like Ultron) or something that we all discussed in our past meeting was KnugVising (relating to nugget). 
+    \item Collect information from the student right at the beginning such as UCF Id and name to start with and then guide them through by asking relevant question to reach the finish line.
+    \item If the bot isn’t able to answer the question but it can detect that the question pertains to the advisor the bot can generate a pre written email in the format that the advisor desires to make it very easy for the advisor to decode and look for what they need from user in their desired format.
+    \item Users get the chance to edit or tweak that pre-written email if they want to add any additional comments or questions, or it can also generate a template structured by the advisor for the specific issue (such as override form or transfer process) that the student could fill out so there is less back and forth email conversations to save time for both parties.
+    \item Add a filter to detect keywords that don’t pertain to the specific department and re-route the student to the department that is responsible such as financial aid and the bot can ask a question such as do you need assistance with financial aid? If the student says ‘yes’ then the bot responds with the department email and a way to contact them and reboot the process to ask again if there’s anything else that needs any assistance.
+    \item The bot is constantly improving and learning from the type of questions as an added functionality to improve efficiency in terms of time and results this can be done through some machine learning techniques and from what I’ve been reading it seems python is an ideal language to handle such a project.
+    \item Design the web-app’s backend in a way that the advisor can get privileges to tweak the model or add words to the cloud or add question types as time progresses. One such situation could be COVID related questions that would not be stored in the bot system so the advisors can go and tweak such things.
+    \item When a new circumstance or question is asked, assign a flag and add it to the list of unusual questions and have the advisor is able to review. If that question is valid and relates to their department then the advisor can input that question and the answer to it to the database.
+    \item In terms of growth a model for each department with different answers for different question each for different departments can be made in the future and used as another senior design project in the coming time. It can certainly be set up to make it easier to expand to other departments.
+    \item Implement a privilege system with and admin privilege, a moderator privilege, and a common student view functionality. Admin can be the UCF IT department and moderators could be the advisors. Admins can edit departments and moderators can add or delete new questions relating to their departments, but this is more on the side of setting up the infrastructure for future long-term goals.
+    \item Potentially bring this project to a mobile and tablet platform for ease of use and increasing accessibility at the same time.
+    \item The bot could be capable of suggesting the right form for the right question for the student to fill out and make sure the margin of error can be minimized.
+    \item Bot theme could be the mascot hanging in the corner of the page with an auto hide and show feature.
+    \item A data sorting system for the advisor sort of like a plugin for the advisors’ email to sort the email regarding the flag sent via the bot (included in the prewritten email) to further ease the work of the advisor. This could have some legal issues, but more research needs to be done regarding this idea.
+    \item Keep the possibility to release updates in the future so make it with a long-term vision and use the most updated technologies to make it a lot easier and maintainable, while providing essential features and solutions.
+    \item Add a speak feature to speak to the bot (Alexa/Siri/google etc.) or just a plain simple mic that can convert words to text.
+\end{enumerate}
+
+\subsubsection{Carlos Santiago Bañón}
+
+\begin{enumerate}
+    \item We could use either the IBM Watson, Amazon Lex, Azure Bot Service, Google DialogFlow, or any other main chatbot platform.
+    \item We could develop our system using Python, which has excellent support for Natural Language Processing libraries.
+    \item We could have it all set up in an independent web application to ensure the highest quality possible, much like the mySchedule Builder and Pegasus Path tools.
+    \item The chatbot could be part of the existing CECS website for ease of access, possibly having to work with older technologies.
+    \item We could have a special portal for advisors to access back-end information.
+    \item We could have a cool mascot represent the chatbot for a high-quality interaction with the user. Examples could be Knightro, Knugget, Citronaut, or any new custom mascot.
+    \item We should mine a large dataset to have a central set of training and testing examples to train our chatbot.
+    \item Our chatbot should have a built-in detector for abuse and profanity.
+    \item The system could have a ticketing system that reports back to advisors to track relevant interactions.
+    \item The system could provide a choice of answers to the user for better communication.
+    \item The system could be triggered by voice in addition to text.
+    \item We need to establish important evaluation metrics for our system (e.g., accuracy, F1 score, precision, recall, etc.)
+    \item The system could use new requests for self-improvement.
+    \item The system should send the user an email with a summary of the interaction for their records.
+    \item There needs to be some marketing campaign once the system is completed to let students know of its existence.
+    \item The system should have a “Did you mean \_\_\_?” option in case it does not understand a particular request.
+    \item The system could recommend courses to students based on their academic history and interests. This could answer the “which courses should I take next?” line of questions.
+    \item The system should have a directory of important UCF contact information.
+    \item The system should respond with empathetic messages to ensure trust is established.
+    \item When in doubt, the system should always point to an academic advisor.
+\end{enumerate}
+
+
+
+
+
+
+
+
 
 
 
@@ -1213,30 +1537,33 @@ In the early stages of our system design, some key research was done in the area
 While looking at existing chatbot platforms, our research produced Table (???), containing pricing information for the top contenders. These were Google DialogFlow, Amazon Lex, IBM Watson, Microsoft’s Azure Bot Service, and Wit. However, as described in section (???), we eventually decided to pursue the idea of implementing our own system from scratch using deep learning libraries (e.g., PyTorch, TensorFlow, Keras, etc.) to gain a higher level of customization. Therefore, the product is expected to not be of any cost to the university.
 
 \begin{center}
+\begin{table}[h]
+\centering
     \begin{tabular}{ L{2cm} L{3cm} L{4.5cm} }
+    
         \toprule
-        \textbf{Platform} & \textbf{Languages} & \textbf{Pricing}
-        \tabularnewline
-        \midrule
-        Google Dialogflow & 20+ & Standard Plan: Free, Enterprise: 0.002 Per Request
-        \tabularnewline
-        \midrule 
-        Amazon Lex & Only U.S. English & Voice: \$0.004 Per Request, Text: \$0.00075 Per Request
-        \tabularnewline
-        \midrule
-        IBM Watson & 10+ (Beta) & Free Plan: 10k Messages Per Month, Paid Plans: Starting at \$0.0025 Per Message
-        \tabularnewline
-        \midrule
-        Microsoft’s Azure Bot Service & 5+ & Free Plan: 10k Messages Per Month, Paid Plans: \$0.5 Per 1,000 Messages (Plus Azure Service Costs)
-        \tabularnewline
-        \midrule
-        Wit & 50+ & Free for personal and commercial use.
-        \tabularnewline
-        \bottomrule
-        % \caption{Caption}
-        % \label{tab:my_label}
-    \end{tabular}
+        \textbf{Platform} & \textbf{Languages} & \textbf{Pricing} \\
 
+        \midrule
+        Google Dialogflow & 20+ & Standard Plan: Free, Enterprise: 0.002 Per Request \\
+
+        \midrule 
+        Amazon Lex & Only U.S. English & Voice: \$0.004 Per Request, Text: \$0.00075 Per Request \\
+
+        \midrule
+        IBM Watson & 10+ (Beta) & Free Plan: 10k Messages Per Month, Paid Plans: Starting at \$0.0025 Per Message \\
+
+        \midrule
+        Microsoft’s Azure Bot Service & 5+ & Free Plan: 10k Messages Per Month, Paid Plans: \$0.5 Per 1,000 Messages (Plus Azure Service Costs) \\
+
+        \midrule
+        Wit & 50+ & Free for personal and commercial use. \\
+
+        \bottomrule
+        
+    \end{tabular}
+    \caption{Chatbot platform pricing.}
+\end{table}
 \end{center}
 
 \pagebreak
