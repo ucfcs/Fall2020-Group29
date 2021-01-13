@@ -12,8 +12,11 @@ def login():
     req = request.get_json()
     username = req['username']
     password = req['password']
+    if username == "" or password == "":
+        return jsonify(success=False, message="invalid credentials")
     print(username)
     print(password)
+    # LDAP Authentication Goes Here
     return jsonify(success=True, message="logged in")
 
 
