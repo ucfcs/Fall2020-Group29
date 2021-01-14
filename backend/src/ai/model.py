@@ -9,3 +9,11 @@ class ChatNeuralNet(nn.Module):
         self.l1 = nn.Linear(in_size, hidden_size) 
         self.l2 = nn.Linear(hidden_size, hidden_size) 
         self.l3 = nn.Linear(hidden_size, num_classes)
+
+    def forward(self, X):
+        X = self.l1(X)
+        X = self.relu(X)
+        X = self.l2(X)
+        X = self.relu(X)
+        X = self.l3(X)
+        return X
