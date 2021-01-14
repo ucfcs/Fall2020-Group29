@@ -36,9 +36,6 @@ function login(nID, pass) {
     console.log(nID);
     console.log(pass);
 
-    if (nID === "" || pass === "")
-        return;
-
     let options = {
         method: "POST",
         headers: {
@@ -51,9 +48,12 @@ function login(nID, pass) {
     };
     console.log(options);
     fetch("http://127.0.0.1:5000/login", options)
-      .then((res) => res.json())
       .then((res) => {
-          console.log(res)
+        if (res.status === 401) {
+          res.json().then((res)=> alert(res['message']))
+        } else {
+          res.json().then((res)=> window.localStorage.setItem('token', res['token']))
+        }
       })
       .catch((err) => {
         console.log("error occurred", err);

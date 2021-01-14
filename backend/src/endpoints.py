@@ -1,11 +1,14 @@
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 import database_manager as db
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 
 app = Flask(__name__)
-CORS(app)
 app.config['JSON_SORT_KEYS'] = False
+app.config['JWT_SECRET_KEY'] = "Test_Secret_Key" #Change for actual production
 
+CORS(app)
+jwt = JWTManager(app)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -13,11 +16,17 @@ def login():
     username = req['username']
     password = req['password']
     if username == "" or password == "":
-        return jsonify(success=False, message="invalid credentials")
+        return jsonify(message="Invalid credentials"), 401
     print(username)
     print(password)
-    # LDAP Authentication Goes Here
-    return jsonify(success=True, message="logged in")
+    
+    authenticated = True # Actual LDAP Authentication Goes Here
+
+    if authenticated:
+        access_token = create_access_token(identity=username)
+        return jsonify(message="Login Successful", token=access_token)
+    else:
+        return jsonify(message="Invalid credentials"), 401
 
 
 
