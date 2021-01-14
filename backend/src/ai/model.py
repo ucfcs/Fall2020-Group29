@@ -6,7 +6,8 @@ class ChatNeuralNet(nn.Module):
 
     def __init__(self, in_size, hidden_size, num_classes):
         """
-        Defines the architecture of the neural network according to the parameters.py
+        Defines the architecture of the neural network according to the parameters. This
+        design uses one hidden layer.
 
         :in_size: the number of nodes in the input layer.
         :hidden_size: the number of nodes in the hidden layer.
