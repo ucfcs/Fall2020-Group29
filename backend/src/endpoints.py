@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
-import database_manager as db
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
+from ldap3 import Connection, Server, SAFE_SYNC
+from ldap3.utils.dn import escape_rdn
+from ldap3.core.exceptions import LDAPSocketOpenError
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
@@ -10,34 +12,30 @@ app.config['JWT_SECRET_KEY'] = "Test_Secret_Key" #Change for actual production
 CORS(app)
 jwt = JWTManager(app)
 
-@app.route("/login", methods=["GET", "POST"])
+
+
+#Faculty_System_API
+@app.route("/api/faculty/login", methods=["GET", "POST"])
 def login():
     req = request.get_json()
-    username = req['username']
+    username = escape_rdn(req['username'])
     password = req['password']
     if username == "" or password == "":
         return jsonify(message="Invalid credentials"), 401
-    print(username)
-    print(password)
-    
-    authenticated = True # Actual LDAP Authentication Goes Here
 
-    if authenticated:
-        access_token = create_access_token(identity=username)
-        return jsonify(message="Login Successful", token=access_token)
-    else:
-        return jsonify(message="Invalid credentials"), 401
-
-
-
-@app.route("/get-intents", methods=["GET"])
-def get_intents():
-    return db.get_intents()
-
-@app.route("/add-intent", methods=["PUT"])
-def add_intent():
-    return jsonify(success=False, message="working on it")
-
-@app.route("/update-intent", methods=["POST"])
-def update_intent():
-    return jsonify(success=False, message="working on it")
+    domain = 'net.ucf.edu'
+    port = 389
+    basedn = 'dc=net,dc=ucf,dc=edu'
+    try:
+        server = Server(domain, port=port)
+        conn = Connection(server, username + "@" + domain, password, strategy=SAFE_SYNC, auto_bind=True)
+        conn.search(basedn, '(dn='+username+')')
+        response = conn.response[0]
+        if 'dn' in response and response['dn'] == username:
+            access_token = create_access_token(identity=username)
+            return jsonify(message="Login Successful", token=access_token)
+        else:
+            return jsonify(message="Invalid credentials"), 401
+    except LDAPSocketOpenError:
+        return jsonify(message="Users must login from within the UCF network"), 401
+        

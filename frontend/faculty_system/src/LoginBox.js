@@ -47,7 +47,7 @@ function login(nID, pass) {
         })
     };
     console.log(options);
-    fetch("http://127.0.0.1:5000/login", options)
+    fetch("http://127.0.0.1:5000/api/faculty/login", options)
       .then((res) => {
         if (res.status === 401) {
           res.json().then((res)=> alert(res['message']))
