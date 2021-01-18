@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from ldap3 import Connection, Server, SAFE_SYNC
 from ldap3.utils.dn import escape_rdn
-from ldap3.core.exceptions import LDAPSocketOpenError
+from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
@@ -29,13 +29,15 @@ def login():
     try:
         server = Server(domain, port=port)
         conn = Connection(server, username + "@" + domain, password, strategy=SAFE_SYNC, auto_bind=True)
-        conn.search(basedn, '(dn='+username+')')
+        conn.search(basedn, '(cn='+username+')')
         response = conn.response[0]
+        # Insert check for UCF Faculty
         if 'dn' in response and response['dn'] == username:
             access_token = create_access_token(identity=username)
             return jsonify(message="Login Successful", token=access_token)
-        else:
-            return jsonify(message="Invalid credentials"), 401
+
     except LDAPSocketOpenError:
         return jsonify(message="Users must login from within the UCF network"), 401
+    except LDAPBindError:
+        return jsonify(message="Invalid credentials"), 401
         
