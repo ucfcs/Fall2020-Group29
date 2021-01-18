@@ -28,13 +28,14 @@ def login():
     basedn = 'dc=net,dc=ucf,dc=edu'
     try:
         server = Server(domain, port=port)
-        conn = Connection(server, username + "@" + domain, password, strategy=SAFE_SYNC, auto_bind=True)
-        conn.search(basedn, '(cn='+username+')')
-        response = conn.response[0]
-        # Insert check for UCF Faculty
-        if 'dn' in response and response['dn'] == username:
+        conn = Connection(server, username + "@" + domain, password, strategy=SAFE_SYNC, auto_bind=False)
+        
+        if conn.bind():
+            # Add with check for UCF Faculty
             access_token = create_access_token(identity=username)
             return jsonify(message="Login Successful", token=access_token)
+        else:
+            return jsonify(message="Invalid credentials"), 401
 
     except LDAPSocketOpenError:
         return jsonify(message="Users must login from within the UCF network"), 401
