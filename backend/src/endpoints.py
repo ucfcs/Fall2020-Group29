@@ -22,7 +22,6 @@ def login():
     password = req['password']
     if username == "" or password == "":
         return jsonify(message="Invalid credentials"), 401
-
     username = escape_rdn(username)
     domain = 'net.ucf.edu'
     port = 389
