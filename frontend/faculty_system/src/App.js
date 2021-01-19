@@ -5,6 +5,7 @@ import {
   Route
 } from "react-router-dom";
 import LoginBox from './LoginBox';
+import HomeBox from './HomeBox';
 import './App.css';
 
 function App() {
@@ -12,8 +13,11 @@ function App() {
     <div className="App">
       <Router>
         <Switch>
-          <Route path="/">
+          <Route exact path="/">
             <LoginBox />
+          </Route>
+          <Route path="/home">
+            <HomeBox />
           </Route>
         </Switch>
       </Router>

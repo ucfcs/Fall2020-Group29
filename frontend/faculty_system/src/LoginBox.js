@@ -30,7 +30,7 @@ export function LoginBox () {
     );
   }
 
-  export default LoginBox
+  export default LoginBox;
 
 function login(nID, pass) {
     console.log(nID);
@@ -53,9 +53,10 @@ function login(nID, pass) {
           res.json().then((res)=> alert(res['message']))
         } else {
           res.json().then((res)=> window.localStorage.setItem('token', res['token']))
+          window.location.href = (window.location + "/home");
         }
       })
       .catch((err) => {
         console.log("error occurred", err);
-      })
+      });
 }  
