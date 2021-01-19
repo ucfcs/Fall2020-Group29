@@ -18,21 +18,23 @@ jwt = JWTManager(app)
 @app.route("/api/faculty/login", methods=["GET", "POST"])
 def login():
     req = request.get_json()
-    username = escape_rdn(req['username'])
+    username = req['username']
     password = req['password']
     if username == "" or password == "":
         return jsonify(message="Invalid credentials"), 401
 
+    username = escape_rdn(username)
     domain = 'net.ucf.edu'
     port = 389
     basedn = 'dc=net,dc=ucf,dc=edu'
     try:
         server = Server(domain, port=port)
-        conn = Connection(server, username + "@" + domain, password, strategy=SAFE_SYNC, auto_bind=False)
+        conn = Connection(server, username + "@" + domain, password)
         
         if conn.bind():
             # Add with check for UCF Faculty
             access_token = create_access_token(identity=username)
+            conn.unbind()
             return jsonify(message="Login Successful", token=access_token)
         else:
             return jsonify(message="Invalid credentials"), 401
