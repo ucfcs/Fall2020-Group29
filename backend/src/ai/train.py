@@ -53,5 +53,29 @@ batch_size = 8
 learning_rate = 0.001
 input_size = len(X_train[0])
 hidden_size = 8
-output_size = len(tags)
-print(input_size, output_size)
+num_classes = len(tags)
+print(input_size, num_classes)
+
+
+class ChatDataset(Dataset):
+
+    def __init__(self):
+        self.n_samples = len(X_train)
+        self.x_data = X_train
+        self.y_data = y_train
+
+    def __getitem__(self, index):
+        return self.x_data[index], self.y_data[index]
+
+    def __len__(self):
+        return self.n_samples
+
+dataset = ChatDataset()
+train_loader = DataLoader(dataset=dataset,
+                          batch_size=batch_size,
+                          shuffle=True,
+                          num_workers=0)
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+model = ChatNeuralNet(input_size, hidden_size, num_classes).to(device)
