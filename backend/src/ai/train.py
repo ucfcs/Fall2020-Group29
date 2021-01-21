@@ -9,7 +9,7 @@ from utils_nltk import bag_of_words, tokenize, stem
 
 
 # Open and load the intents.
-with open('intents_test.json', 'r') as f:
+with open('intents_testing.json', 'r') as f:
     intents = json.load(f)
 
 all_words = []

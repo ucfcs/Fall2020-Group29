@@ -9,7 +9,7 @@ from utils_nltk import bag_of_words, tokenize
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Open and load the intents.
-with open('intents_test.json', 'r') as json_data:
+with open('intents_testing.json', 'r') as json_data:
     intents = json.load(json_data)
 
 # Load the network architecture.
