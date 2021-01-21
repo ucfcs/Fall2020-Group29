@@ -51,6 +51,7 @@ while True:
     # Predict the user intent using the network.
     output = model(X)
     _, predicted = torch.max(output, dim=1)
+    # _, predicted = torch.topk(output, 3, dim=1)
 
     # Tag the predictions.
     tag = tags[predicted.item()]
@@ -59,10 +60,24 @@ while True:
     probs = torch.softmax(output, dim=1)
     prob = probs[0][predicted.item()]
 
+    # Get all entities with more than the set probabilities.
+    for i in range(probs.shape[0]):
+        prob = probs[i][predicted.item()]
+        print(prob.item())
+        print(tag)
+        print(tags)
+        print(output)
+
+    # print(prob.item())
+    # for entity in tags:
+    #     if probs.item() > 0.75:
+    #         print(entity)
+
     # If the correct value is predicted, save it as the intent and respond.
     if prob.item() > 0.75:
         for intent in intents['intents']:
             if tag == intent["tag"]:
+                print("Entities Found:", tags)
                 print(f"{bot_name}: {random.choice(intent['responses'])}")
     else:
         print(f"{bot_name}: Sorry, I do not understand your question.")

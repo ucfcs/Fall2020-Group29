@@ -79,6 +79,22 @@
           "Why did the hipster burn his mouth? He drank the coffee before it was cool.",
           "What did the buffalo say when his son left for college? Bison."
         ]
+      },
+      {
+        "tag": "bs-to-ms",
+        "patterns": [
+          "bs-to-ms",
+          "bstoms",
+          "bachelors masters",
+          "accelerated bs to ms",
+          "accelerated bs-to-ms",
+          "bs ms",
+          "bs-ms"
+        ],
+        "responses": [
+          "Why did the hipster burn his mouth? He drank the coffee before it was cool.",
+          "What did the buffalo say when his son left for college? Bison."
+        ]
       }
     ]
   }
