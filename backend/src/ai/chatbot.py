@@ -1,7 +1,7 @@
 import json
 import random
 import torch
-from model import NeuralNet
+from model import ChatNeuralNet
 from utils_nltk import bag_of_words, tokenize
 
 
