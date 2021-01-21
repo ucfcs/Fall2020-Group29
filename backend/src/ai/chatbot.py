@@ -23,3 +23,6 @@ model_state = data["model_state"]
 model = ChatNeuralNet(input_size, hidden_size, num_classes).to(device)
 model.load_state_dict(model_state)
 model.eval()
+
+bot_name = "Knugget"
+print("It me, Knugget! Need some knugvising? (Type 'quit' to exit.)")
