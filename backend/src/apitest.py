@@ -1,3 +1,8 @@
+#################
+# > venv\Scripts\activate
+# (venv) > python apitest.py
+# Postman http://localhost:5000/questions
+#################
 from flask import Flask
 from flask import jsonify
 from flask import request
@@ -19,30 +24,50 @@ def index_page():
     return "Home Page"
 
 @app.route('/questions', methods=['GET'])
-def get_all_questions():
-  questions = mongo.db.questions
+def get_question(entities = ['BS-to_MS', 'How', 'Sign Up']):
+  found = mongo.db.questions.find({'Entities': { '$all': entities }}) #finds the entry with the exact set of entities
   output = []
-  for s in questions.find():
-    output.append({'patterns' : s['patterns']})
-  for i in questions.find({'context':'CS'}): #only show responses where context is CS
-    output.append({'responses' : i['responses']})
+  if found:
+    for i in found: 
+      output.append({'Name' : i['Name'], 'responses':i['responses'], 'patterns':i['patterns']}) #records the name, responses, and patterns 
+  else:
+    output.append({"nothing found"})
+
   return jsonify({'result' : output})
 
+'''
+@app.route('/star/', methods=['GET'])
+def get_one_star(name):
+  star = mongo.db.stars
+  s = star.find_one({'name' : name})
+  if s:
+    output = {'name' : s['name'], 'distance' : s['distance']}
+  else:
+    output = "No such name"
+  return jsonify({'result' : output})
+'''
 
 
+@app.route('/questions', methods=['POST'])
+def add_questions(name = "BS-to_MS", response = "In order to dah da da da da", entities = ['BS-to-MS', 'How', 'Sign Up'] ):
+  questions = mongo.db.questions
+  questions_id = questions.insert({'Name': name, 'response': response, 'entities':entities})
+  new_questions = questions.find_one({'_id': questions_id })
+  output = {'Name' : new_questions['Name'], 'response' : new_questions['response'], 'entities':new_questions['entities']}
+  return jsonify({'result' : output})
+'''
 newPattern= "how do I post things"
 newResponse = "like this"
 newContext = ["general", "flask"]
 
+
 @app.route('/questions', methods=['POST'])
-def add_questions():
+def add_questions(pattern = newPattern, response = newResponse, context = newContext):
   questions = mongo.db.questions
-  #pattern = request.json['pattern']
-  #distance = request.json['distance']
-  questions_id = questions.insert({'pattern': newPattern, 'response': newResponse, 'context':newContext})
+  questions_id = questions.insert({'pattern': pattern, 'response': response, 'context':context})
   new_questions = questions.find_one({'_id': questions_id })
   output = {'pattern' : new_questions['pattern'], 'response' : new_questions['response'], 'context':new_questions['context']}
   return jsonify({'result' : output})
-
+'''
 if __name__ == '__main__':
     app.run(debug=True) #run in debug mode so that when the .py updates, the whole thing relaunches too
