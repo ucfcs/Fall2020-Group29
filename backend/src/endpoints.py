@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
-from ldap3 import Connection, Server, SAFE_SYNC
+from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
 
@@ -23,6 +23,8 @@ def login():
     if username == "" or password == "":
         return jsonify(message="Invalid credentials"), 401
     username = escape_rdn(username)
+    
+    # Attempts connection to net.ucf.edu on port 389, because we were told to use port 389
     domain = 'net.ucf.edu'
     port = 389
     basedn = 'dc=net,dc=ucf,dc=edu'

@@ -1,10 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import './login.css';
 
 export function LoginBox () {
-
-    const [nID, setNID] = useState(document.getElementById('nID') === null ? "" : document.getElementById('nID').textContent);
-    const [pass, setPass] = useState(document.getElementById('password') === null ? "" : document.getElementById('password').textContent);
     
     return (
       <div>
@@ -13,14 +10,14 @@ export function LoginBox () {
         </h1>
         <div className='login-box'>
           <div className='login-form'>
-            <form onSubmit={(e)=>{e.preventDefault(); login(nID, pass)}}>
+            <form onSubmit={(e)=>{e.preventDefault(); login()}}>
               <div className='input-group'>
                 <label htmlFor='nID'>Account</label>
-                <input className='login-text' id='nID' type='text' placeholder='Username: NID' onChange={(e)=>{setNID(e.target.value)}}/>
+                <input className='login-text' id='nID' type='text' placeholder='Username: NID' />
               </div>
               <div className='input-group'>
                 <label htmlFor='password'>Password</label>
-               <input className='login-text' id='password' type='password' placeholder='Password' onChange={(e)=>{setPass(e.target.value)}}/>
+               <input className='login-text' id='password' type='password' placeholder='Password' />
               </div>
               <input className='btn' type='submit' value='Sign On'/>
             </form>
@@ -32,7 +29,10 @@ export function LoginBox () {
 
   export default LoginBox;
 
-function login(nID, pass) {
+function login() {
+
+    let nID = document.getElementById('nID').value;
+    let pass = document.getElementById('password').value;
 
     let options = {
         method: "POST",
@@ -49,7 +49,7 @@ function login(nID, pass) {
         if (res.status === 401) {
           res.json().then((res)=> alert(res['message']));
         } else if (res.status === 200) {
-          res.json().then((res)=> {window.localStorage.setItem('token', res['token']); window.location.href = (window.location + "/home");});
+          res.json().then((res)=> {window.localStorage.setItem('token', res['token']); window.location.href = (window.location + "home");});
         } else {
           alert("Login Failed");
           console.log(res.status);
