@@ -3,16 +3,23 @@
 # (venv) > python apitest.py
 # Postman http://localhost:5000/questions
 #################
+#api key store in safe place: beb3e463-d2f0-4e64-874c-c6a39f9e8b76
+#
+#
+#################
+
 from flask import Flask
 from flask import jsonify
 from flask import request
 from flask_pymongo import PyMongo
+from pymongo import MongoClient
+
 
 app = Flask(__name__)
 
-app.config['MONGO_DBNAME'] = 'ourDB'
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/ourDB'
-
+app.config['MONGO_DBNAME'] =  'group29' #'ourDB' <-- local connection
+app.config['MONGO_URI'] =  'mongodb+srv://m_user:spell3@clusterg29.pfoak.mongodb.net/group29?retryWrites=true&w=majority' #'mongodb://localhost:27017/ourDB' <-- local connection
+#The "dnspython" module must be installed to use mongodb+srv:
 mongo = PyMongo(app)
 
 @app.route("/")
@@ -23,15 +30,18 @@ def hello_world():
 def index_page():
     return "Home Page"
 
-@app.route('/questions', methods=['GET'])
+@app.route('/get_question', methods=['GET'])
 def get_question(entities = ['BS-to_MS', 'How', 'Sign Up']):
   found = mongo.db.questions.find({'Entities': { '$all': entities }}) #finds the entry with the exact set of entities
+  # found gives a cursor object
+  # when I try to jsonify found I recive: 
+  #    TypeError: Object of type Cursor is not JSON serializable 
   output = []
   if found:
     for i in found: 
       output.append({'Name' : i['Name'], 'responses':i['responses'], 'patterns':i['patterns']}) #records the name, responses, and patterns 
   else:
-    output.append({"nothing found"})
+    output.append({'result ofsearc':'nothing found'})
 
   return jsonify({'result' : output})
 
@@ -48,7 +58,7 @@ def get_one_star(name):
 '''
 
 
-@app.route('/questions', methods=['POST'])
+@app.route('/add_question', methods=['POST'])
 def add_questions(name = "BS-to_MS", response = "In order to dah da da da da", entities = ['BS-to-MS', 'How', 'Sign Up'] ):
   questions = mongo.db.questions
   questions_id = questions.insert({'Name': name, 'response': response, 'entities':entities})
