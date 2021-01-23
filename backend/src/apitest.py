@@ -13,7 +13,7 @@ from flask import jsonify
 from flask import request
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
-
+import json
 
 app = Flask(__name__)
 
@@ -30,53 +30,33 @@ def hello_world():
 def index_page():
     return "Home Page"
 
+
 @app.route('/get_question', methods=['GET'])
-def get_question(entities = ['BS-to_MS', 'How', 'Sign Up']):
-  found = mongo.db.questions.find({'Entities': { '$all': entities }}) #finds the entry with the exact set of entities
-  # found gives a cursor object
-  # when I try to jsonify found I recive: 
-  #    TypeError: Object of type Cursor is not JSON serializable 
-  output = []
-  if found:
-    for i in found: 
-      output.append({'Name' : i['Name'], 'responses':i['responses'], 'patterns':i['patterns']}) #records the name, responses, and patterns 
-  else:
-    output.append({'result ofsearc':'nothing found'})
+def get_question(entities = ['BS-to-MS', 'How', 'Sign Up']):
+  found = mongo.db.questions.find_one({'entities': { '$all': entities }}) #finds the entry with the exact set of entities 
 
-  return jsonify({'result' : output})
+  fickleID = found.pop('_id') # jasonify doens't know how to handle objects of type ObjectID, so we remove it
+  found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+  
+  return jsonify(found) #return result as json
 
-'''
-@app.route('/star/', methods=['GET'])
-def get_one_star(name):
-  star = mongo.db.stars
-  s = star.find_one({'name' : name})
-  if s:
-    output = {'name' : s['name'], 'distance' : s['distance']}
-  else:
-    output = "No such name"
-  return jsonify({'result' : output})
-'''
 
 
 @app.route('/add_question', methods=['POST'])
-def add_questions(name = "BS-to_MS", response = "In order to dah da da da da", entities = ['BS-to-MS', 'How', 'Sign Up'] ):
+def add_question(name = "BS-to-MS", response = "In order to dah da da da da", entities = ['BS-to-MS', 'How', 'Sign Up'] ):
   questions = mongo.db.questions
-  questions_id = questions.insert({'Name': name, 'response': response, 'entities':entities})
-  new_questions = questions.find_one({'_id': questions_id })
-  output = {'Name' : new_questions['Name'], 'response' : new_questions['response'], 'entities':new_questions['entities']}
-  return jsonify({'result' : output})
+  questions_id = questions.insert({'name': name, 'responses': response, 'entities':entities})
+  new_question = questions.find_one({'_id': questions_id })
+  output = {'name' : new_question['name'], 'responses' : new_question['responses'], 'entities':new_question['entities']}
+  return jsonify(output)
+
+
 '''
-newPattern= "how do I post things"
-newResponse = "like this"
-newContext = ["general", "flask"]
-
-
-@app.route('/questions', methods=['POST'])
-def add_questions(pattern = newPattern, response = newResponse, context = newContext):
+@app.route('/add_file', methods=['PUT'])
+def add_file(entities = ['BS-to-MS', 'How', 'Sign Up'], file = 'https://www.cs.ucf.edu/wp-content/uploads/2020/04/CSIT-Elective-List-AY2020-2021.pdf' ):
   questions = mongo.db.questions
-  questions_id = questions.insert({'pattern': pattern, 'response': response, 'context':context})
-  new_questions = questions.find_one({'_id': questions_id })
-  output = {'pattern' : new_questions['pattern'], 'response' : new_questions['response'], 'context':new_questions['context']}
+  new_questions = questions.update({'Entities': { '$all': entities }, '$set':{'file':file}})
+  output = {'Name' : new_questions['Name'], 'response' : new_questions['response'], 'entities':new_questions['entities'], 'file':file}
   return jsonify({'result' : output})
 '''
 if __name__ == '__main__':
