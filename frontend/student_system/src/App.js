@@ -5,6 +5,9 @@ import { ThemeProvider } from "styled-components";
 
 function App(props) 
 {
+
+  let nextResponse = "Understandable, have a nice day!";
+
   const config = {
     width: "300px",
     height: "400px",
@@ -34,19 +37,22 @@ function App(props)
     },
     {
       id: '4',
-      message: 'Have a great day!',
+      message: nextResponse,
       end: true,
     },
 
     {
       id: "5",
       user: true,
+      validator: (value) => {
+        nextResponse = "Let me see what I can do about that."
+        return true;
+      },
       trigger: 6,
      },
-
     {
       id: "6",
-      message: "I am not working yet. Sorry.",
+      message: nextResponse,
       end: true,
      },
   ];
