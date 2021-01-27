@@ -6,6 +6,9 @@ import { ThemeProvider } from "styled-components";
 function App(props) 
 {
 
+  function dummy(value) {
+    return "Let me see what I can do to help with " + value
+  }
   let nextResponse = "Understandable, have a nice day!";
 
   const config = {
@@ -44,15 +47,11 @@ function App(props)
     {
       id: "5",
       user: true,
-      validator: (value) => {
-        nextResponse = "Let me see what I can do about that."
-        return true;
-      },
       trigger: 6,
      },
     {
       id: "6",
-      message: nextResponse,
+      message: dummy('{previousValue}'),
       end: true,
      },
   ];
