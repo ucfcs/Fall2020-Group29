@@ -4,8 +4,8 @@ import {
   Switch,
   Route
 } from "react-router-dom";
-import LoginBox from './LoginBox';
-import HomeBox from './HomeBox';
+import LoginBox from './Components/LoginBox/LoginBox';
+import HomeBox from './Components/HomeBox/HomeBox';
 import './App.css';
 
 function App() {
