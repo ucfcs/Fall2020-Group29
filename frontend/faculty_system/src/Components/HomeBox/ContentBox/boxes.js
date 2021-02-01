@@ -8,9 +8,9 @@ export function ContentBox(props) {
         <div id="content-box">
             {
                 {
-                    'navBox_Questions' : <QuestionsBox />,
-                    'navBox_Entities' : <EntitiesBox />,
-                    'navBox_Contacts' : <ContactsBox />
+                    'navbox-questions' : <QuestionsBox />,
+                    'navbox-entities' : <EntitiesBox />,
+                    'navbox-contacts' : <ContactsBox />
                 }[props.selection]
             }
         </div>

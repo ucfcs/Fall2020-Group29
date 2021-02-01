@@ -1,0 +1,22 @@
+#new-question-selection {
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+}
+
+.section-title {
+    height: 100%;
+    width:25%;
+    font-weight: bold;
+    font-size: xx-large;
+    border-right: 1px solid black;
+    background-color: #e0e0e0;
+}
+
+.plus {
+    float: right;
+    font-weight: bold;
+    font-size: xx-large;
+    margin-right: 5%;
+    cursor: pointer;
+}

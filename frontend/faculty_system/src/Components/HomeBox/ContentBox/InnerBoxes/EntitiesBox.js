@@ -8,7 +8,7 @@ export function EntitiesBox() {
     return (
         <>
             <div id="selection-wrapper">
-                <SelectionBox name="Entities" content={[{name:"Entity 1"}, {name:"Entity 2"}]} update={setSelected} />
+                <SelectionBox name="entities" content={[{name:"Entity 1"}, {name:"Entity 2"}]} update={setSelected} />
             </div>
             <div id="content">
                 

@@ -4,7 +4,7 @@ import './homebox.css';
 
 export function HomeBox () {
 
-    const [selection, setSelection] = useState("navBox_Questions");
+    const [selection, setSelection] = useState("navbox-questions");
     const [selectedNode, setSelectedNode] = useState("");
 
     function changeSelected(event) {
@@ -15,20 +15,20 @@ export function HomeBox () {
 
         let item = selectedNode;
         if (item === "") {
-            item = document.getElementById('navBox_Questions')
+            item = document.getElementById('navbox-questions')
         }
-        item.className = "navBox";
+        item.className = "navbox";
         item.selected = false;
 
         setSelection(event.target.id);
         setSelectedNode(event.target);
-        event.target.className = "navBox Selected";
+        event.target.className = "navbox selected";
         event.target.selected = true;
     }
 
     return (
         <div>
-            <div id="navBar">
+            <div id="navbar">
                 Nav Bar
                 <NavBox sectionName="Questions" selected={true}  clicked={changeSelected} />
                 <NavBox sectionName="Entities" selected={false} clicked={changeSelected} />
@@ -43,8 +43,8 @@ export default HomeBox;
 
 function NavBox(props) {
     return (
-        <div className={props.selected === true ? "navBox Selected" : "navBox"}
-         id={"navBox_"+props.sectionName} onClick={(event)=>props.clicked(event)}>
+        <div className={props.selected === true ? "navbox selected" : "navbox"}
+         id={"navbox-"+props.sectionName.toLowerCase()} onClick={(event)=>props.clicked(event)}>
             {props.sectionName}
         </div>
     );

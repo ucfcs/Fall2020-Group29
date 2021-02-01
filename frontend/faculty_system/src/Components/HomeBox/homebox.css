@@ -1,4 +1,4 @@
-#navBar {
+#navbar {
     overflow: auto;
     width: 100%;
     height: 20%;
@@ -26,7 +26,14 @@
     /* border: 1px solid black; */
 }
 
-.navBox {
+#search-bar {
+    width:100%;
+    height: 60px;
+    line-height: 60px;
+    border-bottom: 1px solid black;
+}
+
+.navbox {
     overflow: hidden;
     text-align: center;
     width: 16.7%;
@@ -35,15 +42,37 @@
     float: left;
     border-right: 1px solid black;
     cursor: pointer;
+    font-size: x-large;
 }
 
-.Selected {
+.selected {
     font-weight: bold;
     text-decoration: underline;
 }
 
-.selectionOption {
+.selection-option {
+    height: 50px;
+    cursor: default;
+    line-height: 50px;
+    border-bottom: 1px solid black;
+    font-size:large;
+    background-color: #b3b3b3;
+}
+
+.selected-option {
     height: 50px;
     line-height: 50px;
-    border: 1px solid black;
+    cursor: default;
+    border-bottom: 1px solid black;
+    font-size:large;
+    font-weight: bold;
+    text-decoration: underline;
+    background-color: #666666;
+    color: #ffcc00;
+}
+
+.arrow {
+    float:right;
+    cursor: pointer;
+    margin-right: 5%;
 }
