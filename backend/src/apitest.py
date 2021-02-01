@@ -101,7 +101,7 @@ def put_contact(Entities = ['BS-to-MS', 'How', 'Sign Up'], contact = 'heinrich@c
       'Entities': { '$all': Entities }
     }, 
     {
-      '$set': { 'comtact':contact } 
+      '$set': { 'contact':contact } 
     },
     upsert=True, # upsert = if thing does not exist, make it exist
     return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
