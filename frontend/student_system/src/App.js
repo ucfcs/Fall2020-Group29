@@ -1,4 +1,5 @@
 import './App.css';
+import Knugget from './Knugget.jpg';
 import React from "react";
 import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
@@ -16,7 +17,8 @@ function App(props)
     height: "400px",
     floating: true,
     headerTitle: "KnugBot",
-    placeholder: "Type response here"
+    placeholder: "Type response here",
+    botAvatar: Knugget
   };
 
   const steps = [
