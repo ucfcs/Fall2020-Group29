@@ -1,58 +1,110 @@
-import React, {useState} from 'react';
+import React from 'react';
 import SelectionBox from './SelectionBox';
 import './questionsbox.css';
 import arrowB from './images/sidearrow_b.png';
 import arrowG from './images/sidearrow_g.png';
 
-export function QuestionsBox() {
+export class QuestionsBox extends React.Component {
 
-    let selected = null;
+    constructor(props) {
+        super(props);
+        let questions = null;
+        this.selectItem = this.selectItem.bind(this);
+        let qfs = localStorage.getItem('questions'); // qfs = Questions From Storage, used to grab the string before parsing to JSON
+        if (qfs === null) {
+            questions = getQuestions();
+        } else {
+            questions = JSON.parse(qfs);
+        }
+        this.state= {
+            selected:null,
+            questions:questions,
+            curQuestion:questions[0],
+            curResponses:questions[0].responses.map(res => {
+                return <Response response={res}/>
+            })
+        };
+        console.log(this.state.questions);
+    }
 
-    function selectItem(event) {
+    selectItem(event, item) {
         event.preventDefault();
-        console.log(selected);
-        if (selected !== null) {
-            selected.setAttribute('src', arrowB);
-            let selectedParent = selected.parentNode;
+        if (this.state.selected !== null) {
+            this.state.selected.setAttribute('src', arrowB);
+            let selectedParent = this.state.selected.parentNode;
             selectedParent.parentNode.className = "selection-option";
         }
 
-        selected = event.target;
-        let parent = event.target.parentNode;
-        console.log(parent.parentNode);
-        event.target.setAttribute('src', arrowG);
-        parent.parentNode.className = "selected-option";
+        this.setState({
+             selected: event.target,
+             curQuestion: item,
+             curResponses:item.responses.map(res => {
+                return <Response response={res}/>
+             })}, ()=> {
+            let parent = event.target.parentNode;
+            event.target.setAttribute('src', arrowG);
+            parent.parentNode.className = "selected-option";
+        });
+        
     }
-
-    return (
-        <>
-            <div id="search-bar">
-                <div className="section-title">
-                    Questions
-                </div>
-            </div>
-            <div id="selection-wrapper">
-                <SelectionBox name="questions" content={[{name:"Question 1"}, {name:"Question 2"}]} update={selectItem} />
-                <div id="new-question-selection">
-                    Add New Question 
-                    <div className="plus">
-                        +
+    render () {
+        return (
+            <>
+                <div id="search-bar">
+                    <div className="section-title">
+                        Questions
                     </div>
                 </div>
-            </div>
-            <div id="content">
-                <div id="entity-dropdowns">
-                    <select name="category" id="category-dropdown">
+                <div id="content-wrapper">
+                    <div id="selection-wrapper">
+                        <SelectionBox name="questions" 
+                         content={this.state.questions}
+                         update={this.selectItem} />
+                        <div id="new-question-selection">
+                            <p className="new-question-text">Add New Question </p>
+                            <div className="plus-select">
+                                +
+                            </div>
+                        </div>
+                    </div>
+                    <div id="content">
+                        <div id="selection-header">
+                            Question Name: <input type="text" className="question-name" id="question-name" value={this.state.curQuestion.name}/>
+                        </div>
+                        <div id="question-content">
+                            <div id="response-box">
+                                <div className="responses">
+                                    {this.state.curResponses}
+                                    <div className="plus-response">
+                                    +
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="entity-box">
 
-                    </select>
-                    <select name="action" id="action-dropdown">
-                        
-                    </select>
-                    <select name="information" id="information-dropdown">
-
-                    </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </>
+        );
+    }
+}
+
+export default QuestionsBox;
+
+function getQuestions() {
+    return [{name:"Question 1", responses:["Response 1"]}, {name:"Question 2", responses:["Response 2", "Response 3"]}]
+}
+
+function Response(props) {
+
+    return(
+        <div className="response">
+            <input type="text" className="response-text" value={props.response}/>
+            <div className="response-delete">
+                X
             </div>
-        </>
-    )
+        </div>
+    );
 }

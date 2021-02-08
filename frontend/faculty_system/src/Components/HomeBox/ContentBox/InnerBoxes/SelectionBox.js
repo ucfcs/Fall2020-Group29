@@ -5,7 +5,7 @@ import arrowG from './images/sidearrow_g.png';
 export function SelectionBox(props) {
 
     const [list, setList] = useState(props.content.map(item => (
-        <Selection name={item.name} selected={false} update={props.update}/>
+        <Selection item={item} selected={false} update={props.update}/>
     )));
 
     return (
@@ -18,9 +18,9 @@ export function SelectionBox(props) {
 function Selection(props) {
     return (
         <div className='selection-option'>
-            {props.name}
+            <p className='selection-name'>{props.item.name}</p>
             <div className='arrow'>
-                <img src={props.selected ? arrowG : arrowB} alt='' style={{width:'16px', height:'16px'}} onClick={props.update} />
+                <img src={props.selected ? arrowG : arrowB} alt='' style={{width:'16px', height:'16px'}} onClick={(e)=> props.update(e, props.item)} />
             </div>
         </div>
     )
