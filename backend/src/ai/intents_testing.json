@@ -1,0 +1,51 @@
+{
+    "intents": [
+      {
+        "tag": "how",
+        "patterns": [
+          "how"
+        ]
+      },
+      {
+        "tag": "deadline",
+        "patterns": [
+          "deadline",
+          "dead line"
+        ]
+      },
+      {
+        "tag": "sign-up",
+        "patterns": [
+          "signup",
+          "sign up"
+        ]
+      },
+      {
+        "tag": "financial-aid",
+        "patterns": [
+          "financial aid"
+        ]
+      },
+      {
+        "tag": "hello",
+        "patterns": [
+          "hi",
+          "hello",
+          "hey"
+        ]
+      },
+      {
+        "tag": "who",
+        "patterns": [
+          "who"
+        ]
+      },
+      {
+        "tag": "override",
+        "patterns": [
+          "override"
+        ]
+      }
+    ]
+  }
+  

@@ -17,6 +17,16 @@ def bag_of_words(tokenized_string, words):
         bag = [ 1, 0, 1, 0, 0 ]
     """
 
+    # USED FOR TESTING.
+    print("SENTENCE")
+    for word in tokenized_string:
+        print(stem(word))
+
+    # USED FOR TESTING.
+    print("ALL")
+    for word in words:
+        print(stem(word))
+
     # Perform stemming on each word.
     num_words = len(words)
     string_words = [stem(word) for word in tokenized_string]
