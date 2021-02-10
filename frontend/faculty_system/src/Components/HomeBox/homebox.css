@@ -31,7 +31,7 @@
 
 #search-bar {
     width:100%;
-    height: 10%;
+    height: 9vh;
     line-height: 60px;
     border-bottom: 1px solid black;
 }
@@ -54,7 +54,7 @@
 }
 
 .selection-option {
-    height: 8%;
+    height: 10%;
     cursor: default;
     display:flex;
     align-items: center;
@@ -64,7 +64,7 @@
 }
 
 .selected-option {
-    height: 8%;
+    height: 10%;
     cursor: default;
     display:flex;
     align-items: center;
@@ -83,4 +83,22 @@
     flex:1;
     cursor: pointer;
     margin-right: 5%;
+}
+
+.button {
+    border: 1px solid black;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-left:3%;
+    max-height: 50%;
+    height:4vh;
+    padding:5px;
+    display:flex;
+    align-items: center; 
+    justify-content: center; 
+}
+
+.delete-button {
+    background-color: red;
+    color:white;
 }

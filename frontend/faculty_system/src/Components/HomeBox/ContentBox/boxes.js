@@ -1,6 +1,6 @@
-import {QuestionsBox} from './InnerBoxes/QuestionsBox';
-import {EntitiesBox} from './InnerBoxes/EntitiesBox';
-import {ContactsBox} from './InnerBoxes/ContactsBox';
+import {QuestionsBox} from './InnerBoxes/QuestionsBox/QuestionsBox';
+import {EntitiesBox} from './InnerBoxes/EntitiesBox/EntitiesBox';
+import {ContactsBox} from './InnerBoxes/ContactsBox/ContactsBox';
 
 
 export function ContentBox(props) {
@@ -8,8 +8,8 @@ export function ContentBox(props) {
         <div id="content-box">
             {
                 {
-                    'navbox-questions' : <QuestionsBox />,
-                    'navbox-entities' : <EntitiesBox />,
+                    'navbox-questions' : <QuestionsBox/>,
+                    'navbox-entities' : <EntitiesBox  isAdmin={true}/>,
                     'navbox-contacts' : <ContactsBox />
                 }[props.selection]
             }
