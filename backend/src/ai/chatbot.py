@@ -24,7 +24,6 @@ def get_entities(input):
     num_classes = data["num_classes"]
     all_words = data['all_words']
     tags = data['tags']
-    print("Tags:", tags)
     model_state = data["model_state"]
 
     # Load the trained network.
@@ -47,10 +46,9 @@ def get_entities(input):
     probs = torch.softmax(output, dim=1)
     probs = probs.detach().numpy()[0]
 
-    redicted_tags = []
-
     top_tags = []
 
+    # Get the top tags.
     for i in range(top_predictions.size):
         top_tags.append(tags[top_predictions[i]])
 
