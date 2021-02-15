@@ -10,7 +10,7 @@ from utils_nltk import bag_of_words, tokenize, stem
 from file_utils import import_csv
 
 
-file_name = 'entities_info.csv'
+file_name = 'entities_dept.csv'
 data = pd.read_csv(file_name)
 
 print(data)

@@ -40,12 +40,13 @@ def get_entities(input):
 
     # Predict the user intent using the network.
     output = model(X)
-    _, top_predictions = torch.topk(output, 3, dim=1)
+    _, top_predictions = torch.topk(output, 2, dim=1)
     top_predictions = top_predictions.numpy()[0]
 
     # Determine the prediction probabilities.
     probs = torch.softmax(output, dim=1)
     probs = probs.detach().numpy()[0]
+    print(probs)
 
     top_tags = []
 
