@@ -12,6 +12,7 @@ from file_utils import import_csv
 file_name = 'entities.csv'
 data = import_csv(file_name)
 
+print(data)
 
 
 
