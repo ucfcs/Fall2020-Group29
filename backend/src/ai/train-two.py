@@ -10,7 +10,7 @@ from utils_nltk import bag_of_words, tokenize, stem
 from file_utils import import_csv
 
 
-file_name = 'entities.csv'
+file_name = 'entities_info.csv'
 data = pd.read_csv(file_name)
 
 # print(data['entity'])
@@ -22,7 +22,7 @@ xy = []
 for index, row in data.iterrows():
 
     entities.append(row['entity'])
-    w = tokenize(row['patterns'])
+    w = tokenize(row['pattern'])
     all_words.extend(w)
     xy.append((w, row['entity']))
 
@@ -36,8 +36,6 @@ entities = sorted(set(entities))
 print(len(xy), "patterns")
 print(len(entities), "entities:", entities)
 print(len(all_words), "unique stemmed words:", all_words)
-
-print("DATA:", xy)
 
 X_train = []
 y_train = []
