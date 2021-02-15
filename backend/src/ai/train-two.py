@@ -13,7 +13,7 @@ from file_utils import import_csv
 file_name = 'entities_info.csv'
 data = pd.read_csv(file_name)
 
-# print(data['entity'])
+print(data)
 
 all_words = []
 entities = []
