@@ -2,7 +2,9 @@ import json
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn as nn
 from dataset import ChatDataset
+from model import NeuralNet
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 from utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
@@ -61,7 +63,7 @@ def preprocess(data):
 
     num_classes = len(tags)
 
-    return X_train, X_test, y_train, y_test, num_classes
+    return X_train, X_test, y_train, y_test, num_classes, all_words, tags
 
 
 def train():
@@ -95,7 +97,7 @@ def train():
         data = pd.read_csv(file_name)
 
         # Preprocess the data.
-        X_train, X_test, y_train, y_test, num_classes = preprocess(data)
+        X_train, X_test, y_train, y_test, num_classes, all_words, tags = preprocess(data)
 
         # Set the parameters.
         num_epochs = params['num_epochs']
@@ -119,6 +121,52 @@ def train():
         # Set the device to a GPU if available.
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        return
+        # Define the model.
+        model = NeuralNet(input_size, hidden_size, num_classes).to(device)
+
+        # Set the loss function and optimizer.
+        criterion = nn.CrossEntropyLoss()
+        optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+        for epoch in range(num_epochs):
+
+            for (words, labels) in train_loader:
+
+                words = words.to(device)
+                labels = labels.to(dtype=torch.long).to(device)
+
+                # Perform forward propagation.
+                outputs = model(words)
+                loss = criterion(outputs, labels)
+
+                # Perform backpropagation.
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+            # Report the loss.
+            if (epoch+1) % 10 == 0:
+                print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
+
+        # Report the final loss.
+        print(f'final loss: {loss.item():.4f}')
+
+        # Save the model components.
+        data = {
+            "model_state": model.state_dict(),
+            "input_size": input_size,
+            "hidden_size": hidden_size,
+            "num_classes": num_classes,
+            "all_words": all_words,
+            "tags": tags
+        }
+
+        # Save the model to "data.pth".
+        FILE = "trained_model.pth"
+        torch.save(data, FILE)
+
+        # Report completion of training.
+        print(f'Training complete. File saved to {FILE}.')
+
 
 train()
