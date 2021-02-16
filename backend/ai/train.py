@@ -10,11 +10,19 @@ def preprocess(data):
     xy = []
 
     for index, row in data.iterrows():
+
+        # Extract the tags.
         tag = row['tag']
         tags.append(tag)
+
+        # Tokenize the tags.
         w = tokenize(row['pattern'])
         all_words.extend(w)
+
+        # Include the pattern and label in the dataset.
         xy.append((w, tag))
+
+    print(xy)
 
     X_train = []
     y_train = []
@@ -29,11 +37,6 @@ def train():
         params = json.load(f)
 
     FLAGS = params['FLAGS']
-    print(FLAGS)
-    print(FLAGS['int'])
-    print(FLAGS['dept'])
-    print(FLAGS['cat'])
-    print(FLAGS['info'])
 
     if FLAGS['int'] == 0 and FLAGS['dept'] == 0 and FLAGS['cat'] == 0 and FLAGS['info'] == 0:
         print("No training done.")
@@ -48,11 +51,8 @@ def train():
         file_name = params['file_dept']
         data = pd.read_csv(file_name)
 
-        print(file_name)
-        print(data)
-
         # Preprocess the data.
-        # X_train, y_train = preprocess(data)
+        X_train, y_train = preprocess(data)
 
         return
 
