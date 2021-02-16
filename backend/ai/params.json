@@ -6,8 +6,8 @@
     "FLAGS":
         {
             "int": 0,
-            "dept": 1,
+            "dept": 0,
             "cat": 0,
-            "info": 0
+            "info": 1
         }
 }

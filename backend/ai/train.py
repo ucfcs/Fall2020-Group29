@@ -22,7 +22,12 @@ def preprocess(data):
         # Include the pattern and label in the dataset.
         xy.append((w, tag))
 
-    print(xy)
+    # Set the ignore words, perform stemming, and sort.
+    ignore_words = ['?', '.', '!']
+    all_words = [stem(w) for w in all_words if w not in ignore_words]
+    all_words = sorted(set(all_words))
+    tags = sorted(set(tags))
+
 
     X_train = []
     y_train = []
@@ -43,24 +48,26 @@ def train():
         return
 
     if FLAGS['int'] == 1:
+        file_name = params['file_int']
         return
 
     if FLAGS['dept'] == 1:
+        file_name = params['file_dept']
+        return
+
+    if FLAGS['cat'] == 1:
+        file_name = params['file_cat']
+        return
+
+    if FLAGS['info'] == 1:
 
         # Import the data.
-        file_name = params['file_dept']
+        file_name = params['file_info']
         data = pd.read_csv(file_name)
 
         # Preprocess the data.
         X_train, y_train = preprocess(data)
 
         return
-
-    if FLAGS['cat'] == 1:
-        return
-
-    if FLAGS['info'] == 0:
-        return
-
 
 train()
