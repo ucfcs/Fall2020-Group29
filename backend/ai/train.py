@@ -72,7 +72,7 @@ def preprocess(data):
     return X_train, X_test, y_train, y_test, num_classes, all_words, tags
 
 
-def train_model(data, params):
+def train_model(data, params, modifier):
     # Preprocess the data.
     X_train, X_test, y_train, y_test, num_classes, all_words, tags = preprocess(data)
 
@@ -132,15 +132,15 @@ def train_model(data, params):
     # Report the final loss.
     print(f'final loss: {loss.item():.4f}')
 
-    # Plot the training loss.
-    fig = plt.figure()
-    ax = plt.axes()
-    x = np.arange(1, num_epochs + 1, 1)
-    plt.title('Loss Per Epoch')
-    ax.set_xlabel('Epoch')
-    ax.set_ylabel('Loss')
-    ax.plot(x, loss_list)
-    plt.show()
+    # # Plot the training loss.
+    # fig = plt.figure()
+    # ax = plt.axes()
+    # x = np.arange(1, num_epochs + 1, 1)
+    # plt.title('Loss Per Epoch')
+    # ax.set_xlabel('Epoch')
+    # ax.set_ylabel('Loss')
+    # ax.plot(x, loss_list)
+    # plt.show()
 
     # Evaluate the model.
     accuracy = evaluate(model, X_test, y_test, tags)
@@ -156,7 +156,7 @@ def train_model(data, params):
     }
 
     # Save the model to "trained_model.pth".
-    FILE = 'trained_model.pth'
+    FILE = 'trained_model_' + modifier + '.pth'
     torch.save(data, FILE)
 
     # Report completion of training.
@@ -181,32 +181,36 @@ def train():
 
     if FLAGS['int'] == 1:
         file_name = params['file_int']
+        modifier = 'int'
         data = pd.read_csv(file_name)
         print("Training Intents")
-        accuracy = train_model(data, params)
+        accuracy = train_model(data, params, modifier)
         accuracies.append(accuracy)
 
     if FLAGS['dept'] == 1:
         file_name = params['file_dept']
+        modifier = 'dept'
         data = pd.read_csv(file_name)
         print("Training Entities: Departments")
-        accuracy = train_model(data, params)
+        accuracy = train_model(data, params, modifier)
         accuracies.append(accuracy)
 
     if FLAGS['cat'] == 1:
         # Import the data.
         file_name = params['file_cat']
+        modifier = 'cat'
         data = pd.read_csv(file_name)
         print("Training Entities: Categories")
-        accuracy = train_model(data, params)
+        accuracy = train_model(data, params, modifier)
         accuracies.append(accuracy)
 
     if FLAGS['info'] == 1:
         # Import the data.
         file_name = params['file_info']
+        modifier = 'info'
         data = pd.read_csv(file_name)
         print("Training Entities: Information")
-        accuracy = train_model(data, params)
+        accuracy = train_model(data, params, modifier)
         accuracies.append(accuracy)
 
     total_accuracy = 0.0
