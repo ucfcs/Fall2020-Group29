@@ -171,6 +171,8 @@ def train():
 
     FLAGS = params['FLAGS']
 
+    accuracies = []
+
     if FLAGS['int'] == 0 and FLAGS['dept'] == 0 and FLAGS['cat'] == 0 and FLAGS['info'] == 0:
         print("No training required.")
         return
@@ -179,26 +181,37 @@ def train():
         file_name = params['file_int']
         data = pd.read_csv(file_name)
         print("Training Intents")
-        train_model(data, params)
+        accuracy = train_model(data, params)
+        accuracies.append(accuracy)
 
     if FLAGS['dept'] == 1:
         file_name = params['file_dept']
         data = pd.read_csv(file_name)
         print("Training Entities: Departments")
-        train_model(data, params)
+        accuracy = train_model(data, params)
+        accuracies.append(accuracy)
 
     if FLAGS['cat'] == 1:
         # Import the data.
         file_name = params['file_cat']
         data = pd.read_csv(file_name)
         print("Training Entities: Categories")
-        train_model(data, params)
+        accuracy = train_model(data, params)
+        accuracies.append(accuracy)
 
     if FLAGS['info'] == 1:
         # Import the data.
         file_name = params['file_info']
         data = pd.read_csv(file_name)
         print("Training Entities: Information")
-        train_model(data, params)
-        
+        accuracy = train_model(data, params)
+        accuracies.append(accuracy)
+
+    total_accuracy = 0.0
+    for acc in accuracies:
+        total_accuracy += acc
+    model_accuracy = total_accuracy / len(accuracies)
+
+    print("Total Accuracy:", model_accuracy)
+    
 train()
