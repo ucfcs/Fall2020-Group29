@@ -28,6 +28,8 @@ def train(FLAGS):
     with open(params_file) as f:
         params = json.load(f)
 
+    FLAGS = params['FLAGS']
+
     if FLAGS.int & FLAGS.dept & FLAGS.cat & FLAGS.info == False:
         print("No training done.")
         return
@@ -41,8 +43,11 @@ def train(FLAGS):
         file_name = params['file_dept']
         data = pd.read_csv(file_name)
 
+        print(file_name)
+        print(data)
+
         # Preprocess the data.
-        X_train, y_train = preprocess(data)
+        # X_train, y_train = preprocess(data)
 
         return
 

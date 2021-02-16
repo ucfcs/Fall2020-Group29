@@ -1,6 +1,14 @@
 {
     "file_int": "intents.csv",
-    "file_dept": "entities_dept.csv",
+    "file_dept": "./src/ai-old/entities_dept.csv",
     "file_cat": "entities_cat.csv",
-    "file_info": "entities_info.csv"
+    "file_info": "entities_info.csv",
+    "FLAGS": [
+        {
+            "int": "False",
+            "dept": "True",
+            "cat": "False",
+            "info": "False"
+        }
+    ]
 }
