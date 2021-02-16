@@ -6,8 +6,8 @@
     "FLAGS":
         {
             "int": 0,
-            "dept": 1,
-            "cat": 0,
+            "dept": 0,
+            "cat": 1,
             "info": 1
         },
     "num_epochs": 1000,
