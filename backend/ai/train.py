@@ -1,4 +1,5 @@
 import json
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
@@ -128,6 +129,8 @@ def train():
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
+        loss_list = np.zeros(num_epochs)
+
         for epoch in range(num_epochs):
 
             for (words, labels) in train_loader:
@@ -146,10 +149,22 @@ def train():
 
             # Report the loss.
             if (epoch+1) % 10 == 0:
-                print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
+                print(f'Epoch ({epoch+1} / {num_epochs}), Loss: {loss.item():.4f}')
+
+                loss_list[epoch] = loss
 
         # Report the final loss.
         print(f'final loss: {loss.item():.4f}')
+
+        # Plot the training loss.
+        fig = plt.figure()
+        ax = plt.axes()
+        x = np.arange(1, num_epochs + 1, 1)
+        plt.title('Loss Per Epoch')
+        ax.set_xlabel('Epoch')
+        ax.set_ylabel('Loss')
+        ax.plot(x, loss_list)
+        plt.show()
 
         # Save the model components.
         data = {
@@ -161,8 +176,8 @@ def train():
             "tags": tags
         }
 
-        # Save the model to "data.pth".
-        FILE = "trained_model.pth"
+        # Save the model to "trained_model.pth".
+        FILE = 'trained_model.pth'
         torch.save(data, FILE)
 
         # Report completion of training.
