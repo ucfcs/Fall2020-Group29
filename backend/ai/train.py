@@ -1,6 +1,8 @@
 import json
+import numpy as np
 import pandas as pd
-from utils import bag_of_words, lemmatize, stem, tokenize
+from sklearn.model_selection import train_test_split
+from utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
 
 
 def preprocess(data):
@@ -28,24 +30,33 @@ def preprocess(data):
     all_words = sorted(set(all_words))
     tags = sorted(set(tags))
 
-    X_train = []
-    y_train = []
+    X = []
+    y = []
 
     for (pattern, tag) in xy:
 
         # Set the bag of words for each pattern.
         bag = bag_of_words(pattern, all_words)
-        X_train.append(bag)
+        X.append(bag)
 
         # Set the class labels.
         label = tags.index(tag)
-        y_train.append(label)
+        y.append(label)
 
     # Set the training data.
-    X_train = np.array(X_train)
-    y_train = np.array(y_train)
+    X = np.array(X)
+    y = np.array(y)
 
-    return X_train, y_train
+    # Shuffle and split the data.
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+
+    # Show the dimensionality of the data.
+    print("X_train:", X_train.shape)
+    print("y_train:", y_train.shape)
+    print("X_test:", X_test.shape)
+    print("y_test:", y_test.shape)
+
+    return X_train, X_test, y_train, y_test
 
 
 def train():
@@ -79,7 +90,7 @@ def train():
         data = pd.read_csv(file_name)
 
         # Preprocess the data.
-        X_train, y_train = preprocess(data)
+        X_train, X_test, y_train, y_test = preprocess(data)
 
         return
 

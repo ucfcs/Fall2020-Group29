@@ -1,3 +1,4 @@
+import math
 import nltk
 import numpy as np
 from nltk.stem.porter import PorterStemmer
@@ -33,6 +34,10 @@ def stem(word):
 
     stemmer = PorterStemmer()
     return stemmer.stem(word.lower())
+
+
+def tf_idf(xy, words):
+    return
 
 
 def tokenize(string):
