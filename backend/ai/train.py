@@ -22,22 +22,27 @@ def preprocess(data):
     return X_train, y_train
 
 
-def train(FLAGS):
+def train():
 
     params_file = 'params.json'
     with open(params_file) as f:
         params = json.load(f)
 
     FLAGS = params['FLAGS']
+    print(FLAGS)
+    print(FLAGS['int'])
+    print(FLAGS['dept'])
+    print(FLAGS['cat'])
+    print(FLAGS['info'])
 
-    if FLAGS.int & FLAGS.dept & FLAGS.cat & FLAGS.info == False:
+    if FLAGS['int'] == 0 and FLAGS['dept'] == 0 and FLAGS['cat'] == 0 and FLAGS['info'] == 0:
         print("No training done.")
         return
 
-    if FLAGS.int == True:
+    if FLAGS['int'] == 1:
         return
 
-    if FLAGS.dept == True:
+    if FLAGS['dept'] == 1:
 
         # Import the data.
         file_name = params['file_dept']
@@ -51,10 +56,11 @@ def train(FLAGS):
 
         return
 
-    if FLAGS.cat == True:
+    if FLAGS['cat'] == 1:
         return
 
-    if FLAGS.info == True:
+    if FLAGS['info'] == 0:
         return
 
 
+train()

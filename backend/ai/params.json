@@ -3,12 +3,11 @@
     "file_dept": "./src/ai-old/entities_dept.csv",
     "file_cat": "entities_cat.csv",
     "file_info": "entities_info.csv",
-    "FLAGS": [
+    "FLAGS":
         {
-            "int": "False",
-            "dept": "True",
-            "cat": "False",
-            "info": "False"
+            "int": 0,
+            "dept": 1,
+            "cat": 0,
+            "info": 0
         }
-    ]
 }
