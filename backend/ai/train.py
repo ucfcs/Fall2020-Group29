@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from utils import tokenize
+from utils import stem, tokenize
 
 
 def preprocess(data):
