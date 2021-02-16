@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from utils import stem, tokenize
+from utils import bag_of_words, lemmatize, stem, tokenize
 
 
 def preprocess(data):
@@ -28,11 +28,22 @@ def preprocess(data):
     all_words = sorted(set(all_words))
     tags = sorted(set(tags))
 
-    print(all_words)
-
-
     X_train = []
     y_train = []
+
+    for (pattern, tag) in xy:
+
+        # Set the bag of words for each pattern.
+        bag = bag_of_words(pattern, all_words)
+        X_train.append(bag)
+
+        # Set the class labels.
+        label = tags.index(tag)
+        y_train.append(label)
+
+    # Set the training data.
+    X_train = np.array(X_train)
+    y_train = np.array(y_train)
 
     return X_train, y_train
 
