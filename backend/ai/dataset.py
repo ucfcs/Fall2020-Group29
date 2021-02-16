@@ -1,7 +1,8 @@
+from torch.utils.data import Dataset
 
 class ChatDataset(Dataset):
 
-    def __init__(self):
+    def __init__(self, X_train, y_train):
         self.n_samples = len(X_train)
         self.x_data = X_train
         self.y_data = y_train

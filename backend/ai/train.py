@@ -1,8 +1,10 @@
 import json
 import numpy as np
 import pandas as pd
-from dataset.py import ChatDataset
+import torch
+from dataset import ChatDataset
 from sklearn.model_selection import train_test_split
+from torch.utils.data import DataLoader
 from utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
 
 
@@ -95,9 +97,27 @@ def train():
         # Preprocess the data.
         X_train, X_test, y_train, y_test, num_classes = preprocess(data)
 
+        # Set the parameters.
+        num_epochs = params['num_epochs']
+        batch_size = params['batch_size']
+        learning_rate = params['learning_rate']
+        hidden_size = params['hidden_size']
+
         # Set the input size.
         input_size = len(X_train[0])
         print("NN Input/Output:", input_size, num_classes)
+
+        # Set the dataset.
+        dataset = ChatDataset(X_train, y_train)
+
+        # Set the dataloader.
+        train_loader = DataLoader(dataset=dataset,
+                                    batch_size=batch_size,
+                                    shuffle=True,
+                                    num_workers=0)
+
+        # Set the device to a GPU if available.
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         return
 
