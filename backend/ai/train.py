@@ -1,6 +1,7 @@
 import json
 import numpy as np
 import pandas as pd
+from dataset.py import ChatDataset
 from sklearn.model_selection import train_test_split
 from utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
 
@@ -56,7 +57,9 @@ def preprocess(data):
     print("X_test:", X_test.shape)
     print("y_test:", y_test.shape)
 
-    return X_train, X_test, y_train, y_test
+    num_classes = len(tags)
+
+    return X_train, X_test, y_train, y_test, num_classes
 
 
 def train():
@@ -90,7 +93,11 @@ def train():
         data = pd.read_csv(file_name)
 
         # Preprocess the data.
-        X_train, X_test, y_train, y_test = preprocess(data)
+        X_train, X_test, y_train, y_test, num_classes = preprocess(data)
+
+        # Set the input size.
+        input_size = len(X_train[0])
+        print("NN Input/Output:", input_size, num_classes)
 
         return
 
