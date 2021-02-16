@@ -28,6 +28,8 @@ def preprocess(data):
     all_words = sorted(set(all_words))
     tags = sorted(set(tags))
 
+    print(all_words)
+
 
     X_train = []
     y_train = []

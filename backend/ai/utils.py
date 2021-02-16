@@ -1,5 +1,14 @@
 import nltk
 from nltk.stem.porter import PorterStemmer
+from nltk.stem import WordNetLemmatizer
+
+
+def lemmatize(word):
+
+    lemmatizer = WordNetLemmatizer()
+    word = word.lower()
+    word = lemmatizer.lemmatize(word)
+    return word
 
 
 def stem(word):
