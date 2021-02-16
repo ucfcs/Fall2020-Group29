@@ -33,8 +33,10 @@ def evaluate(model, X_test, y_test, tags):
 
         index += 1
 
+    accuracy = (correct / len(y_test))
+
     print("Correct:", correct)
     print("Total:", len(y_test))
-    print("Accuracy:", (correct / len(y_test)))
+    print("Accuracy:", accuracy)
 
-    return (correct / len(y_test))
+    return accuracy

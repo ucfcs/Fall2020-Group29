@@ -143,7 +143,7 @@ def train_model(data, params):
     plt.show()
 
     # Evaluate the model.
-    evaluate(model, X_test, y_test, tags)
+    accuracy = evaluate(model, X_test, y_test, tags)
 
     # Save the model components.
     data = {
@@ -161,6 +161,8 @@ def train_model(data, params):
 
     # Report completion of training.
     print(f'Training complete. File saved to {FILE}.')
+
+    return accuracy
 
 
 def train():
@@ -208,10 +210,11 @@ def train():
         accuracies.append(accuracy)
 
     total_accuracy = 0.0
-    for acc in accuracies:
-        total_accuracy += acc
+    for i in range(len(accuracies)):
+        print(accuracies[i])
+        total_accuracy = total_accuracy + accuracies[i]
     model_accuracy = total_accuracy / len(accuracies)
 
-    print("Total Accuracy:", model_accuracy)
+    print("Model Accuracy:", model_accuracy)
     
 train()
