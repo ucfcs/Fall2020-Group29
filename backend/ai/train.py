@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+from utils import tokenize
 
 
 def preprocess(data):
@@ -11,9 +12,9 @@ def preprocess(data):
     for index, row in data.iterrows():
         tag = row['tag']
         tags.append(tag)
-        # w = tokenize(row['pattern'])
-        # all_words.extend(w)
-        # xy.append((w, tag))
+        w = tokenize(row['pattern'])
+        all_words.extend(w)
+        xy.append((w, tag))
 
     X_train = []
     y_train = []
