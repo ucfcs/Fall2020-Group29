@@ -10,7 +10,7 @@ from utils_nltk import bag_of_words, tokenize, stem
 from file_utils import import_csv
 
 
-file_name = 'entities_dept.csv'
+file_name = 'entities_cat.csv'
 data = pd.read_csv(file_name)
 
 print(data)
@@ -55,7 +55,7 @@ X_train = np.array(X_train)
 y_train = np.array(y_train)
 
 # Define the hyperparameters.
-num_epochs = 2000
+num_epochs = 1000
 batch_size = 8
 learning_rate = 0.0003
 input_size = len(X_train[0])
