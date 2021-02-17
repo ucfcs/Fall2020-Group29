@@ -156,7 +156,7 @@ def train_model(data, params, modifier):
     }
 
     # Save the model to "trained_model.pth".
-    FILE = 'trained_model_' + modifier + '.pth'
+    FILE = 'models/trained_model_' + modifier + '.pth'
     torch.save(data, FILE)
 
     # Report completion of training.

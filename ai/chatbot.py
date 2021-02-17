@@ -71,9 +71,9 @@ def predict(utterance):
     file_cat = params['file_cat']
     file_info = params['file_info']
 
-    tags_dept = predict_tags(device, file_dept, 'trained_model_dept.pth', utterance)
-    tags_cat = predict_tags(device, file_cat, 'trained_model_cat.pth', utterance)
-    tags_info = predict_tags(device, file_info, 'trained_model_info.pth', utterance)
+    tags_dept = predict_tags(device, file_dept, 'models/trained_model_dept.pth', utterance)
+    tags_cat = predict_tags(device, file_cat, 'models/trained_model_cat.pth', utterance)
+    tags_info = predict_tags(device, file_info, 'models/trained_model_info.pth', utterance)
 
     predicted_tags['dept'] = tags_dept
     predicted_tags['cat'] = tags_cat
