@@ -42,4 +42,14 @@ def login():
         return jsonify(message="Users must login from within the UCF network"), 401
     except LDAPBindError:
         return jsonify(message="Invalid credentials"), 401
+
+
+@app.route("/api/faculty/get_questions", methods=["GET"])
+def get_questions():
+    return jsonify(questions=[{"name":"Question 1", "responses":["Response 1"]},{"name":"Question 2", "responses":["Response 2", "Response 3"]}])
+
+
+@app.route("/api/faculty/get_entities", methods=["GET"])
+def get_entities():
+    return jsonify(entities={"category":["BS-MS", "Foundation Exam"], "action":["Sign-up", "Advisor"], "info":["How", "Who", "When"]})
         

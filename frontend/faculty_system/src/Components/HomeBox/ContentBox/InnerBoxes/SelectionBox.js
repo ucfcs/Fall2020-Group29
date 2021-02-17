@@ -4,13 +4,11 @@ import arrowG from './images/sidearrow_g.png';
 
 export function SelectionBox(props) {
 
-    const [list, setList] = useState(props.content.map(item => (
-        <Selection item={item} selected={false} update={props.update}/>
-    )));
-
     return (
         <>
-            {list}
+            {props.content.map(item => (
+                <Selection item={item} selected={false} update={props.update}/>
+            ))}
         </>
     )
 }

@@ -88,6 +88,7 @@
 .button {
     border: 1px solid black;
     font-weight: bold;
+    cursor: pointer;
     border-radius: 10px;
     margin-left:3%;
     max-height: 50%;
@@ -98,7 +99,21 @@
     justify-content: center; 
 }
 
+.button:hover {
+    box-shadow: 0 0 0 2px black;
+    -moz-box-shadow: 0 0 0 2px black;
+    -webkit-box-shadow: 0 0 0 2px black;
+    text-decoration: underline;
+}
+
+.button:active {
+    box-shadow: 0 0 0 1px black;
+    -moz-box-shadow: 0 0 0 1px black;
+    -webkit-box-shadow: 0 0 0 1px black;
+    border: 1px solid black;
+}
+
 .delete-button {
     background-color: red;
-    color:white;
+    color:white;  
 }
