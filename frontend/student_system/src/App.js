@@ -22,6 +22,7 @@ function App(props)
     hideUserAvatar: true
   };
 
+
   const steps = [
     {
      id: "Greeting",
@@ -62,18 +63,22 @@ function App(props)
   const theme = {
     background: "#fff",
     fontFamily: "Arial",
-    headerBgColor: "gold",
+    headerBgColor: "#ffd700",
     headerFontColor: "#fff",
     headerFontSize: "15px",
     botBubbleColor: "#eee",
-    botFontColor: "black",
+    botFontColor: "#000000",
     userBubbleColor: "#fff",
-    userFontColor: "black"
+    userFontColor: "#000000"
    };
 
   return (
     <ThemeProvider theme={theme}>
-       <ChatBot steps={steps} {...config} />
+      <div >
+      <ChatBot 
+        recognitionEnable={true}
+        steps={steps} {...config} />
+      </div>
     </ThemeProvider>
    );
 }
