@@ -18,7 +18,8 @@ function App(props)
     floating: true,
     headerTitle: "KnugBot",
     placeholder: "Type response here",
-    botAvatar: Knugget
+    botAvatar: Knugget,
+    hideUserAvatar: true
   };
 
   const steps = [
