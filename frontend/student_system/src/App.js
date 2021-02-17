@@ -40,7 +40,8 @@ function App(props) {
     },
     {
       id: "3",
-      message: Data,
+      // You can say how can i help you?
+      message: "How can I help you?",
       trigger: "5",
     },
     {
