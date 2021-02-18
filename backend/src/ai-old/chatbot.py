@@ -1,6 +1,7 @@
 import json
 import torch
 import numpy as np
+import pandas as pd
 from model import ChatNeuralNet
 from utils_nltk import bag_of_words, tokenize
 
@@ -11,8 +12,8 @@ def get_entities(input):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Open and load the intents.
-    with open('intents_testing.json', 'r') as json_data:
-        intents = json.load(json_data)
+    file_name = 'entities_info.csv'
+    data_entities = pd.read_csv(file_name)
 
     # Load the network architecture.
     FILE = "data.pth"
@@ -23,7 +24,7 @@ def get_entities(input):
     hidden_size = data["hidden_size"]
     num_classes = data["num_classes"]
     all_words = data['all_words']
-    tags = data['tags']
+    tags = data['entities']
     model_state = data["model_state"]
 
     # Load the trained network.
@@ -39,12 +40,13 @@ def get_entities(input):
 
     # Predict the user intent using the network.
     output = model(X)
-    _, top_predictions = torch.topk(output, 3, dim=1)
+    _, top_predictions = torch.topk(output, 2, dim=1)
     top_predictions = top_predictions.numpy()[0]
 
     # Determine the prediction probabilities.
     probs = torch.softmax(output, dim=1)
     probs = probs.detach().numpy()[0]
+    print(probs)
 
     top_tags = []
 
