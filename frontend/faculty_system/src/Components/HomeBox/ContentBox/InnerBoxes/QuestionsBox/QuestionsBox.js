@@ -14,6 +14,7 @@ export class QuestionsBox extends React.Component {
         this.selectItem = this.selectItem.bind(this);
         this.changeResponse = this.changeResponse.bind(this);
         this.deleteResponse = this.deleteResponse.bind(this);
+        this.addResponse = this.addResponse.bind(this);
 
         let qfs = window.sessionStorage.getItem("questions"); // qfs = Questions From Storage, used to grab the string before parsing to JSON
 
@@ -67,7 +68,6 @@ export class QuestionsBox extends React.Component {
 
     changeResponse(event, num) {
         event.preventDefault();
-        console.log(num);
         let question = this.state.curQuestion;
         let responses = question.responses;
         responses[num] = event.target.value;
@@ -82,6 +82,13 @@ export class QuestionsBox extends React.Component {
             question.responses.splice(num, 1);
             this.setState({curQuestion:question});
         }
+    }
+
+    addResponse(event) {
+        event.preventDefault();
+        let question = this.state.curQuestion;
+        question.responses.push("");
+        this.setState({curQuestion:question});
     }
 
     selectItem(event, item) {
@@ -142,7 +149,7 @@ export class QuestionsBox extends React.Component {
                                     {this.state.curQuestion.length === 0 ? "":this.state.curQuestion.responses.map((res, index) => {
                                         return <Response num={index} response={res} change={this.changeResponse} del={this.deleteResponse}/>
                                             })}
-                                    <div className="plus-response">
+                                    <div className="plus-response" onClick={this.addResponse}>
                                     +
                                     </div>
                                 </div>
@@ -180,7 +187,7 @@ function Response(props) {
 
     return(
         <div className="response">
-            <input type="text" className="response-text" num={props.num} value={props.response} onChange={(event)=>props.change(event, props.num)}/>
+            <input type="text" className="response-text" placeholder="New Response" num={props.num} value={props.response} onChange={(event)=>props.change(event, props.num)}/>
             <div className="response-delete" onClick={(event)=>props.del(event, props.num)}>
                 X
             </div>
