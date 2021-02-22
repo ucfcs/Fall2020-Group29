@@ -1,16 +1,37 @@
-import './App.css';
-import Knugget from './Knugget.jpg';
-import React from "react";
+import "./App.css";
+import Knugget from "./Knugget.jpg";
+import React, { useState, useEffect } from "react";
 import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
+import axios from "axios";
 
-function App(props) 
-{
+function App(props) {
+  const [articleId, setArticleId] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   function dummy(value) {
-    return "Let me see what I can do to help with " + value
+    // console.log(value);
+    setUserData(value);
+
+    return "Let me see what I can do to help with " + value;
   }
   let nextResponse = "Understandable, have a nice day!";
+
+  // UseEffect Hook to make a POST request
+  console.log(userData);
+  useEffect(() => {
+    if (userData != null) {
+      // POST request using axios inside useEffect React hook
+      const article = { name: userData };
+      console.log(userData);
+      axios
+        .post("http://127.0.0.1:5000/api/user-response", article)
+        .then((response) => setArticleId(response.data));
+    }
+    console.log(userData);
+  }, [userData]);
+
+  console.log(articleId);
 
   const config = {
     width: "300px",
@@ -19,31 +40,30 @@ function App(props)
     headerTitle: "KnugBot",
     placeholder: "Type response here",
     botAvatar: Knugget,
-    hideUserAvatar: true
+    hideUserAvatar: true,
   };
-
 
   const steps = [
     {
-     id: "Greeting",
-     message: "It me, Knugget! Need some knugvising?",
-     trigger: "2"
+      id: "Greeting",
+      message: "It me, Knugget! Need some knugvising?",
+      trigger: "2",
     },
 
     {
-      id: '2',
+      id: "2",
       options: [
-        { value: 1, label: 'Yes', trigger: '3' },
-        { value: 2, label: 'No', trigger: '4' },
+        { value: 1, label: "Yes", trigger: "3" },
+        { value: 2, label: "No", trigger: "4" },
       ],
     },
     {
-      id: '3',
-      message: 'How can I help?',
-      trigger: '5',
+      id: "3",
+      message: "How can I help?",
+      trigger: "5",
     },
     {
-      id: '4',
+      id: "4",
       message: nextResponse,
       end: true,
     },
@@ -52,12 +72,13 @@ function App(props)
       id: "5",
       user: true,
       trigger: 6,
-     },
+    },
     {
       id: "6",
-      message: dummy('{previousValue}'),
+      // this will send a string to the dummy function instead of an object.
+      message: ({ previousValue }) => dummy(previousValue),
       end: true,
-     },
+    },
   ];
 
   const theme = {
@@ -69,18 +90,16 @@ function App(props)
     botBubbleColor: "#eee",
     botFontColor: "#000000",
     userBubbleColor: "#fff",
-    userFontColor: "#000000"
-   };
+    userFontColor: "#000000",
+  };
 
   return (
     <ThemeProvider theme={theme}>
-      <div >
-      <ChatBot 
-        recognitionEnable={true}
-        steps={steps} {...config} />
+      <div>
+        <ChatBot recognitionEnable={true} steps={steps} {...config} />
       </div>
     </ThemeProvider>
-   );
+  );
 }
 
 export default App;
