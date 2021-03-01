@@ -1,11 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import sys
+import traceback
 
-sys.path.append("../../../ai")
-import chatbot
-import endpoints
-
+# from ...ai import chatbot
+from chatbot import predict
 
 app = Flask(__name__)
 CORS(app)
@@ -21,12 +19,17 @@ def home():
 # POST to recieve an input
 @app.route("/api/user-response", methods=["POST"])
 def create_response():
-    # Saves the json in the user_response variable.
-    user_response = request.get_json()
-    user = user_response["name"]
-    result = chatbot.predict(user)
-    tag
-    return jsonify({result})
+    try:
+        # Saves the json in the user_response variable.
+        user_response = request.get_json()
+        user = user_response["name"]
+
+        result = predict(user)
+        dept = result["dept"][0]["tag"]
+        category = result["cat"][0]["tag"]
+        return jsonify({"dept": dept, "category": category})
+    except:
+        print(traceback.print_exc())
 
 
 # GET to send a response

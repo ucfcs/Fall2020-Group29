@@ -8,6 +8,7 @@ import axios from "axios";
 function App(props) {
   const [articleId, setArticleId] = useState(null);
   const [userData, setUserData] = useState(null);
+  // const [department, setDepartment] = useState(null);
 
   function dummy(value) {
     // console.log(value);
@@ -18,17 +19,17 @@ function App(props) {
   let nextResponse = "Understandable, have a nice day!";
 
   // UseEffect Hook to make a POST request
-  console.log(userData);
+  // console.log(userData);
   useEffect(() => {
     if (userData != null) {
       // POST request using axios inside useEffect React hook
       const article = { name: userData };
-      console.log(userData);
+      // console.log(userData);
       axios
         .post("http://127.0.0.1:5000/api/user-response", article)
         .then((response) => setArticleId(response.data));
     }
-    console.log(userData);
+    // console.log(userData);
   }, [userData]);
 
   console.log(articleId);
@@ -76,9 +77,15 @@ function App(props) {
     {
       id: "6",
       // this will send a string to the dummy function instead of an object.
+      // message: ,
       message: ({ previousValue }) => dummy(previousValue),
       end: true,
     },
+    // {
+    //   id: "7",
+    //   message: "department: " + department + " category: ",
+    //   end: true,
+    // },
   ];
 
   const theme = {
