@@ -15,6 +15,8 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo import ReturnDocument # so that we can return the updated version of the document after updating it
 
+import json
+
 app = Flask(__name__)
 
 app.config['MONGO_DBNAME'] =  'group29' #'ourDB' <-- local connection
@@ -29,6 +31,24 @@ def hello_world():
 @app.route("/home")
 def index_page():
     return "Home Page"
+
+
+## ##
+# return all documents in a collection
+@app.route('/return_all', methods=['GET']) 
+def return_all( Collection = 'questions' ):
+  found = mongo.db[Collection].find({})
+  
+  if (found is None): # if it comes back empty
+    return jsonify({'result':'no results'})
+
+  list = []
+  for i in found: # itterate over curor 
+    fickleID = i.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+    i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+    list.append(i)
+
+  return jsonify(list) #return result as json
 
 ### questions collection ###
 # add 
@@ -123,7 +143,7 @@ def put_contact(Entities = ['BS-to-MS', 'How', 'Sign Up'], contact = 'heinrich@c
 
 #delete
 @app.route('/delete_question', methods=['DELETE']) # retrive a question based on Entities
-def get_question(Entities = ['BS-to-MS', 'How', 'Sign Up']):
+def delete_question(Entities = ['BS-to-MS', 'How', 'Sign Up']):
   found = mongo.db.questions.find_one({'Entities':{ '$all': Entities }}) #finds the entry with the exact set of Entities 
 
   if (found is None): # if there is no match
