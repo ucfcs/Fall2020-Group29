@@ -32,7 +32,13 @@ function App(props) {
     // console.log(userData);
   }, [userData]);
 
+  // data returned from the AI system is stored in articleId.
   console.log(articleId);
+  let department;
+  if (articleId != null) {
+    department = JSON.stringify(articleId["dept"]);
+  }
+  console.log(department);
 
   const config = {
     width: "300px",
@@ -72,20 +78,20 @@ function App(props) {
     {
       id: "5",
       user: true,
-      trigger: 6,
+      trigger: "6",
     },
     {
       id: "6",
       // this will send a string to the dummy function instead of an object.
       // message: ,
       message: ({ previousValue }) => dummy(previousValue),
+      trigger: "7",
+    },
+    {
+      id: "7",
+      message: "department: " + department + " category: ",
       end: true,
     },
-    // {
-    //   id: "7",
-    //   message: "department: " + department + " category: ",
-    //   end: true,
-    // },
   ];
 
   const theme = {
