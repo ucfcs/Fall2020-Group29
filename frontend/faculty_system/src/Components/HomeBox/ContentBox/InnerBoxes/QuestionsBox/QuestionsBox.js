@@ -187,7 +187,7 @@ export class QuestionsBox extends React.Component {
                 <div id='content-wrapper'>
                     <div id='selection-wrapper'>
                         <div className='section-title'>
-                            <h1>Questions</h1>
+                            Questions
                         </div>
                         <div id='search-bar'>
                             <input type='text' placeholder='Search' />
@@ -195,6 +195,10 @@ export class QuestionsBox extends React.Component {
                         <SelectionBox 
                         name='questions' 
                         content={this.state.questions} 
+                        titles={this.state.questions.map(q=> ({
+                            'title':`${q.tags.department}:${q.tags.category}:${q.tags.information}`,
+                            'name':q.name
+                        }))}
                         update={this.selectItem} 
                         />
                         <div id='new-question-selection'>

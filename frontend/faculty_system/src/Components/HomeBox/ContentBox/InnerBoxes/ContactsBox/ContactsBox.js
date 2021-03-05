@@ -8,7 +8,11 @@ export function ContactsBox() {
     return (
         <>
             <div id='selection-wrapper'>
-                <SelectionBox name='contacts' content={[{name:'Contact 1'}, {name:'Contact 2'}]} update={setSelected} />
+                <SelectionBox 
+                name='contacts' 
+                content={[{name:'Contact 1'}, {name:'Contact 2'}]} 
+                titles={[{title:'Contact 1', name:''}, {title:'Contact 2', name:''}]}
+                update={setSelected} />
             </div>
             <div id='content'>
                 
