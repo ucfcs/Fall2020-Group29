@@ -31,7 +31,7 @@ def login():
         conn = Connection(server, username + "@" + domain, password)
         
         if conn.bind():
-            # Add with check for UCF Faculty
+
             access_token = create_access_token(identity=username)
             conn.unbind()
             return jsonify(message="Login Successful", token=access_token)
@@ -46,10 +46,35 @@ def login():
 
 @app.route("/api/faculty/get_questions", methods=["GET"])
 def get_questions():
-    return jsonify(questions=[{"name":"Question 1", "responses":["Response 1"]},{"name":"Question 2", "responses":["Response 2", "Response 3"]}])
+    return jsonify(questions=[
+            {
+            "id":0,
+            "name":"Question 1",
+            "responses":["Response 1"],
+            "patterns":["Pattern number 1", "Pattern number 2"],
+            "tags":{
+                "intent": "Advising",
+                "department": "Sign-up",
+                "category": "BS-MS",
+                "information": "How"
+                }
+            },
+            {
+            "id":1,
+            "name":"Question 2", 
+            "responses":["Response 2", "Response 3"], 
+            "patterns":["Pattern number 3", "Pattern number 4"],
+            "tags":{
+                "intent": "CECS",
+                "department": "Advisor",
+                "category": "Foundation Exam",
+                "information": "Who"
+                }
+            }
+        ])
 
 
-@app.route("/api/faculty/get_entities", methods=["GET"])
+@app.route("/api/faculty/get_tags", methods=["GET"])
 def get_entities():
-    return jsonify(entities={"category":["BS-MS", "Foundation Exam"], "action":["Sign-up", "Advisor"], "info":["How", "Who", "When"]})
+    return jsonify(tags={"intents":["Advising", "CECS", "CECS-IT"],"entities":{"category":["BS-MS", "Foundation Exam"], "department":["Sign-up", "Advisor"], "info":["How", "Who", "When"]}})
         

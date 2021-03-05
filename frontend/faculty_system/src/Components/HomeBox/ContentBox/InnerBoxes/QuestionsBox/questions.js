@@ -1,3 +1,16 @@
+export class Question {
+    constructor(id, name, patterns, entities, responses) {
+
+    }
+}
+
+
+
+
+
+
+
+
 export function getQuestions(callback) {
     let options = {
         method: "GET",
@@ -15,7 +28,7 @@ export function getQuestions(callback) {
             callback([]);
           } else if (res.status === 200) {
             res.json().then((res)=> {
-                //console.log(res["questions"]);
+                console.log(res["questions"]);
                 callback(res["questions"]);
             });
           }
@@ -27,7 +40,7 @@ export function getQuestions(callback) {
       });
 }
 
-export function getEntities(callback) {
+export function getTags(callback) {
     let options = {
         method: "GET",
         headers: {
@@ -37,14 +50,14 @@ export function getEntities(callback) {
 
     };
 
-    fetch("http://127.0.0.1:5000/api/faculty/get_entities", options)
+    fetch("http://127.0.0.1:5000/api/faculty/get_tags", options)
       .then((res)=> {
           if (res.status === 401) {
             res.json().then((res)=> alert(res['message']));
             callback({});
           } else if (res.status === 200) {
             res.json().then((res)=> {
-                callback(res["entities"]);
+                callback(res["tags"]);
             });
           }
       })

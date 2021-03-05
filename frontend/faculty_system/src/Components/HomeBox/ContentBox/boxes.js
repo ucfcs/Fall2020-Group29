@@ -9,7 +9,7 @@ export function ContentBox(props) {
             {
                 {
                     'navbox-questions' : <QuestionsBox/>,
-                    'navbox-entities' : <EntitiesBox  isAdmin={true}/>,
+                    'navbox-tags' : <EntitiesBox  isAdmin={true}/>,
                     'navbox-contacts' : <ContactsBox />
                 }[props.selection]
             }

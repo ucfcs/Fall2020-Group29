@@ -27,12 +27,17 @@ export function HomeBox () {
     }
 
     return (
-        <div>
+        <div id="home-box">
             <div id="navbar">
-                Nav Bar
+                <div id="nav-header">
+                    
+                </div>
                 <NavBox sectionName="Questions" selected={true}  clicked={changeSelected} />
-                <NavBox sectionName="Entities" selected={false} clicked={changeSelected} />
+                <NavBox sectionName="Tags" selected={false} clicked={changeSelected} />
                 <NavBox sectionName="Contacts" selected={false} clicked={changeSelected} />
+                <NavBox sectionName="Documents" selected={false} clicked={changeSelected} />
+                <NavBox sectionName="Users" selected={false} clicked={changeSelected} />
+                <NavBox sectionName="Statistics" selected={false} clicked={changeSelected} />
             </div>
             <ContentBox selection={selection} />
         </div>
