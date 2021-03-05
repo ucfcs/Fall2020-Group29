@@ -5,7 +5,7 @@ import {ContactsBox} from './InnerBoxes/ContactsBox/ContactsBox';
 
 export function ContentBox(props) {
     return (
-        <div id="content-box">
+        <div id='content-box'>
             {
                 {
                     'navbox-questions' : <QuestionsBox/>,

@@ -19,23 +19,23 @@ export class QuestionsBox extends React.Component {
         this.addPattern = this.addPattern.bind(this);
         this.handleSelectTag = this.handleSelectTag.bind(this);
 
-        let qfs = window.sessionStorage.getItem("questions"); // qfs = Questions From Storage, used to grab the string before parsing to JSON
+        let qfs = window.sessionStorage.getItem('questions'); // qfs = Questions From Storage, used to grab the string before parsing to JSON
 
-        let tfs = window.sessionStorage.getItem("tags"); // tfs = Tags From Storage, used to grab the string before parsing to JSON
+        let tfs = window.sessionStorage.getItem('tags'); // tfs = Tags From Storage, used to grab the string before parsing to JSON
 
         this.state= {
             selected:null,
             questions:qfs === null ? [] : JSON.parse(qfs),
             curQuestion:qfs === null ? {
-                "id": null,
-                "name": "",
-                "responses": [],
-                "patterns": [],
-                "tags": {
-                    "intent": "",
-                    "department": "",
-                    "category": "",
-                    "information": ""
+                'id': null,
+                'name': '',
+                'responses': [],
+                'patterns': [],
+                'tags': {
+                    'intent': '',
+                    'department': '',
+                    'category': '',
+                    'information': ''
                 }
             } : JSON.parse(qfs)[0],
             tags:tfs === null ? [] : JSON.parse(tfs),
@@ -53,11 +53,11 @@ export class QuestionsBox extends React.Component {
     */
     componentDidMount() {
         if (this.state.questions.length === 0) {
-            console.log("No questions");
+            console.log('No questions');
             getQuestions((questions)=> {
                 console.log(questions);
                 this.setState({questions:questions}, ()=> {
-                window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                window.sessionStorage.setItem('questions', JSON.stringify(this.state.questions));
                 this.setState({
                     curQuestion: this.state.questions[0]}, console.log(this.state.curQuestion));
             });
@@ -69,23 +69,23 @@ export class QuestionsBox extends React.Component {
         if (this.state.tags.length === 0) {
             getTags((tags)=> {
                 this.setState({tags:tags}, ()=> {
-                    window.sessionStorage.setItem("tags", JSON.stringify(this.state.tags));
+                    window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
                     this.setState({
                         intentList: this.state.tags.intents.map(int => ({
-                             "value":int.toLowerCase(),
-                             "label":int
+                             'value':int.toLowerCase(),
+                             'label':int
                         })),
                         departmentList: this.state.tags.entities.department.map(dept => ({
-                            "value":dept.toLowerCase(),
-                            "label":dept
+                            'value':dept.toLowerCase(),
+                            'label':dept
                         })),
                         categoryList: this.state.tags.entities.category.map(cat => ({
-                            "value":cat.toLowerCase(),
-                            "label":cat
+                            'value':cat.toLowerCase(),
+                            'label':cat
                         })),
                         infoList: this.state.tags.entities.info.map(info => ({
-                            "value":info.toLowerCase(),
-                            "label":info
+                            'value':info.toLowerCase(),
+                            'label':info
                         }))
                     })
                 })
@@ -93,20 +93,20 @@ export class QuestionsBox extends React.Component {
         } else {
             this.setState({
                 intentList: this.state.tags.intents.map(int => ({
-                    "value":int.toLowerCase(),
-                    "label":int
+                    'value':int.toLowerCase(),
+                    'label':int
                 })),
                 departmentList: this.state.tags.entities.department.map(dept => ({
-                   "value":dept.toLowerCase(),
-                   "label":dept
+                   'value':dept.toLowerCase(),
+                   'label':dept
                 })),
                 categoryList: this.state.tags.entities.category.map(cat => ({
-                   "value":cat.toLowerCase(),
-                   "label":cat
+                   'value':cat.toLowerCase(),
+                   'label':cat
                 })),
                 infoList: this.state.tags.entities.info.map(info => ({
-                   "value":info.toLowerCase(),
-                   "label":info
+                   'value':info.toLowerCase(),
+                   'label':info
                 }))
             });
         }
@@ -123,7 +123,7 @@ export class QuestionsBox extends React.Component {
 
     deleteResponse(event, num) {
         event.preventDefault();
-        if (window.confirm("Are you sure you want to delete this response?")) {
+        if (window.confirm('Are you sure you want to delete this response?')) {
             let question = this.state.curQuestion;
             question.responses.splice(num, 1);
             this.setState({curQuestion:question});
@@ -133,7 +133,7 @@ export class QuestionsBox extends React.Component {
     addResponse(event) {
         event.preventDefault();
         let question = this.state.curQuestion;
-        question.responses.push("");
+        question.responses.push('');
         this.setState({curQuestion:question});
     }
 
@@ -149,7 +149,7 @@ export class QuestionsBox extends React.Component {
     addPattern(event) {
         event.preventDefault();
         let question = this.state.curQuestion;
-        question.patterns.push("");
+        question.patterns.push('');
         this.setState({curQuestion:question});
     }
 
@@ -159,7 +159,7 @@ export class QuestionsBox extends React.Component {
             if (this.state.selected !== null) {
                 this.state.selected.setAttribute('src', arrowB);
                 let selectedParent = this.state.selected.parentNode;
-                selectedParent.parentNode.className = "selection-option";
+                selectedParent.parentNode.className = 'selection-option';
             }
 
             this.setState({
@@ -167,7 +167,7 @@ export class QuestionsBox extends React.Component {
              curQuestion: item}, ()=> {
                 let parent = event.target.parentNode;
                 event.target.setAttribute('src', arrowG);
-                parent.parentNode.className = "selected-option";
+                parent.parentNode.className = 'selected-option';
                 console.log(this.state.curQuestion.id);
                 console.log(this.state.curQuestion.tags)
             });
@@ -184,37 +184,37 @@ export class QuestionsBox extends React.Component {
     render () {
         return (
             <>
-                <div id="content-wrapper">
-                    <div id="selection-wrapper">
-                        <div className="section-title">
+                <div id='content-wrapper'>
+                    <div id='selection-wrapper'>
+                        <div className='section-title'>
                             <h1>Questions</h1>
                         </div>
-                        <div id="search-bar">
-                            <input type="text" placeholder="Search" />
+                        <div id='search-bar'>
+                            <input type='text' placeholder='Search' />
                         </div>
                         <SelectionBox 
-                        name="questions" 
+                        name='questions' 
                         content={this.state.questions} 
                         update={this.selectItem} 
                         />
-                        <div id="new-question-selection">
-                            <p className="new-question-text">
+                        <div id='new-question-selection'>
+                            <p className='new-question-text'>
                                 Add New Question
                             </p>
-                            <div className="plus-select">
+                            <div className='plus-select'>
                                 +
                             </div>
                         </div>
                     </div>
-                    <div id="content">
-                        <div id="selection-header">
-                            <label id="question-label" htmlFor="question-name">
+                    <div id='content'>
+                        <div id='selection-header'>
+                            <label id='question-label' htmlFor='question-name'>
                                 Question Name
                             </label>
                             <input 
-                            type="text" 
-                            className="question-name" 
-                            id="question-name" 
+                            type='text' 
+                            className='question-name' 
+                            id='question-name' 
                             value={this.state.curQuestion.name} 
                             onChange={(e)=>{
                                 e.preventDefault();
@@ -223,81 +223,81 @@ export class QuestionsBox extends React.Component {
                                 this.setState({curQuestion:question}, ()=>console.log(this.state.curQuestion));
                              }}
                              />
-                            {/* <div className="button save-button">Save Changes</div>
-                            <div className="button delete-button">Delete Question</div> */}
+                            {/* <div className='button save-button'>Save Changes</div>
+                            <div className='button delete-button'>Delete Question</div> */}
                         </div>
-                        <div id="question-content">
-                            <div id="entity-box">
+                        <div id='question-content'>
+                            <div id='entity-box'>
                                 <h2>Tags</h2>
-                                <div id="entities">
-                                    <div className="entity-selection-box">
-                                        <label className="entity-label" htmlFor="intent-choice">
+                                <div id='entities'>
+                                    <div className='entity-selection-box'>
+                                        <label className='entity-label' htmlFor='intent-choice'>
                                             Intent
                                         </label>
                                         <Select 
-                                        className="entity-select"
-                                        id="intent-choice" 
+                                        className='entity-select'
+                                        id='intent-choice' 
                                         value={{
                                             value:this.state.curQuestion.tags.intent.toLowerCase(),
                                             label:this.state.curQuestion.tags.intent
                                         }}
                                         options={this.state.intentList} 
-                                        onChange={(e)=>this.handleSelectTag(e, "intent")}
+                                        onChange={(e)=>this.handleSelectTag(e, 'intent')}
                                         />
                                     </div>
-                                    <div className="entity-selection-box">
-                                        <label className="entity-label" htmlFor="department-choice">
+                                    <div className='entity-selection-box'>
+                                        <label className='entity-label' htmlFor='department-choice'>
                                             Department
                                         </label>
                                         <Select 
-                                        className="entity-select" 
-                                        id="department-choice" 
+                                        className='entity-select' 
+                                        id='department-choice' 
                                         value={{
                                             value:this.state.curQuestion.tags.department.toLowerCase(),
                                             label:this.state.curQuestion.tags.department
                                         }}
                                         options={this.state.departmentList} 
-                                        onChange={(e)=>this.handleSelectTag(e, "department")}
+                                        onChange={(e)=>this.handleSelectTag(e, 'department')}
                                         />
                                     </div>
-                                    <div className="entity-selection-box">
-                                        <label className="entity-label" htmlFor="category-choice">
+                                    <div className='entity-selection-box'>
+                                        <label className='entity-label' htmlFor='category-choice'>
                                             Category
                                         </label>
                                         <Select 
-                                        className="entity-select" 
-                                        id="category-choice"
+                                        className='entity-select' 
+                                        id='category-choice'
                                         value={{
                                             value:this.state.curQuestion.tags.category.toLowerCase(),
                                             label:this.state.curQuestion.tags.category
                                         }}
                                         options={this.state.categoryList} 
-                                        onChange={(e)=>this.handleSelectTag(e, "category")}
+                                        onChange={(e)=>this.handleSelectTag(e, 'category')}
                                         />
                                     </div>
-                                    <div className="entity-selection-box">
-                                        <label className="entity-label" htmlFor="information-choice">
+                                    <div className='entity-selection-box'>
+                                        <label className='entity-label' htmlFor='information-choice'>
                                             Information
                                         </label>
                                         <Select 
-                                        className="entity-select" 
-                                        id="information-choice"
+                                        className='entity-select' 
+                                        id='information-choice'
                                         value={{
                                             value:this.state.curQuestion.tags.information.toLowerCase(),
                                             label:this.state.curQuestion.tags.information
                                         }}
                                         options={this.state.infoList} 
-                                        onChange={(e)=>this.handleSelectTag(e, "information")}
+                                        onChange={(e)=>this.handleSelectTag(e, 'information')}
                                         />
                                     </div>
                                 </div>
                             </div>
-                            <div id="entered-fields">
-                                <div id="patterns-and-responses">
-                                    <div id="response-box">
+                            <div id='entered-fields'>
+                                <div id='patterns-and-responses'>
+                                    <div id='response-box'>
                                         <h2>Responses to Question</h2>
-                                        <div className="responses">
-                                            {this.state.curQuestion.length === 0 ? "":
+                                        <div className='responses'>
+                                            {this.state.curQuestion.length === 0 ? '':
                                             this.state.curQuestion.responses.map((res, index) => {
                                                 return <Response 
                                                 num={index} 
@@ -305,15 +305,15 @@ export class QuestionsBox extends React.Component {
                                                 change={this.changeResponse} 
                                                 />
                                             })}
-                                            <div className="plus" onClick={this.addResponse}>
+                                            <div className='plus' onClick={this.addResponse}>
                                             +
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="patterns-box">
+                                    <div id='patterns-box'>
                                         <h2>Patterns</h2>
-                                        <div className="patterns">
-                                            {this.state.curQuestion.length === 0 ? "":
+                                        <div className='patterns'>
+                                            {this.state.curQuestion.length === 0 ? '':
                                             this.state.curQuestion.patterns.map((pat, index) => {
                                                 return <Pattern 
                                                 num={index} 
@@ -321,59 +321,59 @@ export class QuestionsBox extends React.Component {
                                                 change={this.changePattern} 
                                                 />
                                             })}
-                                            <div className="plus" onClick={this.addPattern}>
+                                            <div className='plus' onClick={this.addPattern}>
                                             +
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div id="contacts-and-forms">
-                                    <div id="contacts-box">
+                                <div id='contacts-and-forms'>
+                                    <div id='contacts-box'>
                                         <h2>Contacts</h2>
-                                        <div className="contacts field-box">
+                                        <div className='contacts field-box'>
                                             <Select 
-                                            type="text" 
-                                            className="contact field" 
-                                            id="contact-1"
+                                            type='text' 
+                                            className='contact field' 
+                                            id='contact-1'
                                             />
                                             <Select 
-                                            type="text" 
-                                            className="contact field" 
-                                            id="contact-2"
+                                            type='text' 
+                                            className='contact field' 
+                                            id='contact-2'
                                             />
                                         </div>
                                     </div>
-                                    <div id="documents-box">
+                                    <div id='documents-box'>
                                         <h2>Documents</h2>
-                                        <div className="documents field-box">
+                                        <div className='documents field-box'>
                                             <input 
-                                            type="text" 
-                                            className="document field" 
-                                            id="document-1" 
-                                            placeholder="Document" 
+                                            type='text' 
+                                            className='document field' 
+                                            id='document-1' 
+                                            placeholder='Document' 
                                             />
                                             <input 
-                                            type="text" 
-                                            className="document field" 
-                                            id="document-2" 
-                                            placeholder="Document" 
+                                            type='text' 
+                                            className='document field' 
+                                            id='document-2' 
+                                            placeholder='Document' 
                                             />
                                         </div>
                                     </div>
-                                    <div id="follow-up-box">
+                                    <div id='follow-up-box'>
                                         <h2>Follow Up Questions</h2>
-                                        <div className="follow-ups field-box">
+                                        <div className='follow-ups field-box'>
                                             <input 
-                                            type="text" 
-                                            className="follow-up field" 
-                                            id="follow-up-1" 
-                                            placeholder="Follow Up Question" 
+                                            type='text' 
+                                            className='follow-up field' 
+                                            id='follow-up-1' 
+                                            placeholder='Follow Up Question' 
                                             />
                                             <input 
-                                            type="text" 
-                                            className="follow-up field" 
-                                            id="follow-up-2" 
-                                            placeholder="Follow Up Question" 
+                                            type='text' 
+                                            className='follow-up field' 
+                                            id='follow-up-2' 
+                                            placeholder='Follow Up Question' 
                                             />
                                         </div>
                                     </div>
@@ -394,11 +394,11 @@ export default QuestionsBox;
 function Response(props) {
 
     return(
-        <div className="response">
+        <div className='response'>
             <input 
-            type="text" 
-            className="response-text" 
-            placeholder="New Response" 
+            type='text' 
+            className='response-text' 
+            placeholder='New Response' 
             num={props.num} 
             value={props.response} 
             onChange={(event)=>props.change(event, props.num)}
@@ -409,11 +409,11 @@ function Response(props) {
 
 function Pattern(props) {
     return(
-        <div className="pattern">
+        <div className='pattern'>
             <input 
-            type="text" 
-            className="pattern-text" 
-            placeholder="New Pattern" 
+            type='text' 
+            className='pattern-text' 
+            placeholder='New Pattern' 
             num={props.num} 
             value={props.pattern} 
             onChange={(event)=>props.change(event, props.num)}

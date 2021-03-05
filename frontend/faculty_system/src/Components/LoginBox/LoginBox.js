@@ -4,8 +4,8 @@ import './login.css';
 
 export function LoginBox () {
 
-    const [nID, setNID] = useState(document.getElementById('nID') === null ? "" : document.getElementById('nID').textContent);
-    const [pass, setPass] = useState(document.getElementById('password') === null ? "" : document.getElementById('password').textContent);
+    const [nID, setNID] = useState(document.getElementById('nID') === null ? '' : document.getElementById('nID').textContent);
+    const [pass, setPass] = useState(document.getElementById('password') === null ? '' : document.getElementById('password').textContent);
     
     return (
       <div>

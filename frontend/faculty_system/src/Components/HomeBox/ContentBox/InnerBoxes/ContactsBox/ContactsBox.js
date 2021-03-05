@@ -3,14 +3,14 @@ import SelectionBox from '../SelectionBox';
 
 export function ContactsBox() {
 
-    const [selected, setSelected] = useState("");
+    const [selected, setSelected] = useState('');
 
     return (
         <>
-            <div id="selection-wrapper">
-                <SelectionBox name="contacts" content={[{name:"Contact 1"}, {name:"Contact 2"}]} update={setSelected} />
+            <div id='selection-wrapper'>
+                <SelectionBox name='contacts' content={[{name:'Contact 1'}, {name:'Contact 2'}]} update={setSelected} />
             </div>
-            <div id="content">
+            <div id='content'>
                 
             </div>
         </>
