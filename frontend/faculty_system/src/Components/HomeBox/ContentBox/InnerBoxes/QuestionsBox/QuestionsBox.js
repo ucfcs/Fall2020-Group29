@@ -5,7 +5,6 @@ import arrowB from '../images/sidearrow_b.png';
 import arrowG from '../images/sidearrow_g.png';
 import {getQuestions, getTags} from './questions';
 import Select from 'react-select';
-import { useState } from 'react';
 
 export class QuestionsBox extends React.Component {
 
@@ -188,16 +187,20 @@ export class QuestionsBox extends React.Component {
                 <div id="content-wrapper">
                     <div id="selection-wrapper">
                         <div className="section-title">
-                            Questions
+                            <h1>Questions</h1>
                         </div>
                         <div id="search-bar">
                             <input type="text" placeholder="Search" />
                         </div>
-                        <SelectionBox name="questions" 
-                         content={this.state.questions}
-                         update={this.selectItem} />
+                        <SelectionBox 
+                        name="questions" 
+                        content={this.state.questions} 
+                        update={this.selectItem} 
+                        />
                         <div id="new-question-selection">
-                            <p className="new-question-text">Add New Question </p>
+                            <p className="new-question-text">
+                                Add New Question
+                            </p>
                             <div className="plus-select">
                                 +
                             </div>
@@ -205,13 +208,21 @@ export class QuestionsBox extends React.Component {
                     </div>
                     <div id="content">
                         <div id="selection-header">
-                            <label id="question-label" htmlFor="question-name">Question Name</label> 
-                            <input type="text" className="question-name" id="question-name" value={this.state.curQuestion.name} onChange={(e)=>{
+                            <label id="question-label" htmlFor="question-name">
+                                Question Name
+                            </label>
+                            <input 
+                            type="text" 
+                            className="question-name" 
+                            id="question-name" 
+                            value={this.state.curQuestion.name} 
+                            onChange={(e)=>{
                                 e.preventDefault();
                                 let question = this.state.curQuestion;
                                 question.name = e.target.value;
                                 this.setState({curQuestion:question}, ()=>console.log(this.state.curQuestion));
-                             }}/>
+                             }}
+                             />
                             {/* <div className="button save-button">Save Changes</div>
                             <div className="button delete-button">Delete Question</div> */}
                         </div>
@@ -220,7 +231,9 @@ export class QuestionsBox extends React.Component {
                                 <h2>Tags</h2>
                                 <div id="entities">
                                     <div className="entity-selection-box">
-                                        <label className="entity-label" htmlFor="intent-choice">Intent</label>
+                                        <label className="entity-label" htmlFor="intent-choice">
+                                            Intent
+                                        </label>
                                         <Select 
                                         className="entity-select"
                                         id="intent-choice" 
@@ -233,7 +246,9 @@ export class QuestionsBox extends React.Component {
                                         />
                                     </div>
                                     <div className="entity-selection-box">
-                                        <label className="entity-label" htmlFor="department-choice">Department</label>
+                                        <label className="entity-label" htmlFor="department-choice">
+                                            Department
+                                        </label>
                                         <Select 
                                         className="entity-select" 
                                         id="department-choice" 
@@ -246,7 +261,9 @@ export class QuestionsBox extends React.Component {
                                         />
                                     </div>
                                     <div className="entity-selection-box">
-                                        <label className="entity-label" htmlFor="category-choice">Category</label>
+                                        <label className="entity-label" htmlFor="category-choice">
+                                            Category
+                                        </label>
                                         <Select 
                                         className="entity-select" 
                                         id="category-choice"
@@ -259,7 +276,9 @@ export class QuestionsBox extends React.Component {
                                         />
                                     </div>
                                     <div className="entity-selection-box">
-                                        <label className="entity-label" htmlFor="information-choice">Information</label>
+                                        <label className="entity-label" htmlFor="information-choice">
+                                            Information
+                                        </label>
                                         <Select 
                                         className="entity-select" 
                                         id="information-choice"
@@ -278,8 +297,13 @@ export class QuestionsBox extends React.Component {
                                     <div id="response-box">
                                         <h2>Responses to Question</h2>
                                         <div className="responses">
-                                            {this.state.curQuestion.length === 0 ? "":this.state.curQuestion.responses.map((res, index) => {
-                                                return <Response num={index} response={res} change={this.changeResponse} />
+                                            {this.state.curQuestion.length === 0 ? "":
+                                            this.state.curQuestion.responses.map((res, index) => {
+                                                return <Response 
+                                                num={index} 
+                                                response={res} 
+                                                change={this.changeResponse} 
+                                                />
                                             })}
                                             <div className="plus" onClick={this.addResponse}>
                                             +
@@ -289,8 +313,13 @@ export class QuestionsBox extends React.Component {
                                     <div id="patterns-box">
                                         <h2>Patterns</h2>
                                         <div className="patterns">
-                                            {this.state.curQuestion.length === 0 ? "":this.state.curQuestion.patterns.map((pat, index) => {
-                                                return <Pattern num={index} pattern={pat} change={this.changePattern} />
+                                            {this.state.curQuestion.length === 0 ? "":
+                                            this.state.curQuestion.patterns.map((pat, index) => {
+                                                return <Pattern 
+                                                num={index} 
+                                                pattern={pat} 
+                                                change={this.changePattern} 
+                                                />
                                             })}
                                             <div className="plus" onClick={this.addPattern}>
                                             +
@@ -302,22 +331,50 @@ export class QuestionsBox extends React.Component {
                                     <div id="contacts-box">
                                         <h2>Contacts</h2>
                                         <div className="contacts field-box">
-                                            <input type="text" className="contact field" id="contact-1" placeholder="Contact" />
-                                            <input type="text" className="contact field" id="contact-2" placeholder="Contact" />
+                                            <Select 
+                                            type="text" 
+                                            className="contact field" 
+                                            id="contact-1"
+                                            />
+                                            <Select 
+                                            type="text" 
+                                            className="contact field" 
+                                            id="contact-2"
+                                            />
                                         </div>
                                     </div>
                                     <div id="documents-box">
                                         <h2>Documents</h2>
                                         <div className="documents field-box">
-                                            <input type="text" className="document field" id="document-1" placeholder="Document" />
-                                            <input type="text" className="document field" id="document-2" placeholder="Document" />
+                                            <input 
+                                            type="text" 
+                                            className="document field" 
+                                            id="document-1" 
+                                            placeholder="Document" 
+                                            />
+                                            <input 
+                                            type="text" 
+                                            className="document field" 
+                                            id="document-2" 
+                                            placeholder="Document" 
+                                            />
                                         </div>
                                     </div>
                                     <div id="follow-up-box">
                                         <h2>Follow Up Questions</h2>
                                         <div className="follow-ups field-box">
-                                            <input type="text" className="follow-up field" id="follow-up-1" placeholder="Follow Up Question" />
-                                            <input type="text" className="follow-up field" id="follow-up-2" placeholder="Follow Up Question" />
+                                            <input 
+                                            type="text" 
+                                            className="follow-up field" 
+                                            id="follow-up-1" 
+                                            placeholder="Follow Up Question" 
+                                            />
+                                            <input 
+                                            type="text" 
+                                            className="follow-up field" 
+                                            id="follow-up-2" 
+                                            placeholder="Follow Up Question" 
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -338,7 +395,14 @@ function Response(props) {
 
     return(
         <div className="response">
-            <input type="text" className="response-text" placeholder="New Response" num={props.num} value={props.response} onChange={(event)=>props.change(event, props.num)}/>
+            <input 
+            type="text" 
+            className="response-text" 
+            placeholder="New Response" 
+            num={props.num} 
+            value={props.response} 
+            onChange={(event)=>props.change(event, props.num)}
+            />
         </div>
     );
 }
@@ -346,7 +410,14 @@ function Response(props) {
 function Pattern(props) {
     return(
         <div className="pattern">
-            <input type="text" className="pattern-text" placeholder="New Pattern" num={props.num} value={props.pattern} onChange={(event)=>props.change(event, props.num)}/>
+            <input 
+            type="text" 
+            className="pattern-text" 
+            placeholder="New Pattern" 
+            num={props.num} 
+            value={props.pattern} 
+            onChange={(event)=>props.change(event, props.num)}
+            />
         </div>
     );
 }
