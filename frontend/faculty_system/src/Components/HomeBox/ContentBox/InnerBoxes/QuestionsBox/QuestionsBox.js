@@ -23,7 +23,7 @@ export class QuestionsBox extends React.Component {
 
         let tfs = window.sessionStorage.getItem('tags'); // tfs = Tags From Storage, used to grab the string before parsing to JSON
 
-        this.state= {
+        this.state = {
             selected:null,
             questions:qfs === null ? [] : JSON.parse(qfs),
             curQuestion:qfs === null ? {
@@ -168,8 +168,6 @@ export class QuestionsBox extends React.Component {
                 let parent = event.target.parentNode;
                 event.target.setAttribute('src', arrowG);
                 parent.parentNode.className = 'selected-option';
-                console.log(this.state.curQuestion.id);
-                console.log(this.state.curQuestion.tags)
             });
         }
     }

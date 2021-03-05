@@ -1,18 +1,51 @@
-import React, {useState} from 'react';
+import React from 'react';
+import arrowB from '../images/sidearrow_b.png';
+import arrowG from '../images/sidearrow_g.png';
 import SelectionBox from '../SelectionBox';
 
-export function EntitiesBox() {
+export class EntitiesBox extends React.Component {
 
-    const [selected, setSelected] = useState('');
+    constructor(props) {
+        super(props);
 
-    return (
-        <>
-            <div id='selection-wrapper'>
-                <SelectionBox name='entities' content={[{name:'Entity 1'}, {name:'Entity 2'}]} update={setSelected} />
-            </div>
-            <div id='content'>
+        this.selectItem = this.selectItem.bind(this);
+
+        this.state = {
+            selected:null
+        }
+    }
+
+    selectItem(event, item) {
+        event.preventDefault();
+        if (this.state.selected !== event.target) {
+            if (this.state.selected !== null) {
+                this.state.selected.setAttribute('src', arrowB);
+                let selectedParent = this.state.selected.parentNode;
+                selectedParent.parentNode.className = 'selection-option';
+            }
+
+            this.setState({selected: event.target}, ()=> {
+                let parent = event.target.parentNode;
+                event.target.setAttribute('src', arrowG);
+                parent.parentNode.className = 'selected-option';
+            });
+        }
+    }
+
+    render() {
+        return (
+            <>
+                <div id='selection-wrapper'>
+                    <SelectionBox 
+                    name='tags' 
+                    content={[{name:'Tag 1'}, {name:'Tag 2'}]} 
+                    titles={[{title:'Tag 1', name:''}, {title:'Tag 2', name:''}]}
+                    update={this.selectItem} />
+                </div>
+                <div id='content'>
                 
-            </div>
-        </>
-    )
+                </div>
+            </>
+        )
+    }
 }
