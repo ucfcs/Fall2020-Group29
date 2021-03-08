@@ -1,44 +1,128 @@
 import "./App.css";
 import Knugget from "./Knugget.jpg";
-import React, { useState, useEffect } from "react";
-import ChatBot from "react-simple-chatbot";
+import React, { useState, useEffect, Component } from "react";
+import ChatBot, { Loading } from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
 import axios from "axios";
+import PropTypes from "prop-types";
+
+class Result extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loading: true,
+      department: "",
+      category: "",
+      result: "",
+      trigger: false,
+    };
+
+    this.triggetNext = this.triggetNext.bind(this);
+  }
+  async componentDidMount() {
+    const { steps } = this.props;
+    const lookup = steps.userInput.value;
+    const input = { name: lookup };
+    const api_response = await axios.post(
+      "http://127.0.0.1:5000/api/user-response",
+      input
+    );
+    this.setState({
+      loading: false,
+      result: api_response,
+      department: api_response.data.department,
+      category: api_response.data.category,
+    });
+  }
+  triggetNext() {
+    this.setState({ trigger: true }, () => {
+      this.props.triggerNextStep();
+    });
+  }
+  render() {
+    const { trigger, loading, department, category, result } = this.state;
+    // console.log(department);
+    // console.log(category);
+    console.log(result);
+    return (
+      <div
+        style={{
+          textAlign: "center",
+          padding: 15,
+          margin: 30,
+          fontFamily: "Arial",
+          fontSize: "12pt",
+          backgroundColor: "#eee",
+          borderRadius: 25,
+        }}
+      >
+        {loading ? (
+          <Loading />
+        ) : (
+          "1.) Department: " + department + " 2.) Category: " + category
+        )}
+        {!loading && (
+          <div
+            style={{
+              textAlign: "center",
+              margin: 20,
+            }}
+          >
+            {!trigger && (
+              <button onClick={() => this.triggetNext()}>Try again</button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+}
+Result.propTypes = {
+  steps: PropTypes.object,
+  triggerNextStep: PropTypes.func,
+};
+
+Result.defaultProps = {
+  steps: undefined,
+  triggerNextStep: undefined,
+};
 
 function App(props) {
-  const [articleId, setArticleId] = useState(null);
-  const [userData, setUserData] = useState(null);
-  // const [department, setDepartment] = useState(null);
+  // const [result, setResult] = useState(null);
+  // // const [userData, setUserData] = useState(null);
+  // // const [category, setCategory] = useState(null);
+  // // const [department, setDepartment] = useState(null);
+
+  // // UseEffect Hook to make a POST request
+  // // console.log(userData);
+  // useEffect(() => {
+  //   if (userData != null) {
+  //     // POST request using axios inside useEffect React hook
+  //     const getResponse = async () => {
+  //       const article = { name: userData };
+  //       let api_data = await axios.post(
+  //         "http://127.0.0.1:5000/api/user-response",
+  //         article
+  //       );
+  //       setResult(api_data.data.dept);
+  //       console.log(api_data.data.dept, typeof api_data.data);
+  //     };
+  //     getResponse();
+  //   }
+  // console.log(userData);
+  // }, [userData]);
+  // console.log("result", result);
+  // let newResult = JSON.stringify(result);
+  // console.log(newResult);
 
   function dummy(value) {
     // console.log(value);
-    setUserData(value);
+    // setUserData(value);
 
     return "Let me see what I can do to help with " + value;
   }
   let nextResponse = "Understandable, have a nice day!";
-
-  // UseEffect Hook to make a POST request
-  // console.log(userData);
-  useEffect(() => {
-    if (userData != null) {
-      // POST request using axios inside useEffect React hook
-      const article = { name: userData };
-      // console.log(userData);
-      axios
-        .post("http://127.0.0.1:5000/api/user-response", article)
-        .then((response) => setArticleId(response.data));
-    }
-    // console.log(userData);
-  }, [userData]);
-
-  // data returned from the AI system is stored in articleId.
-  console.log(articleId);
-  let department;
-  if (articleId != null) {
-    department = JSON.stringify(articleId["dept"]);
-  }
-  console.log(department);
 
   const config = {
     width: "300px",
@@ -67,7 +151,7 @@ function App(props) {
     {
       id: "3",
       message: "How can I help?",
-      trigger: "5",
+      trigger: "userInput",
     },
     {
       id: "4",
@@ -76,7 +160,7 @@ function App(props) {
     },
 
     {
-      id: "5",
+      id: "userInput",
       user: true,
       trigger: "6",
     },
@@ -89,8 +173,9 @@ function App(props) {
     },
     {
       id: "7",
-      message: "department: " + department + " category: ",
-      end: true,
+      component: <Result />,
+      waitAction: true,
+      trigger: "Greeting",
     },
   ];
 
