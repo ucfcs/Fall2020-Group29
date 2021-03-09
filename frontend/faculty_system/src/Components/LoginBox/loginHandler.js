@@ -15,7 +15,7 @@ export function login(nID, pass) {
         if (res.status === 401) {
           res.json().then((res)=> alert(res['message']));
         } else if (res.status === 200) {
-          res.json().then((res)=> {window.localStorage.setItem('token', res['token']); window.location.href = (window.location + "/home");});
+          res.json().then((res)=> {window.sessionStorage.setItem('token', res['token']); window.location.href = (window.location + "home");});
         } else {
           alert("Login Failed");
           console.log(res.status);

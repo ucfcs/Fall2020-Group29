@@ -48,33 +48,119 @@ def login():
 def get_questions():
     return jsonify(questions=[
             {
-            "id":0,
+            "id":1,
             "name":"Question 1",
             "responses":["Response 1"],
             "patterns":["Pattern number 1", "Pattern number 2"],
             "tags":{
-                "intent": "Advising",
-                "department": "Sign-up",
-                "category": "BS-MS",
-                "information": "How"
-                }
+                "intent": 1,
+                "department": 1,
+                "category": 1,
+                "information": 1
+                },
+            "follow-up":1,
+            "contact": -1,
+            "document": -1
             },
             {
-            "id":1,
+            "id":2,
             "name":"Question 2", 
             "responses":["Response 2", "Response 3"], 
             "patterns":["Pattern number 3", "Pattern number 4"],
             "tags":{
-                "intent": "CECS",
-                "department": "Advisor",
-                "category": "Foundation Exam",
-                "information": "Who"
-                }
+                "intent": 2,
+                "department": 2,
+                "category": 2,
+                "information": 2
+                },
+            "follow-up":-1,
+            "contact": -1,
+            "document": -1
             }
         ])
 
 
 @app.route("/api/faculty/get_tags", methods=["GET"])
-def get_entities():
-    return jsonify(tags={"intents":["Advising", "CECS", "CECS-IT"],"entities":{"category":["BS-MS", "Foundation Exam"], "department":["Sign-up", "Advisor"], "info":["How", "Who", "When"]}})
-        
+def get_tags():
+    return jsonify(tags={
+        "intents":[
+            {
+            "id": 1,
+            "name": "Advising"
+            },
+            {
+            "id": 2,
+            "name": "CECS"
+            },
+            {
+            "id": 3,
+            "name": "CECS-IT"
+            }
+        ],
+        "entities":{
+            "category":[
+                {
+                "id": 1,
+                "name": "BS-MS"
+                },
+                {
+                "id": 2,
+                "name": "Foundation Exam"
+                }
+            ], 
+            "department":[
+                {
+                "id": 1,
+                "name": "Sign-up"
+                },
+                {
+                "id": 2,
+                "name": "Advisor"
+                } 
+            ],
+            "information":[
+                {
+                "id": 1,
+                "name": "How"
+                },
+                {
+                "id": 2,
+                "name": "Who"
+                },
+                {
+                "id": 3,
+                "name": "When"
+                }
+            ]
+        }
+    })
+
+
+@app.route("/api/faculty/get_contacts", methods=["GET"])
+def get_contacts():
+    return jsonify(contacts=[
+        {
+        "id": 1,
+        "name":"Contact 1",
+        "email":"con1@contact.com"
+        },
+        {
+        "id": 2,
+        "name":"Contact 2",
+        "email":"con2@contact.com"
+        }
+    ])
+
+
+@app.route("/api/faculty/get_documents", methods=["GET"])
+def get_documents():
+    return jsonify(documents=[
+        {
+        "id": 1,
+        "name": "Document 1"
+        },
+        {
+        "id": 2,
+        "name": "Document 2"
+        }
+    ])

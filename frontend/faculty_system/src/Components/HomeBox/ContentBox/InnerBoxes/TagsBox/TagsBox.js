@@ -3,7 +3,7 @@ import arrowB from '../images/sidearrow_b.png';
 import arrowG from '../images/sidearrow_g.png';
 import SelectionBox from '../SelectionBox';
 
-export class EntitiesBox extends React.Component {
+export class TagsBox extends React.Component {
 
     constructor(props) {
         super(props);

@@ -3,8 +3,12 @@ import SelectionBox from '../SelectionBox';
 import './questionsbox.css';
 import arrowB from '../images/sidearrow_b.png';
 import arrowG from '../images/sidearrow_g.png';
-import {getQuestions, getTags} from './questions';
+import {getQuestions} from './questions';
+import {getTags} from '../TagsBox/tags';
+import {getContacts} from '../ContactsBox/contacts';
+import {getDocuments} from '../DocumentsBox/documents';
 import Select from 'react-select';
+import {cloneDeep} from 'lodash';
 
 export class QuestionsBox extends React.Component {
 
@@ -18,32 +22,43 @@ export class QuestionsBox extends React.Component {
         this.changePattern = this.changePattern.bind(this);
         this.addPattern = this.addPattern.bind(this);
         this.handleSelectTag = this.handleSelectTag.bind(this);
-
-        let qfs = window.sessionStorage.getItem('questions'); // qfs = Questions From Storage, used to grab the string before parsing to JSON
-
-        let tfs = window.sessionStorage.getItem('tags'); // tfs = Tags From Storage, used to grab the string before parsing to JSON
+        this.handleSelectFollowUp = this.handleSelectFollowUp.bind(this);
+        this.makeOptions = this.makeOptions.bind(this);
 
         this.state = {
             selected:null,
-            questions:qfs === null ? [] : JSON.parse(qfs),
-            curQuestion:qfs === null ? {
-                'id': null,
+            questions:[],
+            curQuestion:{
+                'id': -1,
                 'name': '',
                 'responses': [],
                 'patterns': [],
                 'tags': {
-                    'intent': '',
-                    'department': '',
-                    'category': '',
-                    'information': ''
+                    'intent': -1,
+                    'department': -1,
+                    'category': -1,
+                    'information': -1
+                },
+                'follow-up': -1,
+                'contact': -1,
+                'document': -1
+            },
+            tags:{
+                'intents': [],
+                'entities': {
+                    'category': [],
+                    'department': [],
+                    'information': []
                 }
-            } : JSON.parse(qfs)[0],
-            tags:tfs === null ? [] : JSON.parse(tfs),
+            },
 
             intentList: [],
             categoryList: [],
             departmentList: [],
             infoList: [],
+
+            documents:[],
+            contacts:[]
         };
     }
 
@@ -52,62 +67,58 @@ export class QuestionsBox extends React.Component {
     
     */
     componentDidMount() {
-        if (this.state.questions.length === 0) {
-            console.log('No questions');
-            getQuestions((questions)=> {
-                console.log(questions);
-                this.setState({questions:questions}, ()=> {
-                window.sessionStorage.setItem('questions', JSON.stringify(this.state.questions));
-                this.setState({
-                    curQuestion: this.state.questions[0]}, console.log(this.state.curQuestion));
+
+        getQuestions((questions)=> {
+            console.log(questions);
+            this.setState({
+                questions:questions, 
+                curQuestion: cloneDeep(questions[0])
             });
+        });
 
-            })
-            
-        }
-
-        if (this.state.tags.length === 0) {
-            getTags((tags)=> {
-                this.setState({tags:tags}, ()=> {
-                    window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
-                    this.setState({
-                        intentList: this.state.tags.intents.map(int => ({
-                             'value':int.toLowerCase(),
-                             'label':int
-                        })),
-                        departmentList: this.state.tags.entities.department.map(dept => ({
-                            'value':dept.toLowerCase(),
-                            'label':dept
-                        })),
-                        categoryList: this.state.tags.entities.category.map(cat => ({
-                            'value':cat.toLowerCase(),
-                            'label':cat
-                        })),
-                        infoList: this.state.tags.entities.info.map(info => ({
-                            'value':info.toLowerCase(),
-                            'label':info
-                        }))
-                    })
+        getTags((tags)=> {
+            this.setState({tags:tags}, ()=> {
+                this.setState({
+                    intentList: this.state.tags.intents.map(int => ({
+                         'value':int.id,
+                         'label':int.name
+                    })),
+                    departmentList: this.state.tags.entities.department.map(dept => ({
+                         'value':dept.id,
+                         'label':dept.name
+                    })),
+                    categoryList: this.state.tags.entities.category.map(cat => ({
+                         'value':cat.id,
+                         'label':cat.name
+                    })),
+                    infoList: this.state.tags.entities.information.map(info => ({
+                         'value':info.id,
+                         'label':info.name
+                    }))
                 })
             })
-        } else {
+        });
+
+        getContacts((contacts)=> this.setState({contacts:contacts}));
+
+        getDocuments((documents)=> this.setState({documents:documents}));
+    }
+
+    selectItem(event, item) {
+        event.preventDefault();
+        if (this.state.selected !== event.target) {
+            if (this.state.selected !== null) {
+                this.state.selected.setAttribute('src', arrowB);
+                let selectedParent = this.state.selected.parentNode;
+                selectedParent.parentNode.className = 'selection-option';
+            }
+
             this.setState({
-                intentList: this.state.tags.intents.map(int => ({
-                    'value':int.toLowerCase(),
-                    'label':int
-                })),
-                departmentList: this.state.tags.entities.department.map(dept => ({
-                   'value':dept.toLowerCase(),
-                   'label':dept
-                })),
-                categoryList: this.state.tags.entities.category.map(cat => ({
-                   'value':cat.toLowerCase(),
-                   'label':cat
-                })),
-                infoList: this.state.tags.entities.info.map(info => ({
-                   'value':info.toLowerCase(),
-                   'label':info
-                }))
+             selected: event.target,
+             curQuestion: cloneDeep(item)}, ()=> {
+                let parent = event.target.parentNode;
+                event.target.setAttribute('src', arrowG);
+                parent.parentNode.className = 'selected-option';
             });
         }
     }
@@ -153,31 +164,27 @@ export class QuestionsBox extends React.Component {
         this.setState({curQuestion:question});
     }
 
-    selectItem(event, item) {
-        event.preventDefault();
-        if (this.state.selected !== event.target) {
-            if (this.state.selected !== null) {
-                this.state.selected.setAttribute('src', arrowB);
-                let selectedParent = this.state.selected.parentNode;
-                selectedParent.parentNode.className = 'selection-option';
-            }
-
-            this.setState({
-             selected: event.target,
-             curQuestion: item}, ()=> {
-                let parent = event.target.parentNode;
-                event.target.setAttribute('src', arrowG);
-                parent.parentNode.className = 'selected-option';
-            });
-        }
-    }
-
     handleSelectTag(e, tag) {
         let question = this.state.curQuestion;
-        question.tags[tag] = e.label;
+        question.tags[tag] = e.value;
         this.setState({curQuestion:question})
     }
 
+    handleSelectFollowUp(e) {
+        let question = this.state.curQuestion;
+        question['follow-up'] = e.value;
+        console.log(e.value);
+        this.setState({curQuestion:question})
+    }
+
+    makeOptions(values) {
+        let options = values.map(val=> ({
+            value:val.id,
+            label:val.name   
+        }));
+        options.unshift({value:0,label:'None'});
+        return options
+    }
     
     render () {
         return (
@@ -193,10 +200,24 @@ export class QuestionsBox extends React.Component {
                         <SelectionBox 
                         name='questions' 
                         content={this.state.questions} 
-                        titles={this.state.questions.map(q=> ({
-                            'title':`${q.tags.department}:${q.tags.category}:${q.tags.information}`,
-                            'name':q.name
-                        }))}
+                        titles={this.state.questions.map(q=> {
+                            let dep = this.state.tags.entities.department.filter(t=>
+                                t.id === q.tags.department)[0];
+                            let cat = this.state.tags.entities.category.filter(t=>
+                                t.id === q.tags.category)[0];
+                            let info = this.state.tags.entities.information.filter(t=>
+                                t.id === q.tags.information)[0];
+                            return {
+                            title:`${
+                                    dep === undefined ? '' : dep.name
+                                }:${
+                                    cat === undefined ? '' : cat.name
+                                }:${
+                                    info === undefined ? '' : info.name
+                                }`,
+                            name: q.name
+                            }
+                        })}
                         update={this.selectItem} 
                         />
                         <div id='new-question-selection'>
@@ -240,8 +261,12 @@ export class QuestionsBox extends React.Component {
                                         className='entity-select'
                                         id='intent-choice' 
                                         value={{
-                                            value:this.state.curQuestion.tags.intent.toLowerCase(),
-                                            label:this.state.curQuestion.tags.intent
+                                            value:this.state.curQuestion.tags.intent,
+                                            label:(()=> {
+                                                let tag = this.state.tags.intents.filter(t=>
+                                                t.id === this.state.curQuestion.tags.intent)[0]
+                                                return tag === undefined ? '':tag.name
+                                            })()
                                         }}
                                         options={this.state.intentList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'intent')}
@@ -255,8 +280,12 @@ export class QuestionsBox extends React.Component {
                                         className='entity-select' 
                                         id='department-choice' 
                                         value={{
-                                            value:this.state.curQuestion.tags.department.toLowerCase(),
-                                            label:this.state.curQuestion.tags.department
+                                            value:this.state.curQuestion.tags.department,
+                                            label:(()=> {
+                                                let tag = this.state.tags.entities.department.filter(t=>
+                                                t.id === this.state.curQuestion.tags.department)[0]
+                                                return tag === undefined ? '':tag.name
+                                            })()
                                         }}
                                         options={this.state.departmentList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'department')}
@@ -270,8 +299,12 @@ export class QuestionsBox extends React.Component {
                                         className='entity-select' 
                                         id='category-choice'
                                         value={{
-                                            value:this.state.curQuestion.tags.category.toLowerCase(),
-                                            label:this.state.curQuestion.tags.category
+                                            value:this.state.curQuestion.tags.category,
+                                            label:(()=> {
+                                                let tag = this.state.tags.entities.category.filter(t=>
+                                                t.id === this.state.curQuestion.tags.category)[0]
+                                                return tag === undefined ? '':tag.name
+                                            })()
                                         }}
                                         options={this.state.categoryList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'category')}
@@ -285,8 +318,12 @@ export class QuestionsBox extends React.Component {
                                         className='entity-select' 
                                         id='information-choice'
                                         value={{
-                                            value:this.state.curQuestion.tags.information.toLowerCase(),
-                                            label:this.state.curQuestion.tags.information
+                                            value:this.state.curQuestion.tags.information,
+                                            label:(()=> {
+                                                let tag = this.state.tags.entities.information.filter(t=>
+                                                t.id === this.state.curQuestion.tags.information)[0]
+                                                return tag === undefined ? '':tag.name
+                                            })()
                                         }}
                                         options={this.state.infoList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'information')}
@@ -299,8 +336,7 @@ export class QuestionsBox extends React.Component {
                                     <div id='response-box'>
                                         <h2>Responses to Question</h2>
                                         <div className='responses'>
-                                            {this.state.curQuestion.length === 0 ? '':
-                                            this.state.curQuestion.responses.map((res, index) => {
+                                            {this.state.curQuestion.responses.map((res, index) => {
                                                 return <Response 
                                                 num={index} 
                                                 response={res} 
@@ -315,8 +351,7 @@ export class QuestionsBox extends React.Component {
                                     <div id='patterns-box'>
                                         <h2>Patterns</h2>
                                         <div className='patterns'>
-                                            {this.state.curQuestion.length === 0 ? '':
-                                            this.state.curQuestion.patterns.map((pat, index) => {
+                                            {this.state.curQuestion.patterns.map((pat, index) => {
                                                 return <Pattern 
                                                 num={index} 
                                                 pattern={pat} 
@@ -334,48 +369,43 @@ export class QuestionsBox extends React.Component {
                                         <h2>Contacts</h2>
                                         <div className='contacts field-box'>
                                             <Select 
-                                            type='text' 
                                             className='contact field' 
                                             id='contact-1'
-                                            />
-                                            <Select 
-                                            type='text' 
-                                            className='contact field' 
-                                            id='contact-2'
+                                            options={this.makeOptions(this.state.contacts)}
                                             />
                                         </div>
                                     </div>
                                     <div id='documents-box'>
                                         <h2>Documents</h2>
                                         <div className='documents field-box'>
-                                            <input 
-                                            type='text' 
+                                            <Select  
                                             className='document field' 
                                             id='document-1' 
-                                            placeholder='Document' 
-                                            />
-                                            <input 
-                                            type='text' 
-                                            className='document field' 
-                                            id='document-2' 
-                                            placeholder='Document' 
+                                            options={
+                                                [{value:-1, label:'None'}]
+                                            }
                                             />
                                         </div>
                                     </div>
                                     <div id='follow-up-box'>
-                                        <h2>Follow Up Questions</h2>
+                                        <h2>Follow Up Question</h2>
                                         <div className='follow-ups field-box'>
-                                            <input 
-                                            type='text' 
+                                            <Select  
                                             className='follow-up field' 
-                                            id='follow-up-1' 
-                                            placeholder='Follow Up Question' 
-                                            />
-                                            <input 
-                                            type='text' 
-                                            className='follow-up field' 
-                                            id='follow-up-2' 
-                                            placeholder='Follow Up Question' 
+                                            id='follow-up-1'
+                                            value={ this.state.curQuestion['follow-up'] === -1 ? { 
+                                                value:-1, 
+                                                label:'None'
+                                            } : {
+                                                value:this.state.curQuestion['follow-up'],
+                                                label: this.state.questions.filter(
+                                                    q=>q.id===this.state.curQuestion['follow-up'])[0].name
+                                            }}
+
+                                            options={this.makeOptions(
+                                                this.state.questions.filter(
+                                                    q=>q.id!==this.state.curQuestion.id))}
+                                            onChange={this.handleSelectFollowUp}
                                             />
                                         </div>
                                     </div>

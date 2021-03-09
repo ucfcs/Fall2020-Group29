@@ -1,5 +1,5 @@
 import {QuestionsBox} from './InnerBoxes/QuestionsBox/QuestionsBox';
-import {EntitiesBox} from './InnerBoxes/EntitiesBox/EntitiesBox';
+import {TagsBox} from './InnerBoxes/TagsBox/TagsBox';
 import {ContactsBox} from './InnerBoxes/ContactsBox/ContactsBox';
 
 
@@ -9,7 +9,7 @@ export function ContentBox(props) {
             {
                 {
                     'navbox-questions' : <QuestionsBox/>,
-                    'navbox-tags' : <EntitiesBox  isAdmin={true}/>,
+                    'navbox-tags' : <TagsBox  isAdmin={true}/>,
                     'navbox-contacts' : <ContactsBox />
                 }[props.selection]
             }
