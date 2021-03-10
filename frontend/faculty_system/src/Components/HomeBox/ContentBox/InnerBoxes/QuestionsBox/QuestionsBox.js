@@ -124,17 +124,20 @@ export class QuestionsBox extends React.Component {
     }
 
     filterSearch(event) {
-        // let questions = this.state.questions;
-        // let dis = questions.filter(q=> {
-        //     let contained = q.name.toLowercase().contains(event.target.value.toLowercase())
-        //     if (!contained) {
-        //         q.responses.forEach(r=> {
-
-        //         })
-        //     } else {
-        //         return contained;
-        //     }
-        // })
+        let questions = this.state.questions;
+        let dis = questions.filter(q=> {
+            let contained = q.name.toLowerCase().includes(event.target.value.toLowerCase())
+            if (!contained) {
+                q.responses.forEach(r=> {
+                    if (r.toLowerCase().includes(event.target.value.toLowerCase())) {
+                        contained = true;
+                        return contained;
+                    }
+                })
+            }
+            return contained; 
+        });
+        this.setState({displayedQuestions: dis});
     }
 
     changeResponse(event, num) {
