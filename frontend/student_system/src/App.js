@@ -1,16 +1,25 @@
 import './App.css';
+import Knugget from './Knugget.jpg';
 import React from "react";
 import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
 
 function App(props) 
 {
+
+  function dummy(value) {
+    return "Let me see what I can do to help with " + value
+  }
+  let nextResponse = "Understandable, have a nice day!";
+
   const config = {
     width: "300px",
     height: "400px",
     floating: true,
     headerTitle: "KnugBot",
-    placeholder: "Type response here"
+    placeholder: "Type response here",
+    botAvatar: Knugget,
+    hideUserAvatar: true
   };
 
   const steps = [
@@ -34,7 +43,7 @@ function App(props)
     },
     {
       id: '4',
-      message: 'Have a great day!',
+      message: nextResponse,
       end: true,
     },
 
@@ -43,10 +52,9 @@ function App(props)
       user: true,
       trigger: 6,
      },
-
     {
       id: "6",
-      message: "I am not working yet. Sorry.",
+      message: dummy('{previousValue}'),
       end: true,
      },
   ];
