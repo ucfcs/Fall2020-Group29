@@ -53,14 +53,12 @@ def get_questions():
             "responses":["Response 1"],
             "patterns":["Pattern number 1", "Pattern number 2"],
             "tags":{
-                "intent": 1,
-                "department": 1,
-                "category": 1,
-                "information": 1
+                "intent": "Advising",
+                "department": "Sign-up",
+                "category": "BS-MS",
+                "information": "How"
                 },
-            "follow-up":1,
-            "contact": -1,
-            "document": -1
+            "follow-up":2
             },
             {
             "id":2,
@@ -68,14 +66,11 @@ def get_questions():
             "responses":["Response 2", "Response 3"], 
             "patterns":["Pattern number 3", "Pattern number 4"],
             "tags":{
-                "intent": 2,
-                "department": 2,
-                "category": 2,
-                "information": 2
-                },
-            "follow-up":-1,
-            "contact": -1,
-            "document": -1
+                "intent": "CECS",
+                "department": "Advisor",
+                "category": "Foundation Exam",
+                "information": "Who"
+                }
             }
         ])
 
