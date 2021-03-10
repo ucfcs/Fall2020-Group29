@@ -191,7 +191,7 @@ export class QuestionsBox extends React.Component {
         let question = this.state.curQuestion;
         question['follow-up'] = e.value;
         console.log(e.value);
-        this.setState({curQuestion:question})
+        this.setState({curQuestion:question}, ()=>console.log(this.state.curQuestion))
     }
 
     makeOptions(values) {
@@ -385,9 +385,7 @@ export class QuestionsBox extends React.Component {
                                             <Select  
                                             className='document field' 
                                             id='document-1' 
-                                            options={
-                                                [{value:-1, label:'None'}]
-                                            }
+                                            options={this.makeOptions(this.state.documents)}
                                             />
                                         </div>
                                     </div>
@@ -398,8 +396,8 @@ export class QuestionsBox extends React.Component {
                                             className='follow-up field' 
                                             id='follow-up-1'
                                             value={ this.state.curQuestion['follow-up'] === undefined ? '' :
-                                            this.state.curQuestion['follow-up'] === -1 ? { 
-                                                value:-1, 
+                                            this.state.curQuestion['follow-up'] === 0 ? { 
+                                                value:0, 
                                                 label:'None'
                                             } : {
                                                 value:this.state.curQuestion['follow-up'],
