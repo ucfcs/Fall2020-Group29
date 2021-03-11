@@ -175,13 +175,13 @@ def train():
 
     accuracies = []
 
-    if FLAGS['int'] == 0 and FLAGS['dept'] == 0 and FLAGS['cat'] == 0 and FLAGS['info'] == 0:
+    if FLAGS['ints'] == 0 and FLAGS['dept'] == 0 and FLAGS['cat'] == 0 and FLAGS['info'] == 0:
         print("No training required.")
         return
 
-    if FLAGS['int'] == 1:
-        file_name = params['file_int']
-        modifier = 'int'
+    if FLAGS['ints'] == 1:
+        file_name = params['file_ints']
+        modifier = 'ints'
         data = pd.read_csv(file_name)
         print("Training Intents")
         accuracy = train_model(data, params, modifier)

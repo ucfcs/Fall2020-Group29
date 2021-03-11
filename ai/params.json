@@ -1,11 +1,11 @@
 {
-    "file_int": "data/intents.csv",
+    "file_ints": "data/intents.csv",
     "file_dept": "data/entities_dept.csv",
     "file_cat": "data/entities_cat.csv",
     "file_info": "data/entities_info.csv",
     "FLAGS":
         {
-            "int": 1,
+            "ints": 1,
             "dept": 1,
             "cat": 1,
             "info": 1
