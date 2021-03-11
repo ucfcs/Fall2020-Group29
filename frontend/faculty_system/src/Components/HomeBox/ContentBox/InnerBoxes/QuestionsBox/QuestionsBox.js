@@ -1,8 +1,6 @@
 import React from 'react';
 import SelectionBox from '../SelectionBox';
 import './questionsbox.css';
-import arrowB from '../images/sidearrow_b.png';
-import arrowG from '../images/sidearrow_g.png';
 import {getQuestions} from './questions';
 import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
@@ -23,15 +21,16 @@ export class QuestionsBox extends React.Component {
         this.changePattern = this.changePattern.bind(this);
         this.addPattern = this.addPattern.bind(this);
         this.handleSelectTag = this.handleSelectTag.bind(this);
-        this.handleSelectFollowUp = this.handleSelectFollowUp.bind(this);
+        this.makeTagValue = this.makeTagValue.bind(this);
+        this.handleSelectDropdown = this.handleSelectDropdown.bind(this);
         this.makeOptions = this.makeOptions.bind(this);
 
         this.state = {
-            selected:null,
             questions:[],
             displayedQuestions:[],
             curQuestion:{
-                'id': -1,
+                '_id': '',
+                'number':-1,
                 'name': '',
                 'responses': [],
                 'patterns': [],
@@ -43,12 +42,11 @@ export class QuestionsBox extends React.Component {
                 }
             },
             tags:{
-                'intents': [],
-                'entities': {
-                    'category': [],
-                    'department': [],
-                    'information': []
-                }
+                'intent': [],
+                'category': [],
+                'department': [],
+                'information': []
+
             },
 
             intentList: [],
@@ -71,28 +69,27 @@ export class QuestionsBox extends React.Component {
             console.log(questions);
             this.setState({
                 questions:questions,
-                displayedQuestions:questions,
-                curQuestion: cloneDeep(questions[0])
+                displayedQuestions:questions
             });
         });
 
         getTags((tags)=> {
             this.setState({tags:tags}, ()=> {
                 this.setState({
-                    intentList: this.state.tags.intents.map(int => ({
-                         'value':int.id,
+                    intentList: this.state.tags.intent.map(int => ({
+                         'value':int._id,
                          'label':int.name
                     })),
-                    departmentList: this.state.tags.entities.department.map(dept => ({
-                         'value':dept.id,
+                    departmentList: this.state.tags.department.map(dept => ({
+                         'value':dept._id,
                          'label':dept.name
                     })),
-                    categoryList: this.state.tags.entities.category.map(cat => ({
-                         'value':cat.id,
+                    categoryList: this.state.tags.category.map(cat => ({
+                         'value':cat._id,
                          'label':cat.name
                     })),
-                    infoList: this.state.tags.entities.information.map(info => ({
-                         'value':info.id,
+                    infoList: this.state.tags.information.map(info => ({
+                         'value':info._id,
                          'label':info.name
                     }))
                 })
@@ -106,20 +103,8 @@ export class QuestionsBox extends React.Component {
 
     selectItem(event, item) {
         event.preventDefault();
-        if (this.state.selected !== event.target) {
-            if (this.state.selected !== null) {
-                this.state.selected.setAttribute('src', arrowB);
-                let selectedParent = this.state.selected.parentNode;
-                selectedParent.parentNode.className = 'selection-option';
-            }
-
-            this.setState({
-             selected: event.target,
-             curQuestion: cloneDeep(item)}, ()=> {
-                let parent = event.target.parentNode;
-                event.target.setAttribute('src', arrowG);
-                parent.parentNode.className = 'selected-option';
-            });
+        if (this.state.curQuestion._id !== item._id) {
+            this.setState({curQuestion: cloneDeep(item)});
         }
     }
 
@@ -183,20 +168,35 @@ export class QuestionsBox extends React.Component {
 
     handleSelectTag(e, tag) {
         let question = this.state.curQuestion;
-        question.tags[tag] = e.value;
-        this.setState({curQuestion:question})
+        question.tags[tag] = e.label;
+        this.setState({curQuestion:question});
     }
 
-    handleSelectFollowUp(e) {
+    makeTagValue(key) {
+        if (this.state.curQuestion.tags[key] === '') {
+            return '';
+        } else {
+            return {
+                value:(()=> {
+                    let tag = this.state.tags[key].filter(t=>
+                    t.name === this.state.curQuestion.tags[key])[0]
+                    return tag === undefined ? '':tag._id
+                })(),
+                label:this.state.curQuestion.tags[key]
+            }
+        }
+    }
+
+    handleSelectDropdown(e, key) {
         let question = this.state.curQuestion;
-        question['follow-up'] = e.value;
+        question[key] = e.value;
         console.log(e.value);
-        this.setState({curQuestion:question}, ()=>console.log(this.state.curQuestion))
+        this.setState({curQuestion:question});
     }
 
     makeOptions(values) {
         let options = values.map(val=> ({
-            value:val.id,
+            value:val._id,
             label:val.name   
         }));
         options.unshift({value:0,label:'None'});
@@ -223,6 +223,7 @@ export class QuestionsBox extends React.Component {
                             
                         }))}
                         update={this.selectItem} 
+                        curItem={this.state.curQuestion}
                         />
                         <div id='new-question-selection'>
                             <p className='new-question-text'>
@@ -264,14 +265,7 @@ export class QuestionsBox extends React.Component {
                                         <Select 
                                         className='entity-select'
                                         id='intent-choice' 
-                                        value={({
-                                            value:(()=> {
-                                                let tag = this.state.tags.intents.filter(t=>
-                                                t.name === this.state.curQuestion.tags.intent)[0]
-                                                return tag === undefined ? '':tag.id
-                                            })(),
-                                            label:this.state.curQuestion.tags.intent
-                                        })}
+                                        value={this.makeTagValue('intent')}
                                         options={this.state.intentList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'intent')}
                                         />
@@ -283,14 +277,7 @@ export class QuestionsBox extends React.Component {
                                         <Select 
                                         className='entity-select' 
                                         id='department-choice' 
-                                        value={{
-                                            value:(()=> {
-                                                let tag = this.state.tags.entities.department.filter(t=>
-                                                t.name === this.state.curQuestion.tags.department)[0]
-                                                return tag === undefined ? '':tag.id
-                                            })(),
-                                            label:this.state.curQuestion.tags.department
-                                        }}
+                                        value={this.makeTagValue('department')}
                                         options={this.state.departmentList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'department')}
                                         />
@@ -302,14 +289,7 @@ export class QuestionsBox extends React.Component {
                                         <Select 
                                         className='entity-select' 
                                         id='category-choice'
-                                        value={{
-                                            value:(()=> {
-                                                let tag = this.state.tags.entities.category.filter(t=>
-                                                t.name === this.state.curQuestion.tags.category)[0]
-                                                return tag === undefined ? '':tag.id
-                                            })(),
-                                            label:this.state.curQuestion.tags.category
-                                        }}
+                                        value={this.makeTagValue('category')}
                                         options={this.state.categoryList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'category')}
                                         />
@@ -321,14 +301,7 @@ export class QuestionsBox extends React.Component {
                                         <Select 
                                         className='entity-select' 
                                         id='information-choice'
-                                        value={{
-                                            value:(()=> {
-                                                let tag = this.state.tags.entities.information.filter(t=>
-                                                t.name === this.state.curQuestion.tags.information)[0]
-                                                return tag === undefined ? '':tag.id
-                                            })(),
-                                            label:this.state.curQuestion.tags.information
-                                        }}
+                                        value={this.makeTagValue('information')}
                                         options={this.state.infoList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'information')}
                                         />
@@ -375,7 +348,17 @@ export class QuestionsBox extends React.Component {
                                             <Select 
                                             className='contact field' 
                                             id='contact-1'
-                                            options={this.makeOptions(this.state.contacts)}
+                                            value={ this.state.curQuestion['contact'] === undefined ? '' :
+                                            this.state.curQuestion['contact'] === 0 ? { 
+                                                value:0, 
+                                                label:'None'
+                                            } : {
+                                                value:this.state.curQuestion['contact'],
+                                                label: this.state.contacts.filter(
+                                                    d=>d._id===this.state.curQuestion['contact'])[0].name
+                                            }}
+                                            options={this.makeOptions(this.state.contacts)} 
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'contact')}
                                             />
                                         </div>
                                     </div>
@@ -385,7 +368,17 @@ export class QuestionsBox extends React.Component {
                                             <Select  
                                             className='document field' 
                                             id='document-1' 
+                                            value={ this.state.curQuestion['document'] === undefined ? '' :
+                                            this.state.curQuestion['document'] === 0 ? { 
+                                                value:0, 
+                                                label:'None'
+                                            } : {
+                                                value:this.state.curQuestion['document'],
+                                                label: this.state.documents.filter(
+                                                    d=>d._id===this.state.curQuestion['document'])[0].name
+                                            }}
                                             options={this.makeOptions(this.state.documents)}
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'document')}
                                             />
                                         </div>
                                     </div>
@@ -402,13 +395,13 @@ export class QuestionsBox extends React.Component {
                                             } : {
                                                 value:this.state.curQuestion['follow-up'],
                                                 label: this.state.questions.filter(
-                                                    q=>q.id===this.state.curQuestion['follow-up'])[0].name
+                                                    q=>q._id===this.state.curQuestion['follow-up'])[0].name
                                             }}
 
                                             options={this.makeOptions(
                                                 this.state.questions.filter(
-                                                    q=>q.id!==this.state.curQuestion.id))}
-                                            onChange={this.handleSelectFollowUp}
+                                                    q=>q._id!==this.state.curQuestion._id))}
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'follow-up')}
                                             />
                                         </div>
                                     </div>

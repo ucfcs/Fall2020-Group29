@@ -10,7 +10,7 @@ export function getDocuments(callback) {
   
       };
   
-      fetch('http://127.0.0.1:5000/api/faculty/get_documents', options)
+      fetch('http://127.0.0.1:5000/api/faculty/get_dummy_documents', options)
         .then((res)=> {
             if (res.status === 401) {
               res.json().then((res)=> alert(res['message']));

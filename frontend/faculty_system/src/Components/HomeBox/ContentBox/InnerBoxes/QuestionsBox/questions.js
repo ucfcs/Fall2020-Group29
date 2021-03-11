@@ -20,7 +20,7 @@ export function getQuestions(callback) {
         },
     };
 
-    fetch('http://127.0.0.1:5000/api/faculty/get_questions', options)
+    fetch('http://127.0.0.1:5000/api/faculty/get_dummy_questions', options)
       .then((res)=> {
           if (res.status === 401) {
             res.json().then((res)=> alert(res['message']));
