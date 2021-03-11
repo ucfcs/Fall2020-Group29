@@ -1,6 +1,13 @@
+import json
 import torch
 
 def evaluate(model, X_test, y_test, tags):
+
+    params_file = 'params.json'
+    with open(params_file) as f:
+        params = json.load(f)
+    
+    num_predictions = params['num_predictions']
 
     # Set the device to a GPU if available.
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -16,7 +23,8 @@ def evaluate(model, X_test, y_test, tags):
         pattern = pattern.reshape(1, pattern.shape[0])
         pattern = torch.from_numpy(pattern).to(device)
         output = model(pattern)
-        _, top_predictions = torch.topk(output, 2, dim=1)
+
+        _, top_predictions = torch.topk(output, num_predictions, dim=1)
         top_predictions = top_predictions.numpy()[0]
 
         # Determine the prediction probabilities.

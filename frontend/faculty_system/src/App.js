@@ -3,20 +3,20 @@ import {
   BrowserRouter as Router,
   Switch,
   Route
-} from "react-router-dom";
-import LoginBox from './LoginBox';
-import HomeBox from './HomeBox';
+} from 'react-router-dom';
+import LoginBox from './Components/LoginBox/LoginBox';
+import HomeBox from './Components/HomeBox/HomeBox';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
+    <div className='App'>
       <Router>
         <Switch>
-          <Route exact path="/">
+          <Route exact path='/'>
             <LoginBox />
           </Route>
-          <Route path="/home">
+          <Route path='/home'>
             <HomeBox />
           </Route>
         </Switch>

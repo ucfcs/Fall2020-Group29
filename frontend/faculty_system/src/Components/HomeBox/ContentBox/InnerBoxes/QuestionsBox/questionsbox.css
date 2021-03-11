@@ -1,0 +1,161 @@
+#new-question-selection {
+    height: 12%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+#selection-header {
+    height:10%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#question-content {
+    height:88%;
+}
+
+#entity-box {
+    flex:1;
+    height:20%;
+}
+
+#entered-fields {
+    display:flex;
+    height: 80%;
+}
+
+#question-name {
+    display: block;
+}
+
+#question-label {
+    display: block;
+}
+
+
+#contacts-and-forms {
+    flex:1;
+    height:100%;
+}
+
+#patterns-and-responses {
+    flex:1;
+    height:100%;
+}
+
+#response-box {
+    height:45%;
+    overflow:auto;
+}
+
+#patterns-box {
+    height:45%;
+    overflow: auto;
+}
+
+
+#entities {
+    display: flex;
+    margin-left:4%;
+    margin-right:4%;
+}
+
+.section-title {
+    width:100%;
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    font-weight: bold;
+    font-size: xx-large;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    background-color: #e0e0e0;
+}
+
+.new-question-text {
+    flex:7;
+}
+
+.plus-select {
+    flex:1;
+    font-weight: bold;
+    font-size: xx-large;
+    margin-right: 5%;
+    cursor: pointer;
+}
+
+.plus {
+    float: left;
+    font-weight: bold;
+    font-size: xx-large;
+    margin-left: 5%;
+    cursor: pointer;
+    border:1px solid black;
+    height: 25px;
+    padding:0 2px 2px 2px;
+    line-height: 18px;
+}
+
+.responses {
+    margin-top:5%;
+    margin-bottom: 5%;
+}
+
+.response {
+    margin:1% 5% 1% 5%;
+    display:flex;
+    border:1px solid black;
+}
+
+.response-text {
+    width:75%;
+    height:30px;
+    flex:6;
+}
+
+.pattern {
+    margin:1% 5% 1% 5%;
+    display:flex;
+    border:1px solid black;
+}
+
+.pattern-text {
+    width:75%;
+    height:30px;
+    flex:6;
+}
+
+.response-delete {
+    flex:1;
+    height:30px;
+    line-height:30px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: large;
+}
+
+.entity-selection-box {
+    flex:1;
+    margin: 2%;
+    display:flex;
+    align-items: center; 
+    justify-content: center; 
+    flex-direction: column; 
+}
+
+.entity-select {
+    width:100%;
+}
+
+.field-box {
+    display:flex;
+    justify-content: center; 
+    flex-direction: column; 
+    align-items: left; 
+}
+
+.field {
+    margin:1%;
+}
