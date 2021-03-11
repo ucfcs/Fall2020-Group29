@@ -10,6 +10,11 @@
             "cat": 1,
             "info": 1
         },
+    "num_epochs_ints": 1,
+    "num_epochs_dept": 250,
+    "num_epochs_cat": 750,
+    "num_epochs_info": 1250,
+    "num_predictions": 1,
     "num_epochs": 1000,
     "batch_size": 8,
     "learning_rate": 3e-4,

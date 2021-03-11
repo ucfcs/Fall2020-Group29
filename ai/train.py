@@ -76,8 +76,21 @@ def train_model(data, params, modifier):
     # Preprocess the data.
     X_train, X_test, y_train, y_test, num_classes, all_words, tags = preprocess(data)
 
+    # Set the number of epochs.
+    if modifier == 'ints':
+        num_epochs = params['num_epochs_ints']
+    elif modifier == 'dept':
+        num_epochs = params['num_epochs_dept']
+    elif modifier == 'cat':
+        num_epochs = params['num_epochs_cat']
+    elif modifier == 'info':
+        num_epochs = params['num_epochs_info']
+    else:
+        print("Invalid modifier.")
+        return 0.0
+
     # Set the parameters.
-    num_epochs = params['num_epochs']
+    # num_epochs = params['num_epochs']
     batch_size = params['batch_size']
     learning_rate = params['learning_rate']
     hidden_size = params['hidden_size']
