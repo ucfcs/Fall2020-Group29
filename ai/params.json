@@ -3,6 +3,9 @@
     "file_dept": "data/entities_dept.csv",
     "file_cat": "data/entities_cat.csv",
     "file_info": "data/entities_info.csv",
+
+    "num_predictions": 1,
+
     "FLAGS":
         {
             "ints": 1,
@@ -10,12 +13,12 @@
             "cat": 1,
             "info": 1
         },
+        
     "num_epochs_ints": 1,
     "num_epochs_dept": 250,
     "num_epochs_cat": 750,
     "num_epochs_info": 1250,
-    "num_predictions": 1,
-    "num_epochs": 1000,
+    
     "batch_size": 8,
     "learning_rate": 3e-4,
     "hidden_size": 12
