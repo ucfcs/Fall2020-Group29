@@ -5,7 +5,7 @@
     "file_info": "data/entities_info.csv",
     "FLAGS":
         {
-            "int": 0,
+            "int": 1,
             "dept": 1,
             "cat": 1,
             "info": 1
