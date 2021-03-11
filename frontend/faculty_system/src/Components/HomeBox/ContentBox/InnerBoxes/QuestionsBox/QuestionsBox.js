@@ -23,6 +23,7 @@ export class QuestionsBox extends React.Component {
         this.handleSelectTag = this.handleSelectTag.bind(this);
         this.makeTagValue = this.makeTagValue.bind(this);
         this.handleSelectDropdown = this.handleSelectDropdown.bind(this);
+        this.makeDropdownValue = this.makeDropdownValue.bind(this);
         this.makeOptions = this.makeOptions.bind(this);
 
         this.state = {
@@ -194,6 +195,24 @@ export class QuestionsBox extends React.Component {
         this.setState({curQuestion:question});
     }
 
+    makeDropdownValue(skey, qkey) {
+        if (this.state.curQuestion[qkey] === undefined) {
+            return ''
+        } else if (this.state.curQuestion[qkey] === 0) {
+            return {
+                value:0, 
+                label:'None'
+            }
+
+        } else {
+            return {
+                value:this.state.curQuestion[qkey],
+                label: this.state[skey].filter(
+                    val=>val._id===this.state.curQuestion[qkey])[0].name
+            }
+        }                                      
+    }
+
     makeOptions(values) {
         let options = values.map(val=> ({
             value:val._id,
@@ -347,18 +366,10 @@ export class QuestionsBox extends React.Component {
                                         <div className='contacts field-box'>
                                             <Select 
                                             className='contact field' 
-                                            id='contact-1'
-                                            value={ this.state.curQuestion['contact'] === undefined ? '' :
-                                            this.state.curQuestion['contact'] === 0 ? { 
-                                                value:0, 
-                                                label:'None'
-                                            } : {
-                                                value:this.state.curQuestion['contact'],
-                                                label: this.state.contacts.filter(
-                                                    d=>d._id===this.state.curQuestion['contact'])[0].name
-                                            }}
+                                            id='contact-1' 
+                                            value={this.makeDropdownValue('contacts', 'contact')} 
                                             options={this.makeOptions(this.state.contacts)} 
-                                            onChange={(e)=>this.handleSelectDropdown(e, 'contact')}
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'contact')} 
                                             />
                                         </div>
                                     </div>
@@ -368,17 +379,9 @@ export class QuestionsBox extends React.Component {
                                             <Select  
                                             className='document field' 
                                             id='document-1' 
-                                            value={ this.state.curQuestion['document'] === undefined ? '' :
-                                            this.state.curQuestion['document'] === 0 ? { 
-                                                value:0, 
-                                                label:'None'
-                                            } : {
-                                                value:this.state.curQuestion['document'],
-                                                label: this.state.documents.filter(
-                                                    d=>d._id===this.state.curQuestion['document'])[0].name
-                                            }}
-                                            options={this.makeOptions(this.state.documents)}
-                                            onChange={(e)=>this.handleSelectDropdown(e, 'document')}
+                                            value={this.makeDropdownValue('documents', 'document')} 
+                                            options={this.makeOptions(this.state.documents)} 
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'document')} 
                                             />
                                         </div>
                                     </div>
@@ -388,20 +391,11 @@ export class QuestionsBox extends React.Component {
                                             <Select  
                                             className='follow-up field' 
                                             id='follow-up-1'
-                                            value={ this.state.curQuestion['follow-up'] === undefined ? '' :
-                                            this.state.curQuestion['follow-up'] === 0 ? { 
-                                                value:0, 
-                                                label:'None'
-                                            } : {
-                                                value:this.state.curQuestion['follow-up'],
-                                                label: this.state.questions.filter(
-                                                    q=>q._id===this.state.curQuestion['follow-up'])[0].name
-                                            }}
-
+                                            value={this.makeDropdownValue('questions', 'follow-up')} 
                                             options={this.makeOptions(
                                                 this.state.questions.filter(
-                                                    q=>q._id!==this.state.curQuestion._id))}
-                                            onChange={(e)=>this.handleSelectDropdown(e, 'follow-up')}
+                                                    q=>q._id!==this.state.curQuestion._id))} 
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'follow-up')} 
                                             />
                                         </div>
                                     </div>
