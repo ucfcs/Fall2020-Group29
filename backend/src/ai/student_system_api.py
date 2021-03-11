@@ -41,8 +41,10 @@ def create_response():
         dept = result["dept"][0]["tag"]
         category = result["cat"][0]["tag"]
         info = result["info"][0]["tag"]
-        Entities = ["BS-to-MS", "CECS", "Sign Up"]
-        found = mongo.db.questions.find_one({"Entities": {"$all": Entities}})
+        # intent = result["ints"][0]["tag"]
+
+        Entities = ["advising", "cecs", "bs-to-ms", "sign-up"]
+        found = mongo.db.questions.find_one({"tags": {"$all": Entities}})
         if found is None:  # if there is no match
             return jsonify({"result": "no match"})
         fickleID = found.pop(
@@ -51,7 +53,7 @@ def create_response():
         found.update(
             {"_id": str(fickleID)}
         )  # put _id back in but as a regular string now
-        response = found["Responses"][0]
+        response = found["responses"][0]
 
         return jsonify(
             {
@@ -59,6 +61,7 @@ def create_response():
                 "category": category,
                 "information": info,
                 "answer": response,
+                # "intent": intent,
             }
         )
     except:
