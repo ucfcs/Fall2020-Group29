@@ -34,8 +34,9 @@ def predict_tags(device, file_name, trained_model, utterance):
     X = torch.from_numpy(X).to(device)
 
     # Predict the user intent using the network.
+    num_preds = 1
     output = model(X)
-    _, top_predictions = torch.topk(output, 2, dim=1)
+    _, top_predictions = torch.topk(output, num_preds, dim=1)
     top_predictions = top_predictions.numpy()[0]
 
     # Determine the prediction probabilities.
@@ -67,14 +68,17 @@ def predict(utterance):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Open and load the intents.
+    file_ints = params['file_ints']
     file_dept = params['file_dept']
     file_cat = params['file_cat']
     file_info = params['file_info']
 
+    tags_ints = predict_tags(device, file_ints, 'models/trained_model_ints.pth', utterance)
     tags_dept = predict_tags(device, file_dept, 'models/trained_model_dept.pth', utterance)
     tags_cat = predict_tags(device, file_cat, 'models/trained_model_cat.pth', utterance)
     tags_info = predict_tags(device, file_info, 'models/trained_model_info.pth', utterance)
 
+    predicted_tags['ints'] = tags_ints
     predicted_tags['dept'] = tags_dept
     predicted_tags['cat'] = tags_cat
     predicted_tags['info'] = tags_info
