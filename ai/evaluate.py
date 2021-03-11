@@ -16,7 +16,8 @@ def evaluate(model, X_test, y_test, tags):
         pattern = pattern.reshape(1, pattern.shape[0])
         pattern = torch.from_numpy(pattern).to(device)
         output = model(pattern)
-        _, top_predictions = torch.topk(output, 2, dim=1)
+        num_preds = 1
+        _, top_predictions = torch.topk(output, num_preds, dim=1)
         top_predictions = top_predictions.numpy()[0]
 
         # Determine the prediction probabilities.
