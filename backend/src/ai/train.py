@@ -95,17 +95,10 @@ def train_model(data, params, modifier):
         return 0.0
 
     # Set the parameters.
-<<<<<<< HEAD:backend/src/ai/train.py
-    num_epochs = params["num_epochs"]
-    batch_size = params["batch_size"]
-    learning_rate = params["learning_rate"]
-    hidden_size = params["hidden_size"]
-=======
     # num_epochs = params['num_epochs']
     batch_size = params['batch_size']
     learning_rate = params['learning_rate']
     hidden_size = params['hidden_size']
->>>>>>> main:ai/train.py
 
     # Set the input size.
     input_size = len(X_train[0])
@@ -199,20 +192,6 @@ def train():
 
     accuracies = []
 
-<<<<<<< HEAD:backend/src/ai/train.py
-    if (
-        FLAGS["int"] == 0
-        and FLAGS["dept"] == 0
-        and FLAGS["cat"] == 0
-        and FLAGS["info"] == 0
-    ):
-        print("No training required.")
-        return
-
-    if FLAGS["int"] == 1:
-        file_name = params["file_int"]
-        modifier = "int"
-=======
     if FLAGS['ints'] == 0 and FLAGS['dept'] == 0 and FLAGS['cat'] == 0 and FLAGS['info'] == 0:
         print("No training required.")
         return
@@ -220,7 +199,6 @@ def train():
     if FLAGS['ints'] == 1:
         file_name = params['file_ints']
         modifier = 'ints'
->>>>>>> main:ai/train.py
         data = pd.read_csv(file_name)
         print("Training Intents")
         accuracy = train_model(data, params, modifier)
