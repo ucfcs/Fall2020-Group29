@@ -6,13 +6,16 @@ import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
 import {getDocuments} from '../DocumentsBox/documents';
 import Select from 'react-select';
-import {cloneDeep} from 'lodash';
+import {confirmAlert} from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import {cloneDeep, isEqual} from 'lodash';
 
 export class QuestionsBox extends React.Component {
 
     constructor(props) {
         super(props);
         
+        this.hasChanges = this.hasChanges.bind(this);
         this.selectItem = this.selectItem.bind(this);
         this.filterSearch = this.filterSearch.bind(this);
         this.changeResponse = this.changeResponse.bind(this);
@@ -27,6 +30,7 @@ export class QuestionsBox extends React.Component {
         this.makeOptions = this.makeOptions.bind(this);
 
         this.state = {
+            hasChanges:false,
             questions:[],
             displayedQuestions:[],
             curQuestion:{
@@ -102,10 +106,33 @@ export class QuestionsBox extends React.Component {
         getDocuments((documents)=> this.setState({documents:documents}));
     }
 
+    hasChanges() {
+        let question = this.state.questions.filter(q=>
+            q._id === this.state.curQuestion._id)[0];
+        return this.state.curQuestion._id !== '' && !isEqual(question, this.state.curQuestion);
+    }
+
     selectItem(event, item) {
         event.preventDefault();
         if (this.state.curQuestion._id !== item._id) {
-            this.setState({curQuestion: cloneDeep(item)});
+            if (this.hasChanges()) {
+                confirmAlert({
+                    title:"You have unsaved changes",
+                    message: "Do you want to leave without saving your changes?",
+                    buttons: [
+                        {
+                            label: "Yes",
+                            onClick: ()=>this.setState({curQuestion: cloneDeep(item), hasChanges:false}) 
+                        },
+                        {
+                            label: "No",
+                            onClick: ()=>{}
+                        }
+                    ]
+                    })
+            } else {
+                this.setState({curQuestion: cloneDeep(item), hasChanges:false});
+            }
         }
     }
 
@@ -170,7 +197,7 @@ export class QuestionsBox extends React.Component {
     handleSelectTag(e, tag) {
         let question = this.state.curQuestion;
         question.tags[tag] = e.label;
-        this.setState({curQuestion:question});
+        this.setState({curQuestion:question, hasChanges:true});
     }
 
     makeTagValue(key) {
