@@ -41,7 +41,7 @@ def index_page():
 @app.route("/get_question", methods=["GET"])  # retrive a question based on Entities
 def get_question(Entities=["BS-to-MS", "How", "Sign Up"]):
     found = mongo.db.questions.find_one(
-        {"Entities": {"$all": Entities}}
+        {"tags": {"$all": Entities}}
     )  # finds the entry with the exact set of Entities
 
     if found is None:  # if there is no match
