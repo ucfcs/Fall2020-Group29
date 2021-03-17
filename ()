@@ -1,0 +1,18 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch api/nlp-system-rp
+# Your branch is up to date with 'origin/api/nlp-system-rp'.
+#
+# Changes to be committed:
+#	new file:   backend/src/ai/__pycache__/apitest.cpython-38.pyc
+#	modified:   backend/src/ai/__pycache__/chatbot.cpython-38.pyc
+#	modified:   backend/src/ai/__pycache__/model.cpython-38.pyc
+#	modified:   backend/src/ai/__pycache__/utils.cpython-38.pyc
+#	new file:   backend/src/ai/apitest.py
+#	modified:   backend/src/ai/student_system_api.py
+#	deleted:    backend/src/apitest.py
+#	modified:   frontend/faculty_system/.eslintcache
+#	modified:   frontend/student_system/.eslintcache
+

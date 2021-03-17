@@ -1,2 +1,4 @@
 {
+    "python.pythonPath": "/opt/anaconda3/bin/python",
+    "python.condaPath": "/opt/anaconda3/bin/conda"
 }
