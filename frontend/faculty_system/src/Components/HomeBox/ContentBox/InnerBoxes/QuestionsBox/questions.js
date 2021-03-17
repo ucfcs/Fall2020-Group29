@@ -20,14 +20,14 @@ export function getQuestions(callback) {
         },
     };
 
-    fetch('http://127.0.0.1:5000/api/faculty/get_dummy_questions', options)
+    fetch('http://127.0.0.1:5000/api/faculty/get_questions', options)
       .then((res)=> {
           if (res.status === 401) {
             res.json().then((res)=> alert(res['message']));
             callback([]);
           } else if (res.status === 200) {
             res.json().then((res)=> {
-                console.log(res['questions']);
+                console.log(res);
                 window.sessionStorage.setItem('questions', JSON.stringify(res['questions']))
                 callback(res['questions']);
             });

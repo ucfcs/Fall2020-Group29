@@ -67,41 +67,37 @@ def get_questions():
             "information": tags[3]
         }
 
-    return jsonify(questions)
+    return jsonify(questions=questions)
 
 @app.route("/api/faculty/get_tags", methods=["GET"])
 def get_tags():
 
-    tags = return_all(mongo, "entities")
+    tags = return_all(mongo, "tags")
     intent = []
     department = []
     category = []
     information = []
 
     for t in tags:
-        if t["Type"].lower() == "intent":
+        if t["type"].lower() == "intents":
             intent.append({
                 "_id": t["_id"],
-                "name": t["Name"],
-                "patterns": t["Patterns"]
+                "name": t["name"]
             })
-        elif t["Type"].lower() == "department":
+        elif t["type"].lower() == "dept":
             department.append({
                 "_id": t["_id"],
-                "name": t["Name"],
-                "patterns": t["Patterns"]
+                "name": t["name"]
             })
-        elif t["Type"].lower() == "category":
+        elif t["type"].lower() == "cat":
             category.append({
                 "_id": t["_id"],
-                "name": t["Name"],
-                "patterns": t["Patterns"]
+                "name": t["name"]
             })
-        elif t["Type"].lower() == "information":
+        elif t["type"].lower() == "info":
             information.append({
                 "_id": t["_id"],
-                "name": t["Name"],
-                "patterns": t["Patterns"]
+                "name": t["name"]
             })
     return jsonify(tags={
         "intent": intent,
@@ -124,7 +120,7 @@ def get_contacts():
             "office": c["Office"]
         })
     
-    return jsonify(contacts)
+    return jsonify(contacts=contacts)
 
 @app.route("/api/faculty/get_documents", methods=["GET"])
 def get_documents():
@@ -137,7 +133,7 @@ def get_documents():
             "department": f["Department"],
             "link": f["Link to File"]
         })
-    return jsonify(documents)
+    return jsonify(documents=documents)
 
 # Routes for retrieving Dummy Data for testing purposes
 @app.route("/api/faculty/get_dummy_questions", methods=["GET"])

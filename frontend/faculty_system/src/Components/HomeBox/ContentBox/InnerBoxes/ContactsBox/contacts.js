@@ -10,7 +10,7 @@ export function getContacts(callback) {
   
       };
   
-      fetch('http://127.0.0.1:5000/api/faculty/get_dummy_contacts', options)
+      fetch('http://127.0.0.1:5000/api/faculty/get_contacts', options)
         .then((res)=> {
             if (res.status === 401) {
               res.json().then((res)=> alert(res['message']));

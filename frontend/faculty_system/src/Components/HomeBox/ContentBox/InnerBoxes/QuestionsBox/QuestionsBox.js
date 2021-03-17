@@ -97,13 +97,19 @@ export class QuestionsBox extends React.Component {
                          'value':info._id,
                          'label':info.name
                     }))
-                })
-            })
+                });
+            });
         });
 
-        getContacts((contacts)=> this.setState({contacts:contacts}));
+        getContacts((contacts)=> {
+            console.log(contacts);
+            this.setState({contacts:contacts});
+        });
 
-        getDocuments((documents)=> this.setState({documents:documents}));
+        getDocuments((documents)=> {
+            console.log(documents);
+            this.setState({documents:documents});
+        });
     }
 
     hasChanges() {
