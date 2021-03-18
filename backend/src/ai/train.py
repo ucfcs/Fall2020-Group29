@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from dataset import ChatDataset
-from evaluate import evaluate
-from model import NeuralNet
+from .dataset import ChatDataset
+from .evaluate import evaluate
+from .model import NeuralNet
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import normalize
 from torch.utils.data import DataLoader

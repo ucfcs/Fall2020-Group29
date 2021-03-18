@@ -2,8 +2,8 @@ import json
 import torch
 import numpy as np
 import pandas as pd
-from model import NeuralNet
-from utils import bag_of_words, tokenize
+from .model import NeuralNet
+from .utils import bag_of_words, tokenize
 
 
 def predict_tags(device, file_name, trained_model, utterance, num_predictions):

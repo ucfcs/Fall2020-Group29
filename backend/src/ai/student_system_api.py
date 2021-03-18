@@ -4,11 +4,11 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo import ReturnDocument
 import traceback
-from apitest import get_question
+from .apitest import get_question
 
 
 # from ...ai import chatbot
-from chatbot import predict
+from .chatbot import predict
 
 app = Flask(__name__)
 CORS(app)

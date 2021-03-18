@@ -30,7 +30,7 @@ class Result extends Component {
     );
     this.setState({
       loading: false,
-      result: api_response,
+      result: api_response.data.answer,
       department: api_response.data.department,
       category: api_response.data.category,
     });
@@ -60,7 +60,7 @@ class Result extends Component {
         {loading ? (
           <Loading />
         ) : (
-          "1.) Department: " + department + " 2.) Category: " + category
+          result
         )}
         {!loading && (
           <div
