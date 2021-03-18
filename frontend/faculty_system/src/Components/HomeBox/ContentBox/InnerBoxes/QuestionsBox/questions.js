@@ -42,3 +42,11 @@ export function getQuestions(callback) {
     callback(JSON.parse(qfs));
   }
 }
+
+export function saveQuestion(question, callback) {
+  callback(
+    {
+      success:false,
+      message:"System not yet configured to save Questions to Database."
+    });
+}

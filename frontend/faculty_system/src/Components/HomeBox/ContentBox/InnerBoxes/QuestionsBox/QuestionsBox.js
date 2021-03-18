@@ -1,7 +1,7 @@
 import React from 'react';
 import SelectionBox from '../SelectionBox';
 import './questionsbox.css';
-import {getQuestions} from './questions';
+import {getQuestions, saveQuestion} from './questions';
 import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
 import {getDocuments} from '../DocumentsBox/documents';
@@ -28,6 +28,7 @@ export class QuestionsBox extends React.Component {
         this.handleSelectDropdown = this.handleSelectDropdown.bind(this);
         this.makeDropdownValue = this.makeDropdownValue.bind(this);
         this.makeOptions = this.makeOptions.bind(this);
+        this.handleSave = this.handleSave.bind(this);
 
         this.state = {
             hasChanges:false,
@@ -71,7 +72,6 @@ export class QuestionsBox extends React.Component {
     componentDidMount() {
 
         getQuestions((questions)=> {
-            console.log(questions);
             this.setState({
                 questions:questions,
                 displayedQuestions:questions
@@ -102,12 +102,10 @@ export class QuestionsBox extends React.Component {
         });
 
         getContacts((contacts)=> {
-            console.log(contacts);
             this.setState({contacts:contacts});
         });
 
         getDocuments((documents)=> {
-            console.log(documents);
             this.setState({documents:documents});
         });
     }
@@ -224,7 +222,6 @@ export class QuestionsBox extends React.Component {
     handleSelectDropdown(e, key) {
         let question = this.state.curQuestion;
         question[key] = e.value;
-        console.log(e.value);
         this.setState({curQuestion:question});
     }
 
@@ -253,6 +250,39 @@ export class QuestionsBox extends React.Component {
         }));
         options.unshift({value:0,label:'None'});
         return options
+    }
+
+    handleSave(event) {
+        event.preventDefault();
+        if (this.hasChanges()) {
+            confirmAlert({
+                title:'Are you sure you want to save these changes?',
+                message: '',
+                buttons: [
+                    {
+                        label: 'Yes, please save',
+                        onClick: ()=>saveQuestion(this.state.curQuestion, response=> {
+                            if (response.success) {
+                                let questions = this.state.questions;
+                                let question = questions.filter(q=>
+                                    q._id === this.state.curQuestion._id)[0];
+                                questions[questions.indexOf(question)] = cloneDeep(this.state.curQuestion);
+                                this.setState({questions:questions}, ()=> {
+                                    window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                    alert("Question successfully updated.");
+                                });
+                            } else {
+                                console.error(response.message);
+                            }
+                        })
+                    },
+                    {
+                        label: 'No, continue working',
+                        onClick: ()=>{}
+                    }
+                ]
+                })
+        }
     }
     
     render () {
@@ -303,8 +333,13 @@ export class QuestionsBox extends React.Component {
                                 this.setState({curQuestion:question});
                              }}
                              />
-                            {/* <div className='button save-button'>Save Changes</div>
-                            <div className='button delete-button'>Delete Question</div> */}
+                            <div 
+                                className={'button save-button ' + (this.hasChanges() ? "selectable" : "non-selectable")}
+                                onClick={this.handleSave}
+                            >
+                                 Save Changes
+                            </div>
+                            {/* <div className='button delete-button'>Delete Question</div> */}
                         </div>
                         <div id='question-content'>
                             <div id='entity-box'>
