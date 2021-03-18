@@ -72,9 +72,6 @@ def get_question( Entities = ['BS-to-MS', 'How', 'Sign Up'] ):
 
   fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
-  print("beep boop")
-  print(__name__)
-
 
   return jsonify(found) #return result as json
 
@@ -142,8 +139,8 @@ def put_contact(Entities = ['BS-to-MS', 'How', 'Sign Up'], contact = 'heinrich@c
 
   return jsonify(updated)
 
-  # TODO: append an experation date to a question?
   # TODO: append follow up question 
+
 # search via ObjectID
 @app.route('/get_question_via_ID', methods=['GET']) # retrive a question based on id
 def get_question_via_ID( _id = "6049969161a11a47b4b8fe4e" ):
