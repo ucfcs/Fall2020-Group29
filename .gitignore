@@ -1,2 +1,4 @@
 *.eslintcache
 *.pyc
+.vscode
+
