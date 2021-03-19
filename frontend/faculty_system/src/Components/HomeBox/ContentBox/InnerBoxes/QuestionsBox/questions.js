@@ -28,8 +28,10 @@ export function getQuestions(callback) {
           } else if (res.status === 200) {
             res.json().then((res)=> {
                 console.log(res);
-                window.sessionStorage.setItem('questions', JSON.stringify(res['questions']))
-                callback(res['questions']);
+                let questions = res['questions'];
+                questions.forEach(q => formatQuestion(q));
+                window.sessionStorage.setItem('questions', JSON.stringify(questions));
+                callback(questions);
             });
           }
       })
@@ -44,9 +46,49 @@ export function getQuestions(callback) {
 }
 
 export function saveQuestion(question, callback) {
-  callback(
-    {
-      success:false,
-      message:"System not yet configured to save Questions to Database."
-    });
+
+  let options = {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': window.sessionStorage.getItem('token')
+    },
+    body: JSON.stringify({'question': question})
+  };
+
+  fetch('http://127.0.0.1:5000/api/faculty/update_question', options)
+    .then((res)=> {
+      if (res.status===200) {
+        res.json().then((res)=> {
+          let q = res['question'];
+          formatQuestion(q);
+          callback(
+            {
+              success:true,
+              message:'Question updated',
+              question: q
+            });
+        });
+      } else {
+        res.json().then((res)=> {
+          callback(
+            {
+              success:false,
+              message: res.message
+            });
+        });
+      }
+    })
+  
+}
+
+
+function formatQuestion(question) {
+  let tags = question.tags;
+  question.tags = {
+    'intent': tags[0],
+    'department': tags[1],
+    'category': tags[2],
+    'information': tags[3]
+  }
 }

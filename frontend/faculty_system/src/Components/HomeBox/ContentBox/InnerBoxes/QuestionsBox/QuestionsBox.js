@@ -228,9 +228,9 @@ export class QuestionsBox extends React.Component {
     makeDropdownValue(skey, qkey) {
         if (this.state.curQuestion[qkey] === undefined) {
             return ''
-        } else if (this.state.curQuestion[qkey] === 0) {
+        } else if (this.state.curQuestion[qkey] === '0') {
             return {
-                value:0, 
+                value:'0', 
                 label:'None'
             }
 
@@ -248,7 +248,7 @@ export class QuestionsBox extends React.Component {
             value:val._id,
             label:val.name   
         }));
-        options.unshift({value:0,label:'None'});
+        options.unshift({value:'0',label:'None'});
         return options
     }
 
@@ -266,7 +266,7 @@ export class QuestionsBox extends React.Component {
                                 let questions = this.state.questions;
                                 let question = questions.filter(q=>
                                     q._id === this.state.curQuestion._id)[0];
-                                questions[questions.indexOf(question)] = cloneDeep(this.state.curQuestion);
+                                questions[questions.indexOf(question)] = cloneDeep(response.question);
                                 this.setState({questions:questions}, ()=> {
                                     window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                     alert("Question successfully updated.");

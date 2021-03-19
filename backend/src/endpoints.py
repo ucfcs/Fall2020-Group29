@@ -2,11 +2,10 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token
 from flask_pymongo import PyMongo
-from pymongo import ReturnDocument, MongoClient # so that we can return the updated version of the document after updating it
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from database_manager import return_all
+from .database_manager import return_all, update_question
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
@@ -57,16 +56,6 @@ def login():
 def get_questions():
 
     questions = return_all(mongo, "questions")
-
-    for q in questions:
-        tags = q["tags"]
-        q["tags"] = {
-            "intent": tags[0],
-            "department": tags[1],
-            "category": tags[2],
-            "information": tags[3]
-        }
-
     return jsonify(questions=questions)
 
 @app.route("/api/faculty/get_tags", methods=["GET"])
@@ -134,6 +123,30 @@ def get_documents():
             "link": f["Link to File"]
         })
     return jsonify(documents=documents)
+
+@app.route("/api/faculty/add_question", methods=["POST"])
+def add_question():
+    return jsonify(question={})
+
+@app.route("/api/faculty/update_question", methods=["PUT"])
+def update_q():
+    req = request.get_json()
+    question = req["question"]
+    qId = question["_id"]
+    tags = question["tags"]
+    question["tags"] = [tags["intent"], tags["department"], tags["category"], tags["information"]]
+    question.pop("_id")
+    question.pop("number")
+    updated = update_question(mongo, qId, question)
+    if updated == None:
+        return jsonify(message="Question not found."), 404
+    else:
+        return jsonify(question=updated)
+
+
+
+####################################################### Dummy Data ####################################################
+
 
 # Routes for retrieving Dummy Data for testing purposes
 @app.route("/api/faculty/get_dummy_questions", methods=["GET"])
