@@ -38,6 +38,9 @@ def add_question(mongo, name, responses, tags, patterns):
 
 
 def update_question(mongo, id, update_dict):
+  if check_exists(mongo, id, update_dict['tags']):
+    return None
+
   updated = mongo.db.questions.find_one_and_update(
     {
       '_id': ObjectId(id)
@@ -55,3 +58,17 @@ def update_question(mongo, id, update_dict):
   updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return updated
+
+def check_exists(mongo, id, tags):
+  result = mongo.db.questions.find_one({
+    "tags" : {
+      "$all":tags
+      }
+    })
+  if result is None:
+    return False
+  else:
+    check = result['_id']
+    if str(check) != id:
+      return True
+    return False
