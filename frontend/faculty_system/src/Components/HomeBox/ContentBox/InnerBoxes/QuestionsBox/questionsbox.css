@@ -47,7 +47,6 @@
 
 #response-box {
     height:45%;
-    overflow:auto;
 }
 
 #patterns-box {
@@ -55,6 +54,11 @@
     overflow: auto;
 }
 
+#response {
+    width:80%;
+    height:70%;
+    resize:none;
+}
 
 #entities {
     display: flex;
@@ -96,11 +100,6 @@
     height: 25px;
     padding:0 2px 2px 2px;
     line-height: 18px;
-}
-
-.responses {
-    margin-top:5%;
-    margin-bottom: 5%;
 }
 
 .response {

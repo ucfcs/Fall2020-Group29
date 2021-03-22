@@ -399,19 +399,12 @@ export class QuestionsBox extends React.Component {
                             <div id='entered-fields'>
                                 <div id='patterns-and-responses'>
                                     <div id='response-box'>
-                                        <h2>Responses to Question</h2>
-                                        <div className='responses'>
-                                            {this.state.curQuestion.responses.map((res, index) => {
-                                                return <Response 
-                                                num={index} 
-                                                response={res} 
-                                                change={this.changeResponse} 
-                                                />
-                                            })}
-                                            <div className='plus' onClick={this.addResponse}>
-                                            +
-                                            </div>
-                                        </div>
+                                        <h2>Response to Question</h2>
+                                        <textarea 
+                                            id='response'
+                                            value={this.state.curQuestion.responses[0]} 
+                                            onChange={(e)=> this.changeResponse(e, 0)} 
+                                        />
                                     </div>
                                     <div id='patterns-box'>
                                         <h2>Patterns</h2>
