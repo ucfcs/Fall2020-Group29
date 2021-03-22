@@ -5,7 +5,19 @@
 //     }
 // }
 
-
+export const defaultQuestion = {
+  '_id': '',
+  'number':-1,
+  'name': '',
+  'responses': [''],
+  'patterns': [],
+  'tags': {
+    'intent': '',
+    'department': '',
+    'category': '',
+    'information': ''
+  }
+}
 
 
 export function getQuestions(callback) {

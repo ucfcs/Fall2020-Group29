@@ -1,7 +1,7 @@
 import React from 'react';
 import SelectionBox from '../SelectionBox';
 import './questionsbox.css';
-import {getQuestions, saveQuestion} from './questions';
+import {getQuestions, saveQuestion, defaultQuestion} from './questions';
 import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
 import {getDocuments} from '../DocumentsBox/documents';
@@ -34,19 +34,7 @@ export class QuestionsBox extends React.Component {
             hasChanges:false,
             questions:[],
             displayedQuestions:[],
-            curQuestion:{
-                '_id': '',
-                'number':-1,
-                'name': '',
-                'responses': [],
-                'patterns': [],
-                'tags': {
-                    'intent': '',
-                    'department': '',
-                    'category': '',
-                    'information': ''
-                }
-            },
+            curQuestion: cloneDeep(defaultQuestion),
             tags:{
                 'intent': [],
                 'category': [],
@@ -111,9 +99,13 @@ export class QuestionsBox extends React.Component {
     }
 
     hasChanges() {
-        let question = this.state.questions.filter(q=>
-            q._id === this.state.curQuestion._id)[0];
-        return this.state.curQuestion._id !== '' && !isEqual(question, this.state.curQuestion);
+        if (this.state.curQuestion._id === '') {
+            return !isEqual(defaultQuestion, this.state.curQuestion);
+        } else {
+            let question = this.state.questions.filter(q=>
+                q._id === this.state.curQuestion._id)[0];
+            return !isEqual(question, this.state.curQuestion);
+        }
     }
 
     selectItem(event, item) {
@@ -312,7 +304,7 @@ export class QuestionsBox extends React.Component {
                             <p className='new-question-text'>
                                 Add New Question
                             </p>
-                            <div className='plus-select'>
+                            <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultQuestion)}>
                                 +
                             </div>
                         </div>
