@@ -273,6 +273,7 @@ export class QuestionsBox extends React.Component {
                                 });
                             } else {
                                 console.error(response.message);
+                                alert('Could not update question:\n' + response.message);
                             }
                         })
                     },

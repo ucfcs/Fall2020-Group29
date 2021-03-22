@@ -137,9 +137,12 @@ def update_q():
     question["tags"] = [tags["intent"], tags["department"], tags["category"], tags["information"]]
     question.pop("_id")
     question.pop("number")
-    updated = update_question(mongo, qId, question)
+    updated, ex_name = update_question(mongo, qId, question)
     if updated == None:
-        return jsonify(message="Question not found."), 404
+        if ex_name == "":
+            return jsonify(message="Question not found."), 404
+        else:
+            return jsonify(message=("Question already exists with the requested tags\n \"{0}\"".format(ex_name))), 409
     else:
         return jsonify(question=updated)
 

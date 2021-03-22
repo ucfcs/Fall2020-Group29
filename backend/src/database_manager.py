@@ -38,8 +38,10 @@ def add_question(mongo, name, responses, tags, patterns):
 
 
 def update_question(mongo, id, update_dict):
-  if check_exists(mongo, id, update_dict['tags']):
-    return None
+  exists, q_name = check_exists(mongo, id, update_dict['tags'])
+
+  if exists:
+    return None, q_name
 
   updated = mongo.db.questions.find_one_and_update(
     {
@@ -52,12 +54,12 @@ def update_question(mongo, id, update_dict):
     return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
     )
   if (updated is None): # if there is no match
-    return None
+    return None, ''
   
   fickleID = updated.pop('_id') # jsonify() doens't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
-  return updated
+  return updated, ''
 
 def check_exists(mongo, id, tags):
   result = mongo.db.questions.find_one({
@@ -66,9 +68,9 @@ def check_exists(mongo, id, tags):
       }
     })
   if result is None:
-    return False
+    return False, ''
   else:
     check = result['_id']
     if str(check) != id:
-      return True
-    return False
+      return True, result['name']
+    return False, ''
