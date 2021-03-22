@@ -46,16 +46,16 @@
 }
 
 #response-box {
-    height:45%;
+    height:40%;
 }
 
 #patterns-box {
-    height:45%;
+    height:55%;
     overflow: auto;
 }
 
 #response {
-    width:80%;
+    width:85%;
     height:70%;
     resize:none;
 }
