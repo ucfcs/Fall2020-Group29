@@ -154,6 +154,7 @@ def delete_question(Entities = ['BS-to-MS', 'How', 'Sign Up']):
   
   return jsonify(found) #return result as json
 
+# TODO: delete one pattern
 
 ### contacts collection ###
 # add
