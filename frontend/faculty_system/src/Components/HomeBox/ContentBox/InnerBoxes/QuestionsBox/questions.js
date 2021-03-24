@@ -58,6 +58,12 @@ export function getQuestions(callback) {
 }
 
 export function saveQuestion(question, callback) {
+  let call = '';
+  if (question._id === '') {
+    call = 'add_question';
+  } else {
+    call = 'update_question';
+  }
 
   let options = {
     method: 'PUT',
@@ -68,7 +74,7 @@ export function saveQuestion(question, callback) {
     body: JSON.stringify({'question': question})
   };
 
-  fetch('http://127.0.0.1:5000/api/faculty/update_question', options)
+  fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
     .then((res)=> {
       if (res.status===200) {
         res.json().then((res)=> {

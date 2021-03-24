@@ -5,7 +5,7 @@ from flask_pymongo import PyMongo
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from .database_manager import return_all, update_question
+from .database_manager import return_all, update_question, add_question
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
@@ -125,8 +125,18 @@ def get_documents():
     return jsonify(documents=documents)
 
 @app.route("/api/faculty/add_question", methods=["POST"])
-def add_question():
-    return jsonify(question={})
+def add_q():
+    req = request.get_json()
+    question = req["question"]
+    tags = question["tags"]
+    question["tags"] = [tags["intent"], tags["department"], tags["category"], tags["information"]]
+    question.pop("_id")
+    question.pop("number")
+    added, ex_name = add_question(mongo, question)
+    if added == None:
+        return jsonify(message=("Question already exists with the requested tags\n \"{0}\"".format(ex_name))), 409
+    else:
+        return jsonify(message="Question successfully added.", question=added)
 
 @app.route("/api/faculty/update_question", methods=["PUT"])
 def update_q():
@@ -145,8 +155,6 @@ def update_q():
             return jsonify(message=("Question already exists with the requested tags\n \"{0}\"".format(ex_name))), 409
     else:
         return jsonify(question=updated)
-
-
 
 ####################################################### Dummy Data ####################################################
 

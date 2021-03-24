@@ -258,7 +258,11 @@ export class QuestionsBox extends React.Component {
                                 let questions = this.state.questions;
                                 let question = questions.filter(q=>
                                     q._id === this.state.curQuestion._id)[0];
-                                questions[questions.indexOf(question)] = cloneDeep(response.question);
+                                if (question === undefined) {
+                                    questions.push(cloneDeep(response.question));
+                                } else {
+                                    questions[questions.indexOf(question)] = cloneDeep(response.question);
+                                }
                                 this.setState({questions:questions}, ()=> {
                                     window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                     alert("Question successfully updated.");
