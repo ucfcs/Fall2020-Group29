@@ -25,12 +25,12 @@ class Result extends Component {
     const lookup = steps.userInput.value;
     const input = { name: lookup };
     const api_response = await axios.post(
-      "http://127.0.0.1:5000/api/user-response",
+      "http://127.0.0.1:4999/api/user-response",
       input
     );
     this.setState({
       loading: false,
-      result: api_response,
+      result: api_response.data.answer,
       department: api_response.data.department,
       category: api_response.data.category,
     });
@@ -57,11 +57,7 @@ class Result extends Component {
           borderRadius: 25,
         }}
       >
-        {loading ? (
-          <Loading />
-        ) : (
-          "1.) Department: " + department + " 2.) Category: " + category
-        )}
+        {loading ? <Loading /> : result}
         {!loading && (
           <div
             style={{
