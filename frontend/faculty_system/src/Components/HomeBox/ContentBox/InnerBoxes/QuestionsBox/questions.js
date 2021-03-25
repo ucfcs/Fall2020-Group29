@@ -31,7 +31,12 @@ const tagTypes = [
   'department',
   'category',
   'information'
-]
+];
+
+export const fieldsRequiringTraining = [
+  'patterns',
+  'tags'
+];
 
 export function getQuestions(callback) {
 
@@ -76,6 +81,7 @@ export function getQuestions(callback) {
 export function saveQuestion(question, callback) {
   let call = '';
   let method = '';
+  let succMessage = '';
   let hasFields = hasAllFields(question);
     
   if (!hasFields.hasFields) {
@@ -90,9 +96,11 @@ export function saveQuestion(question, callback) {
   } else if (question._id === '') {
     call = 'add_question';
     method = 'POST';
+    succMessage = 'Question Successfully Added to System.';
   } else {
     method = 'PUT';
     call = 'update_question';
+    succMessage = 'Question Successfully Updated.'
   }
 
   let options = {
@@ -112,8 +120,8 @@ export function saveQuestion(question, callback) {
           formatQuestion(q);
           callback(
             {
-              success:true,
-              message:'Question updated',
+              success: true,
+              message: succMessage,
               question: q
             });
         });
@@ -121,7 +129,7 @@ export function saveQuestion(question, callback) {
         res.json().then((res)=> {
           callback(
             {
-              success:false,
+              success: false,
               message: res.message
             });
         });

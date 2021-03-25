@@ -1,7 +1,7 @@
 import React from 'react';
 import SelectionBox from '../SelectionBox';
 import './questionsbox.css';
-import {getQuestions, saveQuestion, defaultQuestion} from './questions';
+import {getQuestions, saveQuestion, defaultQuestion, fieldsRequiringTraining} from './questions';
 import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
 import {getDocuments} from '../DocumentsBox/documents';
@@ -16,6 +16,7 @@ export class QuestionsBox extends React.Component {
         super(props);
         
         this.hasChanges = this.hasChanges.bind(this);
+        this.hasTrainableChanges = this.hasTrainableChanges.bind(this);
         this.selectItem = this.selectItem.bind(this);
         this.filterSearch = this.filterSearch.bind(this);
         this.changeResponse = this.changeResponse.bind(this);
@@ -106,6 +107,28 @@ export class QuestionsBox extends React.Component {
                 q._id === this.state.curQuestion._id)[0];
             return !isEqual(question, this.state.curQuestion);
         }
+    }
+
+    hasTrainableChanges() {
+        
+        if (this.state.curQuestion._id === '') {
+        /*
+            If the question is a new one, it has to be changed regardless. 
+            If it has changes, they're trainable ones.
+        */
+            return this.hasChanges();
+        } else {
+            let trainableChanges = false;
+            let question = this.state.questions.filter(q=>
+                q._id === this.state.curQuestion._id)[0];
+            fieldsRequiringTraining.forEach(field=> {
+                if (!isEqual(question[field], this.state.curQuestion[field])) {
+                    trainableChanges = true;
+                }
+            });
+            return trainableChanges;
+        }
+        
     }
 
     selectItem(event, item) {
@@ -247,39 +270,98 @@ export class QuestionsBox extends React.Component {
     handleSave(event) {
         event.preventDefault();
         if (this.hasChanges()) {
-            confirmAlert({
-                title:'Are you sure you want to save these changes?',
-                message: '',
-                buttons: [
-                    {
-                        label: 'Yes, please save',
-                        onClick: ()=>saveQuestion(this.state.curQuestion, response=> {
-                            if (response.success) {
-                                let questions = this.state.questions;
-                                let question = questions.filter(q=>
-                                    q._id === this.state.curQuestion._id)[0];
-                                if (question === undefined) {
-                                    questions.push(cloneDeep(response.question));
-                                    this.setState({curQuestion:cloneDeep(response.question)});
+            if (this.hasTrainableChanges()) {
+                confirmAlert({
+                    title:'You\'ve made changes which require the system to be retrained.',
+                    message: 'Would you like to save your changes and retrain now?',
+                    buttons: [
+                        {
+                            label: 'Save and Retrain',
+                            onClick: ()=> saveQuestion(this.state.curQuestion, response=> {
+                                if (response.success) {
+                                    let questions = this.state.questions;
+                                    let question = questions.filter(q=>
+                                        q._id === this.state.curQuestion._id)[0];
+                                    if (question === undefined) {
+                                        questions.push(cloneDeep(response.question));
+                                        this.setState({curQuestion:cloneDeep(response.question)});
+                                    } else {
+                                        questions[questions.indexOf(question)] = cloneDeep(response.question);
+                                    }
+                                    this.setState({questions:questions}, ()=> {
+                                        window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                        alert(response.message);
+                                    });
                                 } else {
-                                    questions[questions.indexOf(question)] = cloneDeep(response.question);
+                                    console.error(response.message);
+                                    alert('Could not save question - \n' + response.message);
                                 }
-                                this.setState({questions:questions}, ()=> {
-                                    window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
-                                    alert("Question successfully updated.");
-                                });
-                            } else {
-                                console.error(response.message);
-                                alert('Could not update question:\n' + response.message);
-                            }
-                        })
-                    },
-                    {
-                        label: 'No, continue working',
-                        onClick: ()=>{}
-                    }
-                ]
-                })
+                            })
+                        },
+                        {
+                            label: 'Save and Don\'t Retrain',
+                            onClick: ()=>saveQuestion(this.state.curQuestion, response=> {
+                                if (response.success) {
+                                    let questions = this.state.questions;
+                                    let question = questions.filter(q=>
+                                        q._id === this.state.curQuestion._id)[0];
+                                    if (question === undefined) {
+                                        questions.push(cloneDeep(response.question));
+                                        this.setState({curQuestion:cloneDeep(response.question)});
+                                    } else {
+                                        questions[questions.indexOf(question)] = cloneDeep(response.question);
+                                    }
+                                    this.setState({questions:questions}, ()=> {
+                                        window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                        alert(response.message + '\n Please Remember to retrain the system before you log out.');
+                                    });
+                                } else {
+                                    console.error(response.message);
+                                    alert('Could not save question - \n' + response.message);
+                                }
+                            })
+                        },
+                        {
+                            label: 'Cancel',
+                            onClick: ()=>{}
+                        }
+                    ]
+                }); 
+            } else {
+                confirmAlert({
+                    title:'Are you sure you want to save these changes?',
+                    message: '',
+                    buttons: [
+                        {
+                            label: 'Yes, please save',
+                            onClick: ()=>saveQuestion(this.state.curQuestion, response=> {
+                                if (response.success) {
+                                    let questions = this.state.questions;
+                                    let question = questions.filter(q=>
+                                        q._id === this.state.curQuestion._id)[0];
+                                    if (question === undefined) {
+                                        questions.push(cloneDeep(response.question));
+                                        this.setState({curQuestion:cloneDeep(response.question)});
+                                    } else {
+                                        questions[questions.indexOf(question)] = cloneDeep(response.question);
+                                    }
+                                    this.setState({questions:questions}, ()=> {
+                                        window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                        alert(response.message);
+                                    });
+                                } else {
+                                    console.error(response.message);
+                                    alert('Could not save question - \n' + response.message);
+                                }
+                            })
+                        },
+                        {
+                            label: 'No, continue working',
+                            onClick: ()=>{}
+                        }
+                    ]
+                });
+            }
         }
     }
     
