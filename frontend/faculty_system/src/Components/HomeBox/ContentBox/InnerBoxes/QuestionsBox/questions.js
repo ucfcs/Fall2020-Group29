@@ -17,8 +17,21 @@ export const defaultQuestion = {
     'category': '',
     'information': ''
   }
-}
+};
 
+const requiredFields = [
+  'name',
+  'responses', 
+  'patterns', 
+  'tags'
+];
+
+const tagTypes = [
+  'intent',
+  'department',
+  'category',
+  'information'
+]
 
 export function getQuestions(callback) {
 
@@ -57,16 +70,33 @@ export function getQuestions(callback) {
   }
 }
 
+
+
+
 export function saveQuestion(question, callback) {
   let call = '';
-  if (question._id === '') {
+  let method = '';
+  let hasFields = hasAllFields(question);
+    
+  if (!hasFields.hasFields) {
+    callback(
+      {
+        success: false,
+        message: 'Question missing required fields:\n' + hasFields.missingFields.join(', ')
+      }
+    )
+    return;
+
+  } else if (question._id === '') {
     call = 'add_question';
+    method = 'POST';
   } else {
+    method = 'PUT';
     call = 'update_question';
   }
 
   let options = {
-    method: 'PUT',
+    method: method,
     headers: {
         'Content-Type': 'application/json',
         'Authorization': window.sessionStorage.getItem('token')
@@ -109,4 +139,35 @@ function formatQuestion(question) {
     'category': tags[2],
     'information': tags[3]
   }
+}
+
+function hasField(question, field) {
+  return question[field].length !== 0;
+}
+
+function hasAllFields(question) {
+  let hasAllFields = true;
+  let missingFields = [];
+  requiredFields.forEach(field => {
+    console.log(field);
+    console.log(question[field]);
+    if (field === 'tags') {
+      tagTypes.forEach(tag => {
+        if (!hasField(question.tags, tag)) {
+          hasAllFields = false;
+          missingFields.push(tag);
+        }
+      });
+    } else {
+      if (!hasField(question, field)) {
+        hasAllFields = false;
+        missingFields.push(field);
+      }
+    }
+  });
+    
+    return {
+      hasFields: hasAllFields,
+      missingFields: missingFields
+    }
 }

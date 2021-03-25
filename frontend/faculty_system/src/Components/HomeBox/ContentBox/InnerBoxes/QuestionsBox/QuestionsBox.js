@@ -260,6 +260,7 @@ export class QuestionsBox extends React.Component {
                                     q._id === this.state.curQuestion._id)[0];
                                 if (question === undefined) {
                                     questions.push(cloneDeep(response.question));
+                                    this.setState({curQuestion:cloneDeep(response.question)});
                                 } else {
                                     questions[questions.indexOf(question)] = cloneDeep(response.question);
                                 }
