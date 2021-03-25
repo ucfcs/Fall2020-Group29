@@ -10,6 +10,7 @@ class Result extends Component {
   constructor(props) {
     super(props);
 
+    // sets initial states
     this.state = {
       loading: true,
       department: "",
@@ -24,10 +25,12 @@ class Result extends Component {
     const { steps } = this.props;
     const lookup = steps.userInput.value;
     const input = { name: lookup };
+    // stores returned data in api_response
     const api_response = await axios.post(
       "http://127.0.0.1:5000/api/user-response",
       input
     );
+    // set the state to the relevant data it needs to hold
     this.setState({
       loading: false,
       result: api_response.data.answer,
@@ -42,26 +45,24 @@ class Result extends Component {
   }
   render() {
     const { trigger, loading, department, category, result } = this.state;
-    // console.log(department);
-    // console.log(category);
+    console.log(department);
+    console.log(category);
     console.log(result);
     return (
       <div
         style={{
           textAlign: "center",
           padding: 15,
-          margin: 30,
+          marginTop: 20,
+          marginLeft: 10,
+          marginRight: 10,
           fontFamily: "Arial",
-          fontSize: "12pt",
+          fontSize: "11pt",
           backgroundColor: "#eee",
           borderRadius: 25,
         }}
       >
-        {loading ? (
-          <Loading />
-        ) : (
-          result
-        )}
+        {loading ? <Loading /> : result}
         {!loading && (
           <div
             style={{
@@ -70,7 +71,20 @@ class Result extends Component {
             }}
           >
             {!trigger && (
-              <button onClick={() => this.triggetNext()}>Try again</button>
+              <button
+                onClick={() => this.triggetNext()}
+                style={{
+                  backgroundColor: "#ffd700",
+                  borderColor: "#ffd700",
+                  color: "white",
+                  borderWidth: 0,
+                  borderRadius: 50,
+                  height: 20,
+                  fontWeight: "bold",
+                }}
+              >
+                Try again
+              </button>
             )}
           </div>
         )}
@@ -89,37 +103,8 @@ Result.defaultProps = {
 };
 
 function App(props) {
-  // const [result, setResult] = useState(null);
-  // // const [userData, setUserData] = useState(null);
-  // // const [category, setCategory] = useState(null);
-  // // const [department, setDepartment] = useState(null);
-
-  // // UseEffect Hook to make a POST request
-  // // console.log(userData);
-  // useEffect(() => {
-  //   if (userData != null) {
-  //     // POST request using axios inside useEffect React hook
-  //     const getResponse = async () => {
-  //       const article = { name: userData };
-  //       let api_data = await axios.post(
-  //         "http://127.0.0.1:5000/api/user-response",
-  //         article
-  //       );
-  //       setResult(api_data.data.dept);
-  //       console.log(api_data.data.dept, typeof api_data.data);
-  //     };
-  //     getResponse();
-  //   }
-  // console.log(userData);
-  // }, [userData]);
-  // console.log("result", result);
-  // let newResult = JSON.stringify(result);
-  // console.log(newResult);
-
+  // Dummy Function to return some data to the chatbot
   function dummy(value) {
-    // console.log(value);
-    // setUserData(value);
-
     return "Let me see what I can do to help with " + value;
   }
   let nextResponse = "Understandable, have a nice day!";
@@ -175,7 +160,7 @@ function App(props) {
       id: "7",
       component: <Result />,
       waitAction: true,
-      trigger: "Greeting",
+      trigger: "3",
     },
   ];
 
