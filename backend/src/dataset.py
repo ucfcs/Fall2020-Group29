@@ -1,4 +1,5 @@
 from torch.utils.data import Dataset
+from .database_manager import return_all
 
 class ChatDataset(Dataset):
 
@@ -12,3 +13,12 @@ class ChatDataset(Dataset):
 
     def __len__(self):
         return self.n_samples
+
+
+def fetch_data(db, params):
+    
+    raw_data = return_all(db)
+
+    # Script to convert to CSV.
+
+    return None
