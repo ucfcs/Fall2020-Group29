@@ -53,8 +53,8 @@ def return_all( Collection = 'questions' ):
 ### questions collection ###
 # add 
 @app.route('/add_question', methods=['POST']) # add a question to the database with Name, Responses, an Entities, returns this new document
-def add_question( Name = "BS-to-MS", Responses = ["In order to dah da da da da"], Entities = ['BS-to-MS', 'How', 'Sign Up'] ):
-  new_question = {'Name': Name, 'Responses': Responses, 'Entities':Entities}
+def add_question( Name = "BS-to-MS", Response = 'In order to dah da da da da', Entities = ['BS-to-MS', 'How', 'Sign Up'] ):
+  new_question = {'Name': Name, 'Response': Response, 'Entities':Entities}
   
   InsertOneResult_Obj = mongo.db.questions.insert_one(new_question) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
   
@@ -167,8 +167,10 @@ def delete_question(Entities = ['BS-to-MS', 'How', 'Sign Up']):
   
   return jsonify(found) #return result as json
 
+# TODO: delete one pattern
 
 ### contacts collection ###
+#contacts should have dept and maybe grad/undergrad
 # add
 @app.route('/add_contact', methods=['POST']) # add a contact to the database with Name, Title, Email, Phone and Office, returns inerted doctment 
 def add_contact(Name = 'Mark Heinrich', Title = 'CS Advisor', Email = 'heinrich@cs.ucf.edu', Phone = '(407) 882-0138', Office = 'HEC 345'):
@@ -204,6 +206,7 @@ def update_contact(Name = 'Mark Heinrich', Title = 'CS Advisor', itemToUpdate = 
 
   return jsonify(updated)
 
+# TODO: add a link
 # TODO: delete
 
 
@@ -242,6 +245,37 @@ def update_contact(Name = 'Mark Heinrich', Title = 'CS Advisor', itemToUpdate = 
 
 # TODO: delete
 
+
+## settings collection ##
+
+# TODO: check
+@app.route('/needs_update_check', methods=['GET']) 
+def needs_update_check():
+  found = mongo.db.settings.find_one({'needs training':True}) 
+
+  if (found is None): # if there is no match
+    return jsonify({'needs training':False})
+
+  return jsonify({'needs training':True}) #return result as json
+
+# TODO: change
+@app.route('/set_needs_update', methods=['PUT']) # sets 
+def set_needs_update(set = True):
+  updated = mongo.db.settings.find_one_and_update(
+    {}, 
+    {
+      '$set': { 'needs training':set } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
 
 
 if __name__ == '__main__':
