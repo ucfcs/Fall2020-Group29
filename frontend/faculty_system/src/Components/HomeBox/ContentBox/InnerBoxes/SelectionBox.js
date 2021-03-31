@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import arrowB from './images/sidearrow_b.png';
 import arrowG from './images/sidearrow_g.png';
 

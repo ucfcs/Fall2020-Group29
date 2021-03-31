@@ -1,4 +1,4 @@
-
+import {isEqual} from 'lodash';
 // export class Question {
 //     constructor(id, name, patterns, entities, responses) {
 
@@ -7,7 +7,6 @@
 
 export const defaultQuestion = {
   '_id': '',
-  'number':-1,
   'name': '',
   'responses': [''],
   'patterns': [],
@@ -37,6 +36,15 @@ export const fieldsRequiringTraining = [
   'patterns',
   'tags'
 ];
+
+export function makeOptions(values) {
+  let options = values.map(val=> ({
+      value:val._id,
+      label:val.name   
+  }));
+  options.unshift({value:'0',label:'None'});
+  return options
+}
 
 export function getQuestions(callback) {
 
@@ -75,9 +83,6 @@ export function getQuestions(callback) {
   }
 }
 
-
-
-
 export function saveQuestion(question, callback) {
   let call = '';
   let method = '';
@@ -101,6 +106,66 @@ export function saveQuestion(question, callback) {
     method = 'PUT';
     call = 'update_question';
     succMessage = 'Question Successfully Updated.'
+  }
+
+  let options = {
+    method: method,
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': window.sessionStorage.getItem('token')
+    },
+    body: JSON.stringify({'question': question, 'retrain': false})
+  };
+
+  fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
+    .then((res)=> {
+      if (res.status===200) {
+        res.json().then((res)=> {
+          let q = res['question'];
+          formatQuestion(q);
+          callback(
+            {
+              success: true,
+              message: succMessage,
+              question: q
+            });
+        });
+      } else {
+        res.json().then((res)=> {
+          callback(
+            {
+              success: false,
+              message: res.message
+            });
+        });
+      }
+    })
+  
+}
+
+export function saveQuestionAndTrain(question, callback) {
+  let call = '';
+  let method = '';
+  let succMessage = '';
+  let hasFields = hasAllFields(question);
+    
+  if (!hasFields.hasFields) {
+    callback(
+      {
+        success: false,
+        message: 'Question missing required fields:\n' + hasFields.missingFields.join(', ')
+      }
+    )
+    return;
+
+  } else if (question._id === '') {
+    call = 'add_question';
+    method = 'POST';
+    succMessage = 'Question Successfully Added to System.\n Now starting training.';
+  } else {
+    method = 'PUT';
+    call = 'update_question';
+    succMessage = 'Question Successfully Updated.\n Now starting training.'
   }
 
   let options = {
@@ -134,7 +199,26 @@ export function saveQuestion(question, callback) {
             });
         });
       }
-    })
+    });
+
+    options = {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': window.sessionStorage.getItem('token')
+      }
+    };
+
+    fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+    .then((res)=> {
+      if (res.status===200) {
+        res.json().then((res)=> {
+          alert(res['message']);
+        });
+      } else {
+        alert('Error: System could not be retrained.');
+      }
+    });
   
 }
 

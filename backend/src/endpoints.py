@@ -6,6 +6,7 @@ from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
 from .database_manager import return_all, update_question, add_question
+from .train import train
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
@@ -131,7 +132,6 @@ def add_q():
     tags = question["tags"]
     question["tags"] = [tags["intent"], tags["department"], tags["category"], tags["information"]]
     question.pop("_id")
-    question.pop("number")
     added, ex_name = add_question(mongo, question)
     if added == None:
         return jsonify(message=("Question already exists with the requested tags\n \"{0}\"".format(ex_name))), 409
@@ -146,7 +146,6 @@ def update_q():
     tags = question["tags"]
     question["tags"] = [tags["intent"], tags["department"], tags["category"], tags["information"]]
     question.pop("_id")
-    question.pop("number")
     updated, ex_name = update_question(mongo, qId, question)
     if updated == None:
         if ex_name == "":
@@ -154,8 +153,12 @@ def update_q():
         else:
             return jsonify(message=("Question already exists with the requested tags\n \"{0}\"".format(ex_name))), 409
     else:
-        return jsonify(question=updated)
+        return jsonify(message="Question successfully updated.", question=updated)
 
+@app.route("/api/faculty/retrain_model", methods=["GET"])
+def retrain_model():
+    train()
+    return jsonify(message="Model successfully retrained")
 ####################################################### Dummy Data ####################################################
 
 

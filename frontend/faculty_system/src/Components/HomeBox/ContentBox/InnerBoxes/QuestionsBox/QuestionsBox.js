@@ -1,7 +1,14 @@
 import React from 'react';
 import SelectionBox from '../SelectionBox';
 import './questionsbox.css';
-import {getQuestions, saveQuestion, defaultQuestion, fieldsRequiringTraining} from './questions';
+import {
+    getQuestions, 
+    saveQuestion, 
+    defaultQuestion, 
+    fieldsRequiringTraining, 
+    makeOptions, 
+    saveQuestionAndTrain
+} from './questions';
 import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
 import {getDocuments} from '../DocumentsBox/documents';
@@ -27,12 +34,14 @@ export class QuestionsBox extends React.Component {
         this.handleSelectTag = this.handleSelectTag.bind(this);
         this.makeTagValue = this.makeTagValue.bind(this);
         this.handleSelectDropdown = this.handleSelectDropdown.bind(this);
-        this.makeDropdownValue = this.makeDropdownValue.bind(this);
-        this.makeOptions = this.makeOptions.bind(this);
+        this.populateDropdownValue = this.populateDropdownValue.bind(this);
+        this.hasValidTags = this.hasValidTags.bind(this);
+        this.canSave = this.canSave.bind(this);
         this.handleSave = this.handleSave.bind(this);
 
         this.state = {
-            hasChanges:false,
+            needsTraining: false,
+            hasChanges: false,
             questions:[],
             displayedQuestions:[],
             curQuestion: cloneDeep(defaultQuestion),
@@ -216,7 +225,7 @@ export class QuestionsBox extends React.Component {
     handleSelectTag(e, tag) {
         let question = this.state.curQuestion;
         question.tags[tag] = e.label;
-        this.setState({curQuestion:question, hasChanges:true});
+        this.setState({curQuestion:question});
     }
 
     makeTagValue(key) {
@@ -230,7 +239,7 @@ export class QuestionsBox extends React.Component {
                     return tag === undefined ? '':tag._id
                 })(),
                 label:this.state.curQuestion.tags[key]
-            }
+            };
         }
     }
 
@@ -240,36 +249,49 @@ export class QuestionsBox extends React.Component {
         this.setState({curQuestion:question});
     }
 
-    makeDropdownValue(skey, qkey) {
+    populateDropdownValue(skey, qkey) {
         if (this.state.curQuestion[qkey] === undefined) {
-            return ''
+            return '';
         } else if (this.state.curQuestion[qkey] === '0') {
             return {
                 value:'0', 
                 label:'None'
-            }
+            };
 
         } else {
             return {
                 value:this.state.curQuestion[qkey],
                 label: this.state[skey].filter(
                     val=>val._id===this.state.curQuestion[qkey])[0].name
-            }
+            };
         }                                      
     }
 
-    makeOptions(values) {
-        let options = values.map(val=> ({
-            value:val._id,
-            label:val.name   
-        }));
-        options.unshift({value:'0',label:'None'});
-        return options
+    hasValidTags() {
+        let check = this.state.questions.filter(q=> {
+          return isEqual(this.state.curQuestion.tags, q.tags);
+        })[0];
+      
+        if (check === undefined) {
+          return {
+              valid:true,
+              name:''
+          };
+        } else {
+          return {
+              valid: check._id === this.state.curQuestion._id,
+              name: check.name
+            };
+        }
+    }
+
+    canSave() {
+        return this.hasValidTags().valid && this.hasChanges()
     }
 
     handleSave(event) {
         event.preventDefault();
-        if (this.hasChanges()) {
+        if (this.canSave()) {
             if (this.hasTrainableChanges()) {
                 confirmAlert({
                     title:'You\'ve made changes which require the system to be retrained.',
@@ -277,7 +299,7 @@ export class QuestionsBox extends React.Component {
                     buttons: [
                         {
                             label: 'Save and Retrain',
-                            onClick: ()=> saveQuestion(this.state.curQuestion, response=> {
+                            onClick: ()=> saveQuestionAndTrain(this.state.curQuestion, response=> {
                                 if (response.success) {
                                     let questions = this.state.questions;
                                     let question = questions.filter(q=>
@@ -311,7 +333,7 @@ export class QuestionsBox extends React.Component {
                                     } else {
                                         questions[questions.indexOf(question)] = cloneDeep(response.question);
                                     }
-                                    this.setState({questions:questions}, ()=> {
+                                    this.setState({questions:questions, needsTraining:true}, ()=> {
                                         window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                         alert(response.message + '\n Please Remember to retrain the system before you log out.');
                                     });
@@ -424,13 +446,19 @@ export class QuestionsBox extends React.Component {
                         <div id='question-content'>
                             <div id='entity-box'>
                                 <h2>Tags</h2>
+                                <div className={this.hasValidTags().valid ? 'hide invalid-tags' : 'show invalid-tags'}>
+                                    Question already exists with the given combination of tags:<br/> "{this.hasValidTags().name}"
+                                </div>
                                 <div id='entities'>
                                     <div className='entity-selection-box'>
                                         <label className='entity-label' htmlFor='intent-choice'>
                                             Intent
                                         </label>
                                         <Select 
-                                        className='entity-select'
+                                        className={
+                                            this.hasValidTags().valid ? 
+                                                 'entity-select' : 'entity-select invalid-combo' 
+                                        }
                                         id='intent-choice' 
                                         value={this.makeTagValue('intent')}
                                         options={this.state.intentList} 
@@ -442,7 +470,10 @@ export class QuestionsBox extends React.Component {
                                             Department
                                         </label>
                                         <Select 
-                                        className='entity-select' 
+                                        className={
+                                            this.hasValidTags().valid ? 
+                                                 'entity-select' : 'entity-select invalid-combo' 
+                                        }
                                         id='department-choice' 
                                         value={this.makeTagValue('department')}
                                         options={this.state.departmentList} 
@@ -454,7 +485,10 @@ export class QuestionsBox extends React.Component {
                                             Category
                                         </label>
                                         <Select 
-                                        className='entity-select' 
+                                        className={
+                                            this.hasValidTags().valid ? 
+                                                 'entity-select' : 'entity-select invalid-combo' 
+                                        }
                                         id='category-choice'
                                         value={this.makeTagValue('category')}
                                         options={this.state.categoryList} 
@@ -466,7 +500,10 @@ export class QuestionsBox extends React.Component {
                                             Information
                                         </label>
                                         <Select 
-                                        className='entity-select' 
+                                        className={
+                                            this.hasValidTags().valid ? 
+                                                 'entity-select' : 'entity-select invalid-combo' 
+                                        }
                                         id='information-choice'
                                         value={this.makeTagValue('information')}
                                         options={this.state.infoList} 
@@ -509,8 +546,8 @@ export class QuestionsBox extends React.Component {
                                             <Select 
                                             className='contact field' 
                                             id='contact-1' 
-                                            value={this.makeDropdownValue('contacts', 'contact')} 
-                                            options={this.makeOptions(this.state.contacts)} 
+                                            value={this.populateDropdownValue('contacts', 'contact')} 
+                                            options={makeOptions(this.state.contacts)} 
                                             onChange={(e)=>this.handleSelectDropdown(e, 'contact')} 
                                             />
                                         </div>
@@ -521,8 +558,8 @@ export class QuestionsBox extends React.Component {
                                             <Select  
                                             className='document field' 
                                             id='document-1' 
-                                            value={this.makeDropdownValue('documents', 'document')} 
-                                            options={this.makeOptions(this.state.documents)} 
+                                            value={this.populateDropdownValue('documents', 'document')} 
+                                            options={makeOptions(this.state.documents)} 
                                             onChange={(e)=>this.handleSelectDropdown(e, 'document')} 
                                             />
                                         </div>
@@ -533,8 +570,8 @@ export class QuestionsBox extends React.Component {
                                             <Select  
                                             className='follow-up field' 
                                             id='follow-up-1'
-                                            value={this.makeDropdownValue('questions', 'follow-up')} 
-                                            options={this.makeOptions(
+                                            value={this.populateDropdownValue('questions', 'follow-up')} 
+                                            options={makeOptions(
                                                 this.state.questions.filter(
                                                     q=>q._id!==this.state.curQuestion._id))} 
                                             onChange={(e)=>this.handleSelectDropdown(e, 'follow-up')} 
@@ -555,21 +592,21 @@ export default QuestionsBox;
 
 
 
-function Response(props) {
+// function Response(props) {
 
-    return(
-        <div className='response'>
-            <input 
-            type='text' 
-            className='response-text' 
-            placeholder='New Response' 
-            num={props.num} 
-            value={props.response} 
-            onChange={(event)=>props.change(event, props.num)}
-            />
-        </div>
-    );
-}
+//     return(
+//         <div className='response'>
+//             <input 
+//             type='text' 
+//             className='response-text' 
+//             placeholder='New Response' 
+//             num={props.num} 
+//             value={props.response} 
+//             onChange={(event)=>props.change(event, props.num)}
+//             />
+//         </div>
+//     );
+// }
 
 function Pattern(props) {
     return(

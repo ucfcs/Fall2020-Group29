@@ -17,13 +17,12 @@
 }
 
 #entity-box {
-    flex:1;
-    height:20%;
+    height:20vh;
 }
 
 #entered-fields {
     display:flex;
-    height: 80%;
+    height: 80vh;
 }
 
 #question-name {
@@ -157,4 +156,21 @@
 
 .field {
     margin:1%;
+}
+
+.invalid-combo {
+    box-shadow: 0 0 0 2px red;
+}
+
+.hide {
+    display:none;
+}
+
+.show {
+    display:block;
+    
+}
+
+.invalid-tags {
+    color:red;
 }
