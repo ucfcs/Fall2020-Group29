@@ -5,15 +5,14 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from .dataset import ChatDataset
+from .dataset import fetch_data
 from .evaluate import evaluate
 from .model import NeuralNet
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import normalize
 from torch.utils.data import DataLoader
 import sys
-
-sys.path.append("/Users/RajPatel/Documents/GitHub/ucf-ai-advising-chatbot/ai")
-from utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
+from .utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
 
 
 def preprocess(data):
@@ -182,11 +181,15 @@ def train_model(data, params, modifier):
     return accuracy
 
 
-def train():
-
+def train(kind='manual', db=None):
+    
     params_file = "params.json"
     with open(params_file) as f:
         params = json.load(f)
+
+    # Fetch the data from the database.
+    if kind == 'auto':
+        fetch_data(db, params)
 
     FLAGS = params["FLAGS"]
 
@@ -237,6 +240,3 @@ def train():
     model_accuracy = total_accuracy / len(accuracies)
 
     print("Model Accuracy:", model_accuracy)
-
-
-train()
