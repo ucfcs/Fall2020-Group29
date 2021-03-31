@@ -248,7 +248,7 @@ def update_contact(Name = 'Mark Heinrich', Title = 'CS Advisor', itemToUpdate = 
 
 ## settings collection ##
 
-# TODO: check
+# checks if there needs training
 @app.route('/needs_update_check', methods=['GET']) 
 def needs_update_check():
   found = mongo.db.settings.find_one({'needs training':True}) 
@@ -258,7 +258,7 @@ def needs_update_check():
 
   return jsonify({'needs training':True}) #return result as json
 
-# TODO: change
+# changes the status of needs training
 @app.route('/set_needs_update', methods=['PUT']) # sets 
 def set_needs_update(set = True):
   updated = mongo.db.settings.find_one_and_update(
@@ -276,6 +276,7 @@ def set_needs_update(set = True):
   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(updated)
+
 
 
 if __name__ == '__main__':
