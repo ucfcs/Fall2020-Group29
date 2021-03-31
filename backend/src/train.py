@@ -5,6 +5,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from .dataset import ChatDataset
+from .dataset import fetch_data
 from .evaluate import evaluate
 from .model import NeuralNet
 from sklearn.model_selection import train_test_split
@@ -180,11 +181,15 @@ def train_model(data, params, modifier):
     return accuracy
 
 
-def train(db):
-
+def train(kind='manual', db=None):
+    
     params_file = "params.json"
     with open(params_file) as f:
         params = json.load(f)
+
+    # Fetch the data from the database.
+    if kind == 'auto':
+        fetch_data(db, params)
 
     FLAGS = params["FLAGS"]
 
