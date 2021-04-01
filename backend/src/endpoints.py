@@ -158,7 +158,7 @@ def update_q():
 
 @app.route("/api/faculty/retrain_model", methods=["GET"])
 def retrain_model():
-    train()
+    train(db=mongo)
     return jsonify(message="Model successfully retrained")
 ####################################################### Dummy Data ####################################################
 
