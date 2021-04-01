@@ -2,8 +2,8 @@ import json
 import torch
 import numpy as np
 import pandas as pd
-from .model import NeuralNet
-from .utils import bag_of_words, tokenize
+from model import NeuralNet
+from utils import bag_of_words, tokenize
 
 
 def predict_tags(device, file_name, trained_model, utterance, num_predictions):
@@ -90,5 +90,14 @@ def predict(utterance):
     predicted_tags["dept"] = tags_dept
     predicted_tags["cat"] = tags_cat
     predicted_tags["info"] = tags_info
+
+    all_probs = [ tags_ints.get(0).get("prob"),
+                  tags_dept.get(0).get("prob"),
+                  tags_cat.get(0).get("prob"),
+                  tags_info.get(0).get("prob") ]
+    
+    total_prob = np.mean(all_probs)
+
+    predicted_tags["total_prob"] = total_prob
 
     return predicted_tags

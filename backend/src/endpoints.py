@@ -7,6 +7,7 @@ from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
 from .database_manager import return_all, update_question, add_question
 from .train import train
+import json
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
@@ -56,13 +57,13 @@ def login():
 @app.route("/api/faculty/get_questions", methods=["GET"])
 def get_questions():
 
-    questions = return_all(mongo, "questions")
+    questions = (json.loads(return_all(mongo, "questions")))
     return jsonify(questions=questions)
 
 @app.route("/api/faculty/get_tags", methods=["GET"])
 def get_tags():
 
-    tags = return_all(mongo, "tags")
+    tags = (json.loads(return_all(mongo, "tags")))
     intent = []
     department = []
     category = []
@@ -98,7 +99,7 @@ def get_tags():
 
 @app.route("/api/faculty/get_contacts", methods=["GET"])
 def get_contacts():
-    cons = return_all(mongo, "contacts")
+    cons = (json.loads(return_all(mongo, "contacts")))
     contacts = []
     for c in cons:
         contacts.append({
@@ -114,7 +115,7 @@ def get_contacts():
 
 @app.route("/api/faculty/get_documents", methods=["GET"])
 def get_documents():
-    files = return_all(mongo, "files")
+    files = (json.loads(return_all(mongo, "files")))
     documents = []
     for f in files:
         documents.append({
