@@ -1,114 +1,20 @@
 import "./App.css";
 import Knugget from "./Knugget.jpg";
 import React, { useState, useEffect, Component } from "react";
-import ChatBot, { Loading } from "react-simple-chatbot";
+import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
-import axios from "axios";
-import PropTypes from "prop-types";
-
-class Result extends Component {
-  constructor(props) {
-    super(props);
-
-    // sets initial states
-    this.state = {
-      loading: true,
-      department: "",
-      category: "",
-      result: "",
-      trigger: false,
-    };
-
-    this.triggetNext = this.triggetNext.bind(this);
-  }
-  async componentDidMount() {
-    const { steps } = this.props;
-    const lookup = steps.userInput.value;
-    const input = { name: lookup };
-    // stores returned data in api_response
-    const api_response = await axios.post(
-      "http://127.0.0.1:5000/api/user-response",
-      input
-    );
-    // set the state to the relevant data it needs to hold
-    this.setState({
-      loading: false,
-      result: api_response.data.answer,
-      department: api_response.data.department,
-      category: api_response.data.category,
-    });
-  }
-  triggetNext() {
-    this.setState({ trigger: true }, () => {
-      this.props.triggerNextStep();
-    });
-  }
-  render() {
-    const { trigger, loading, department, category, result } = this.state;
-    console.log(department);
-    console.log(category);
-    console.log(result);
-    return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: 15,
-          marginTop: 20,
-          marginLeft: 10,
-          marginRight: 10,
-          fontFamily: "Arial",
-          fontSize: "11pt",
-          backgroundColor: "#eee",
-          borderRadius: 25,
-        }}
-      >
-        {loading ? <Loading /> : result}
-        {!loading && (
-          <div
-            style={{
-              textAlign: "center",
-              margin: 20,
-            }}
-          >
-            {!trigger && (
-              <button
-                onClick={() => this.triggetNext()}
-                style={{
-                  backgroundColor: "#ffd700",
-                  borderColor: "#ffd700",
-                  color: "white",
-                  borderWidth: 0,
-                  borderRadius: 50,
-                  height: 20,
-                  fontWeight: "bold",
-                }}
-              >
-                Try again
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  }
-}
-Result.propTypes = {
-  steps: PropTypes.object,
-  triggerNextStep: PropTypes.func,
-};
-
-Result.defaultProps = {
-  steps: undefined,
-  triggerNextStep: undefined,
-};
+import Result from "./Components/Result";
 
 function App(props) {
-  // Dummy Function to return some data to the chatbot
-  function dummy(value) {
-    return "Let me see what I can do to help with " + value;
-  }
-  let nextResponse = "Understandable, have a nice day!";
+  // const [count, setCount] = useState(0);
 
+  // Dummy Function to return some data to the chatbot
+  const dummy = (value) => {
+    return "Let me see what I can do to help with " + value;
+  };
+
+  let nextResponse = "Understandable, have a nice day!";
+  // setCount(34);
   const config = {
     width: "300px",
     height: "400px",
@@ -129,12 +35,12 @@ function App(props) {
     {
       id: "2",
       options: [
-        { value: 1, label: "Yes", trigger: "3" },
+        { value: 1, label: "Yes", trigger: "More Help" },
         { value: 2, label: "No", trigger: "4" },
       ],
     },
     {
-      id: "3",
+      id: "More Help",
       message: "How can I help?",
       trigger: "userInput",
     },
@@ -160,7 +66,28 @@ function App(props) {
       id: "7",
       component: <Result />,
       waitAction: true,
-      trigger: "3",
+      trigger: "More Help",
+    },
+
+    {
+      id: "Even More Help",
+      message: "Is there something else I can assist you with?",
+      trigger: "help options",
+    },
+
+    {
+      id: "help options",
+      // message: "Heloooo",
+      options: [
+        { value: 1, label: "Yes", trigger: "More Help" },
+        { value: 2, label: "No", trigger: "Thank you" },
+      ],
+    },
+    {
+      id: "Thank you",
+      message: "Perfect! Glad I could help!",
+      // trigger: "Feedback",
+      end: true,
     },
   ];
 
