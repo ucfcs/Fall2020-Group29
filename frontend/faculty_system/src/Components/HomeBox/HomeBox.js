@@ -1,47 +1,108 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ContentBox } from './ContentBox/boxes';
+import {retrain} from './home'
+import {confirmAlert} from 'react-confirm-alert';
 import './homebox.css';
 
-export function HomeBox () {
+export class HomeBox extends React.Component {
 
-    const [selection, setSelection] = useState('navbox-questions');
-    const [selectedNode, setSelectedNode] = useState('');
+    constructor(props) {
+        super(props);
 
-    function changeSelected(event) {
+        this.changeSelected = this.changeSelected.bind(this);
+        this.handleRetrain = this.handleRetrain.bind(this);
+        this.handleUpdateTrain = this.handleUpdateTrain.bind(this);
+
+        this.state = {
+            selection: 'navbox-questions',
+            selectedNode: '',
+            needsTraining: 'Fully Trained'
+        }
+    }
+
+    changeSelected(event) {
 
         event.preventDefault();
-        console.log(selectedNode);
+        console.log(this.state.selectedNode);
         
 
-        let item = selectedNode;
+        let item = this.state.selectedNode;
         if (item === '') {
             item = document.getElementById('navbox-questions')
         }
         item.className = 'navbox';
         item.selected = false;
-
-        setSelection(event.target.id);
-        setSelectedNode(event.target);
-        event.target.className = 'navbox selected';
-        event.target.selected = true;
+        this.setState({selection:event.target.id, selected:event.target}, ()=> {
+            event.target.className = 'navbox selected';
+            event.target.selected = true;
+        });        
     }
 
-    return (
-        <div id='home-box'>
-            <div id='navbar'>
-                <div id='nav-header'>
+    handleRetrain(event) {
+        event.preventDefault();
+        if (this.state.needsTraining === 'Needs Training') {
+            confirmAlert({
+                title: 'Do you want to retrain the system?',
+                message: '',
+                buttons: [
+                    {
+                        label: 'Yes, retrain',
+                        onClick: ()=>{
+                            this.setState({needsTraining:'Training Now'}, ()=>{
+                                retrain((res)=> {
+                                    alert(res.message);
+                                    if (res.trained) {
+                                        this.setState({needsTraining:'Fully Trained'});
+                                    } else {
+                                        this.setState({needsTraining:'Needs Training'});
+                                    }
+                                });
+                            }); 
+                        }
+                    },
+                    {
+                        label: 'No, don\'t retrain yet',
+                        onClick: ()=>{}
+                    }
+                ]
+            })      
+        }
+    }
+
+    handleUpdateTrain(value) {
+        this.setState({needsTraining:value});
+    }
+
+    render() {
+        return (
+            <div id='home-box'>
+                <div id='sidebox'>
+                    <div id='navbar'>
+                        <div id='nav-header'>
                     
+                        </div>
+                        <NavBox sectionName='Questions' selected={true}  clicked={this.changeSelected}/>
+                        <NavBox sectionName='Tags' selected={false} clicked={this.changeSelected} />
+                        <NavBox sectionName='Contacts' selected={false} clicked={this.changeSelected} />
+                        <NavBox sectionName='Documents' selected={false} clicked={this.changeSelected} />
+                        <NavBox sectionName='Users' selected={false} clicked={this.changeSelected} />
+                        <NavBox sectionName='Statistics' selected={false} clicked={this.changeSelected} />
+                    </div>
+                    <div 
+                        className={'button train-button ' + ({
+                            'Needs Training': 'need-training',
+                            'Training Now': 'training',
+                            'Fully Trained': 'trained'
+                        }[this.state.needsTraining])}
+                        onClick={this.handleRetrain}
+                    >
+                        {this.state.needsTraining}
+                    </div>
                 </div>
-                <NavBox sectionName='Questions' selected={true}  clicked={changeSelected} />
-                <NavBox sectionName='Tags' selected={false} clicked={changeSelected} />
-                <NavBox sectionName='Contacts' selected={false} clicked={changeSelected} />
-                <NavBox sectionName='Documents' selected={false} clicked={changeSelected} />
-                <NavBox sectionName='Users' selected={false} clicked={changeSelected} />
-                <NavBox sectionName='Statistics' selected={false} clicked={changeSelected} />
+                <ContentBox selection={this.state.selection} updateTrain={this.handleUpdateTrain}/>
             </div>
-            <ContentBox selection={selection} />
-        </div>
-    );
+        );
+    }
 }
 
 export default HomeBox;

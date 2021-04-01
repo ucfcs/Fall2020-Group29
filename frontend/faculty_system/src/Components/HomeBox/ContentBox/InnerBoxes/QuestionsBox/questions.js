@@ -1,4 +1,3 @@
-import {isEqual} from 'lodash';
 // export class Question {
 //     constructor(id, name, patterns, entities, responses) {
 
@@ -143,12 +142,13 @@ export function saveQuestion(question, callback) {
   
 }
 
-export function saveQuestionAndTrain(question, callback) {
+export function saveQuestionAndTrain(question, update, callback) {
   let call = '';
   let method = '';
   let succMessage = '';
   let hasFields = hasAllFields(question);
-    
+  let saved = false;
+  console.log(update);
   if (!hasFields.hasFields) {
     callback(
       {
@@ -183,12 +183,37 @@ export function saveQuestionAndTrain(question, callback) {
         res.json().then((res)=> {
           let q = res['question'];
           formatQuestion(q);
+          saved = true;
           callback(
             {
               success: true,
               message: succMessage,
               question: q
             });
+
+            if (saved===true) {
+              update('Training Now');
+              options = {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': window.sessionStorage.getItem('token')
+                }
+              };
+        
+              fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+              .then((res)=> {
+                if (res.status===200) {
+                  res.json().then((res)=> {
+                    update('Fully Trained');
+                    alert(res['message']);
+                  });
+                } else {
+                  update('Needs Training');
+                  alert('Error: System could not be retrained.');
+                }
+              });
+          }
         });
       } else {
         res.json().then((res)=> {
@@ -199,27 +224,7 @@ export function saveQuestionAndTrain(question, callback) {
             });
         });
       }
-    });
-
-    options = {
-      method: 'GET',
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': window.sessionStorage.getItem('token')
-      }
-    };
-
-    fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
-    .then((res)=> {
-      if (res.status===200) {
-        res.json().then((res)=> {
-          alert(res['message']);
-        });
-      } else {
-        alert('Error: System could not be retrained.');
-      }
-    });
-  
+    });  
 }
 
 

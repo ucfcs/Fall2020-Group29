@@ -21,6 +21,7 @@ export class QuestionsBox extends React.Component {
 
     constructor(props) {
         super(props);
+        console.log(props);
         
         this.hasChanges = this.hasChanges.bind(this);
         this.hasTrainableChanges = this.hasTrainableChanges.bind(this);
@@ -293,13 +294,14 @@ export class QuestionsBox extends React.Component {
         event.preventDefault();
         if (this.canSave()) {
             if (this.hasTrainableChanges()) {
+                console.log(this.props.updateTrain);
                 confirmAlert({
                     title:'You\'ve made changes which require the system to be retrained.',
                     message: 'Would you like to save your changes and retrain now?',
                     buttons: [
                         {
                             label: 'Save and Retrain',
-                            onClick: ()=> saveQuestionAndTrain(this.state.curQuestion, response=> {
+                            onClick: ()=> saveQuestionAndTrain(this.state.curQuestion, this.props.updateTrain, response=> {
                                 if (response.success) {
                                     let questions = this.state.questions;
                                     let question = questions.filter(q=>
@@ -336,6 +338,7 @@ export class QuestionsBox extends React.Component {
                                     this.setState({questions:questions, needsTraining:true}, ()=> {
                                         window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                         alert(response.message + '\n Please Remember to retrain the system before you log out.');
+                                        this.props.updateTrain('Needs Training');
                                     });
                                 } else {
                                     console.error(response.message);
