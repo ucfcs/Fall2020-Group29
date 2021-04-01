@@ -16,7 +16,6 @@ class ChatDataset(Dataset):
     def __len__(self):
         return self.n_samples
 
-
 def fetch_data(db, params):
     
     # Fetch the data from the database.
