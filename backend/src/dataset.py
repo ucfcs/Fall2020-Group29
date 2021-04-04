@@ -2,6 +2,7 @@ from torch.utils.data import Dataset
 from .database_manager import return_all
 import json
 import pandas as pd
+from flask import jsonify
 
 class ChatDataset(Dataset):
 
@@ -19,7 +20,7 @@ class ChatDataset(Dataset):
 def fetch_data(db, params):
     
     # Fetch the data from the database.
-    raw_data = return_all(db)
+    raw_data = jsonify(return_all(db))
 
     data_ints = []
     data_dept = []

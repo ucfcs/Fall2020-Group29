@@ -57,13 +57,13 @@ def login():
 @app.route("/api/faculty/get_questions", methods=["GET"])
 def get_questions():
 
-    questions = (json.loads(return_all(mongo, "questions")))
+    questions = return_all(mongo, "questions")
     return jsonify(questions=questions)
 
 @app.route("/api/faculty/get_tags", methods=["GET"])
 def get_tags():
 
-    tags = (json.loads(return_all(mongo, "tags")))
+    tags = return_all(mongo, "tags")
     intent = []
     department = []
     category = []
@@ -99,7 +99,7 @@ def get_tags():
 
 @app.route("/api/faculty/get_contacts", methods=["GET"])
 def get_contacts():
-    cons = (json.loads(return_all(mongo, "contacts")))
+    cons = return_all(mongo, "contacts")
     contacts = []
     for c in cons:
         contacts.append({
@@ -115,7 +115,7 @@ def get_contacts():
 
 @app.route("/api/faculty/get_documents", methods=["GET"])
 def get_documents():
-    files = (json.loads(return_all(mongo, "files")))
+    files = return_all(mongo, "files")
     documents = []
     for f in files:
         documents.append({
@@ -169,9 +169,8 @@ def get_dummy_questions():
     return jsonify(questions=[
             {
             "_id":1,
-            "number":1,
             "name":"Question 1",
-            "responses":["Response 1"],
+            "response":"Response 1",
             "patterns":["Pattern number 1", "Pattern number 2"],
             "tags":{
                 "intent": "Advising",
@@ -183,9 +182,8 @@ def get_dummy_questions():
             },
             {
             "_id":2,
-            "number":2,
             "name":"Question 2", 
-            "responses":["Response 2", "Response 3"], 
+            "response":"Response 2", 
             "patterns":["Pattern number 3", "Pattern number 4"],
             "tags":{
                 "intent": "CECS",

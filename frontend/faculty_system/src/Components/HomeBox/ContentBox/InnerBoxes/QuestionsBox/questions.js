@@ -7,7 +7,7 @@
 export const defaultQuestion = {
   '_id': '',
   'name': '',
-  'responses': [''],
+  'response': '',
   'patterns': [],
   'tags': {
     'intent': '',
@@ -19,7 +19,7 @@ export const defaultQuestion = {
 
 const requiredFields = [
   'name',
-  'responses', 
+  'response', 
   'patterns', 
   'tags'
 ];

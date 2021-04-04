@@ -170,24 +170,21 @@ export class QuestionsBox extends React.Component {
         let dis = questions.filter(q=> {
             let contained = q.name.toLowerCase().includes(event.target.value.toLowerCase())
             if (!contained) {
-                q.responses.forEach(r=> {
-                    if (r.toLowerCase().includes(event.target.value.toLowerCase())) {
-                        contained = true;
-                        return contained;
-                    }
-                })
+                if (q.response.toLowerCase().includes(event.target.value.toLowerCase())) {
+                    contained = true;
+                }
             }
             return contained; 
         });
         this.setState({displayedQuestions: dis});
     }
 
-    changeResponse(event, num) {
+    changeResponse(event) {
         event.preventDefault();
         let question = this.state.curQuestion;
-        let responses = question.responses;
-        responses[num] = event.target.value;
-        question.responses = responses;
+        let response = question.responses;
+        response= event.target.value;
+        question.response = response;
         this.setState({curQuestion:question});
     }
 
@@ -439,7 +436,7 @@ export class QuestionsBox extends React.Component {
                              }}
                              />
                             <div 
-                                className={'button save-button ' + (this.hasChanges() ? "selectable" : "non-selectable")}
+                                className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
                                 onClick={this.handleSave}
                             >
                                  Save Changes
@@ -521,8 +518,8 @@ export class QuestionsBox extends React.Component {
                                         <h2>Response to Question</h2>
                                         <textarea 
                                             id='response'
-                                            value={this.state.curQuestion.responses[0]} 
-                                            onChange={(e)=> this.changeResponse(e, 0)} 
+                                            value={this.state.curQuestion.response} 
+                                            onChange={this.changeResponse} 
                                         />
                                     </div>
                                     <div id='patterns-box'>

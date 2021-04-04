@@ -24,7 +24,7 @@ def return_all(mongo, Collection = 'questions'):
     i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
     list.append(i)
 
-  return jsonify(list) #return result 
+  return list #return result 
 
 def add_question(mongo, question):
   exists, q_name = check_exists(mongo, '', question['tags'])
