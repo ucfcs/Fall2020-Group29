@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 import React from 'react';
 import Select from 'react-select';
 import SelectionBox from '../SelectionBox';
@@ -15,6 +15,7 @@ export class TagsBox extends React.Component {
         this.selectType = this.selectType.bind(this);
         this.filterSearch = this.filterSearch.bind(this);
         this.handleSelectType = this.handleSelectType.bind(this);
+        this.hasValidChanges = this.hasValidChanges.bind(this);
 
         this.state = {
             selected:null,
@@ -57,7 +58,11 @@ export class TagsBox extends React.Component {
     selectItem(event, item) {
         event.preventDefault();
         if (this.state.curTag._id !==item._id) {
-            this.setState({curTag:cloneDeep(item)}, ()=>console.log(this.state.curTag));
+            let tag = cloneDeep(item);
+            if (isEqual(tag, defaultTag)) {
+                tag.type = this.state.curType === 'all' ? '' : this.state.curType;
+            }
+            this.setState({curTag:tag});
         }
     }
 
@@ -88,6 +93,22 @@ export class TagsBox extends React.Component {
         let tag = this.state.curTag;
         tag.type = event.value;
         this.setState({curTag:cloneDeep(tag)});
+    }
+
+    hasValidChanges() {
+        let tags = this.state.tags[this.state.curTag.type];
+        if (tags === undefined) {
+            return true;
+        } else {
+            let check = tags.filter(t=>{
+                return t.name === this.state.curTag.name;
+            })[0]
+            if (check !== undefined) {
+                return check._id === this.state.curTag._id;
+            } else {
+                return true;
+            }
+        }
     }
 
     render() {
@@ -150,7 +171,7 @@ export class TagsBox extends React.Component {
                             </label>
                             <input 
                             type='text' 
-                            className='tag-name' 
+                            className={'tag-name' + (this.hasValidChanges() ? '' : ' invalid')} 
                             id='tag-name' 
                             value={this.state.curTag.name} 
                             onChange={(e)=>{

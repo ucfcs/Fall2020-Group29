@@ -30,12 +30,7 @@ export class HomeBox extends React.Component {
         if (item === '') {
             item = document.getElementById('navbox-questions')
         }
-        item.className = 'navbox';
-        item.selected = false;
-        this.setState({selection:event.target.id, selected:event.target}, ()=> {
-            event.target.className = 'navbox selected';
-            event.target.selected = true;
-        });        
+        this.setState({selection:event.target.id, selected:event.target});        
     }
 
     handleRetrain(event) {
@@ -81,12 +76,36 @@ export class HomeBox extends React.Component {
                         <div id='nav-header'>
                     
                         </div>
-                        <NavBox sectionName='Questions' selected={true}  clicked={this.changeSelected}/>
-                        <NavBox sectionName='Tags' selected={false} clicked={this.changeSelected} />
-                        <NavBox sectionName='Contacts' selected={false} clicked={this.changeSelected} />
-                        <NavBox sectionName='Documents' selected={false} clicked={this.changeSelected} />
-                        <NavBox sectionName='Users' selected={false} clicked={this.changeSelected} />
-                        <NavBox sectionName='Statistics' selected={false} clicked={this.changeSelected} />
+                        <NavBox 
+                            sectionName='Questions' 
+                            selected={this.state.selection === 'navbox-questions'}  
+                            clicked={this.changeSelected}
+                        />
+                        <NavBox 
+                            sectionName='Tags' 
+                            selected={this.state.selection === 'navbox-tags'} 
+                            clicked={this.changeSelected} 
+                        />
+                        <NavBox 
+                            sectionName='Contacts' 
+                            selected={this.state.selection === 'navbox-contacts'} 
+                            clicked={this.changeSelected} 
+                        />
+                        <NavBox 
+                            sectionName='Documents' 
+                            selected={this.state.selection === 'navbox-documents'} 
+                            clicked={this.changeSelected} 
+                        />
+                        <NavBox 
+                            sectionName='Users' 
+                            selected={this.state.selection === 'navbox-users'} 
+                            clicked={this.changeSelected} 
+                        />
+                        <NavBox 
+                            sectionName='Statistics' 
+                            selected={this.state.selection === 'navbox-statistics'} 
+                            clicked={this.changeSelected} 
+                        />
                     </div>
                     <div 
                         className={'button train-button ' + ({
