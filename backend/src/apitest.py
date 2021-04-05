@@ -292,11 +292,11 @@ def update_contact(name = 'Mark Heinrich', title = 'CS Advisor', itemToUpdate = 
 # TODO: delete
 
 
-## entities collection ##
+## tags collection ##
 
-# TODO: create 
+# TODO: create - tag name & tag type
 
-# TODO: search entity
+# TODO: search tags
 
 # TODO: search a triplet of entities
 
