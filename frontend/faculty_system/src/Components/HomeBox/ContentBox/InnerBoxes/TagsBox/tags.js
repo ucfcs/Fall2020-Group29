@@ -5,6 +5,8 @@ export const defaultTag = {
   type: ''
 }
 
+export const tagTypes = ['intent', 'department', 'category', 'information']
+
 
 
 export function getTags(callback) {
