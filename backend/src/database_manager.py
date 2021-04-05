@@ -12,8 +12,8 @@ def get_intents():
         }
     ])
 
-def return_all(mongo, collection='questions'):
-  found = mongo.db[collection].find({})
+def return_all(mongo, Collection = 'questions'):
+  found = mongo.db[Collection].find({})
   
   if (found is None): # if it comes back empty
     return jsonify({'result':'no results'})
@@ -26,14 +26,19 @@ def return_all(mongo, collection='questions'):
 
   return list #return result 
 
-def add_question(mongo, name, responses, tags, patterns):
-  new_question = {'name': name, 'responses': responses, 'tags':tags, 'patterns': patterns}
+def add_question(mongo, question):
+  exists, q_name = check_exists(mongo, '', question['tags'])
+
+  if exists:
+    return None, q_name
+  
+  new_question = question
   # insert_one() doesn't return a document, it returns a result that contains the ObjectID
   InsertOneResult_Obj = mongo.db.questions.insert_one(new_question)
   # append new_question with the ObjectID (as a string) so that we can actually return something that resembles a document :/
   new_question.update({'_id':str(InsertOneResult_Obj.inserted_id)}) 
  
-  return jsonify(new_question)
+  return new_question, ''
 
 
 def update_question(mongo, id, update_dict):
