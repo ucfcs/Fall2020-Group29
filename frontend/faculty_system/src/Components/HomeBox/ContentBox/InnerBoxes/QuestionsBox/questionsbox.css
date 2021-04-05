@@ -5,13 +5,6 @@
     text-align: center;
 }
 
-#selection-header {
-    height:10%;
-    display:flex;
-    align-items: center;
-    justify-content: center;
-}
-
 #question-content {
     height:88%;
 }
@@ -79,26 +72,6 @@
 
 .new-question-text {
     flex:7;
-}
-
-.plus-select {
-    flex:1;
-    font-weight: bold;
-    font-size: xx-large;
-    margin-right: 5%;
-    cursor: pointer;
-}
-
-.plus {
-    float: left;
-    font-weight: bold;
-    font-size: xx-large;
-    margin-left: 5%;
-    cursor: pointer;
-    border:1px solid black;
-    height: 25px;
-    padding:0 2px 2px 2px;
-    line-height: 18px;
 }
 
 .response {

@@ -46,6 +46,13 @@ p {
     border-bottom: 1px solid black;
 }
 
+#selection-header {
+    height:10%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .navbox {
     overflow: hidden;
     text-align: center;
@@ -180,4 +187,24 @@ p {
     -moz-box-shadow: 0 0 0 1px black;
     -webkit-box-shadow: 0 0 0 1px black;
     border: 1px solid black;
+}
+
+.plus-select {
+    flex:1;
+    font-weight: bold;
+    font-size: xx-large;
+    margin-right: 5%;
+    cursor: pointer;
+}
+
+.plus {
+    float: left;
+    font-weight: bold;
+    font-size: xx-large;
+    margin-left: 5%;
+    cursor: pointer;
+    border:1px solid black;
+    height: 25px;
+    padding:0 2px 2px 2px;
+    line-height: 18px;
 }

@@ -2,6 +2,7 @@ import { cloneDeep } from 'lodash';
 import React from 'react';
 import SelectionBox from '../SelectionBox';
 import { defaultTag, getTags } from './tags';
+import './tagsbox.css';
 
 export class TagsBox extends React.Component {
 
@@ -68,24 +69,25 @@ export class TagsBox extends React.Component {
     render() {
         return (
             <>
-                <div id='selection-wrapper'>
-                    <div className='section-title'>
-                        Tags
-                    </div>
-                    <div id='search-bar'>
-                        <input type='text' placeholder='Search' onChange={this.filterSearch}/>
-                    </div>
-                    <SelectionBox 
-                    name='tags' 
-                    content={this.state.displayedTags}
-                    titles={this.state.displayedTags.map(tag=>({
-                        title:tag.name,
-                        name:tag.type
-                    }))}
-                    update={this.selectItem} 
-                    curItem={this.state.curTag}
-                    />
-                    <div id='new-tag-selection'>
+                <div id="content-wrapper">
+                    <div id='selection-wrapper'>
+                        <div className='section-title'>
+                            Tags
+                        </div>
+                        <div id='search-bar'>
+                            <input type='text' placeholder='Search' onChange={this.filterSearch}/>
+                        </div>
+                        <SelectionBox 
+                        name='tags' 
+                        content={this.state.displayedTags}
+                        titles={this.state.displayedTags.map(tag=>({
+                            title:tag.name,
+                            name:tag.type
+                        }))}
+                        update={this.selectItem} 
+                        curItem={this.state.curTag}
+                        />
+                        <div id='new-tag-selection'>
                             <p className='new-tag-text'>
                                 Add New Tag
                             </p>
@@ -93,11 +95,31 @@ export class TagsBox extends React.Component {
                                 +
                             </div>
                         </div>
-                </div>
-                <div id='content'>
-                
+                    </div>
+                    <div id='content'>
+                        <div id='selection-header'>
+                            <label id='tag-label' htmlFor='tag-name'>
+                                Tag Name
+                            </label>
+                            <input 
+                            type='text' 
+                            className='tag-name' 
+                            id='tag-name' 
+                            value={this.state.curTag.name} 
+                            onChange={(e)=>{
+                                e.preventDefault();
+                                let tag = this.state.curTag;
+                                tag.name = e.target.value;
+                                this.setState({curTag:tag});
+                             }}
+                             />
+                        </div>
+                        <div id='tag-content'>
+
+                        </div>
+                    </div>
                 </div>
             </>
-        )
+        );
     }
 }
