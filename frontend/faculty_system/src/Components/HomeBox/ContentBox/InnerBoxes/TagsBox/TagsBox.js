@@ -63,8 +63,8 @@ export class TagsBox extends React.Component {
 
     selectType(event, item) {
         event.preventDefault();
-        if (this.state.curType !== item) {
-            this.setState({curType:item}, ()=>{
+        if (this.state.curType !== item.name) {
+            this.setState({curType:item.name}, ()=>{
                 let tags = this.concatTags();
                 let dis = tags.filter(t=>{
                     return this.state.curType === 'all' || t.type === this.state.curType;
@@ -101,13 +101,19 @@ export class TagsBox extends React.Component {
                             </div>
                             <SelectionBox 
                             name='tag-types' 
-                            content={['all'].concat(tagTypes)}
+                            content={['all'].concat(tagTypes).map((tag, index)=>({
+                                _id:index,
+                                name:tag
+                            }))}
                             titles={['all'].concat(tagTypes).map(tag=>({
                                 title:tag,
                                 name:''
                             }))}
                             update={this.selectType}
-                            curItem={this.state.curType}
+                            curItem={{
+                                _id:this.state.curType === 'all' ? 0 : (tagTypes.indexOf(this.state.curType) + 1),
+                                name:this.state.curType
+                            }}
                             />
                         </div>
                         <div id='tag-selection'>
