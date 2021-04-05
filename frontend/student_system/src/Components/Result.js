@@ -66,6 +66,12 @@ class Result extends Component {
     });
   }
 
+  triggerSorryThankYou() {
+    this.setState({ trigger: true }, () => {
+      this.props.triggerNextStep({ trigger: "Sorry Thank you" });
+    });
+  }
+
   // Renders the answer display box in the chatbot
   render() {
     // the constants that are passed in the render (state values)
@@ -112,6 +118,7 @@ class Result extends Component {
                         borderRadius: 50,
                         height: 30,
                         margin: 10,
+                        width: 35,
                         fontWeight: "bold",
                       }}
                     >
@@ -129,7 +136,7 @@ class Result extends Component {
                         borderRadius: 50,
                         height: 30,
                         margin: 10,
-                        width: 30,
+                        width: 35,
                         fontWeight: "bold",
                       }}
                     >
@@ -178,7 +185,9 @@ class Result extends Component {
                         color: "white",
                         borderWidth: 0,
                         borderRadius: 50,
-                        height: 20,
+                        height: 30,
+                        margin: 10,
+                        width: 35,
                         fontWeight: "bold",
                       }}
                     >
@@ -187,14 +196,16 @@ class Result extends Component {
                   )}
                   {!trigger && (
                     <button
-                      onClick={() => this.triggerThankYou()}
+                      onClick={() => this.triggerMoreHelp()}
                       style={{
                         backgroundColor: "#ffd700",
                         borderColor: "#ffd700",
                         color: "white",
                         borderWidth: 0,
                         borderRadius: 50,
-                        height: 20,
+                        height: 30,
+                        margin: 10,
+                        width: 35,
                         fontWeight: "bold",
                       }}
                     >
@@ -246,7 +257,9 @@ class Result extends Component {
                         color: "white",
                         borderWidth: 0,
                         borderRadius: 50,
-                        height: 20,
+                        height: 30,
+                        margin: 10,
+                        width: 35,
                         fontWeight: "bold",
                       }}
                     >
@@ -262,7 +275,9 @@ class Result extends Component {
                         color: "white",
                         borderWidth: 0,
                         borderRadius: 50,
-                        height: 20,
+                        height: 30,
+                        margin: 10,
+                        width: 35,
                         fontWeight: "bold",
                       }}
                     >
@@ -314,7 +329,9 @@ class Result extends Component {
                     color: "white",
                     borderWidth: 0,
                     borderRadius: 50,
-                    height: 20,
+                    height: 30,
+                    margin: 10,
+                    width: 35,
                     fontWeight: "bold",
                   }}
                 >
@@ -323,14 +340,16 @@ class Result extends Component {
               )}
               {!trigger && (
                 <button
-                  onClick={() => this.triggerThankYou()}
+                  onClick={() => this.triggerSorryThankYou()}
                   style={{
                     backgroundColor: "#ffd700",
                     borderColor: "#ffd700",
                     color: "white",
                     borderWidth: 0,
                     borderRadius: 50,
-                    height: 20,
+                    height: 30,
+                    margin: 10,
+                    width: 35,
                     fontWeight: "bold",
                   }}
                 >

@@ -89,6 +89,11 @@ function App(props) {
       // trigger: "Feedback",
       end: true,
     },
+    {
+      id: "Sorry Thank you",
+      message: "I am Sorry, I wish I could be of more help.",
+      end: true,
+    },
   ];
 
   const theme = {
