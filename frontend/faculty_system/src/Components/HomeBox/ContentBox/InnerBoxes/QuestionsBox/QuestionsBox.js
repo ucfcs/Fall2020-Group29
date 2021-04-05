@@ -1,20 +1,30 @@
 import React from 'react';
 import SelectionBox from '../SelectionBox';
 import './questionsbox.css';
-import arrowB from '../images/sidearrow_b.png';
-import arrowG from '../images/sidearrow_g.png';
-import {getQuestions} from './questions';
+import {
+    getQuestions, 
+    saveQuestion, 
+    defaultQuestion, 
+    fieldsRequiringTraining, 
+    makeOptions, 
+    saveQuestionAndTrain
+} from './questions';
 import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
 import {getDocuments} from '../DocumentsBox/documents';
 import Select from 'react-select';
-import {cloneDeep} from 'lodash';
+import {confirmAlert} from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import {cloneDeep, isEqual} from 'lodash';
 
 export class QuestionsBox extends React.Component {
 
     constructor(props) {
         super(props);
+        console.log(props);
         
+        this.hasChanges = this.hasChanges.bind(this);
+        this.hasTrainableChanges = this.hasTrainableChanges.bind(this);
         this.selectItem = this.selectItem.bind(this);
         this.filterSearch = this.filterSearch.bind(this);
         this.changeResponse = this.changeResponse.bind(this);
@@ -23,32 +33,25 @@ export class QuestionsBox extends React.Component {
         this.changePattern = this.changePattern.bind(this);
         this.addPattern = this.addPattern.bind(this);
         this.handleSelectTag = this.handleSelectTag.bind(this);
-        this.handleSelectFollowUp = this.handleSelectFollowUp.bind(this);
-        this.makeOptions = this.makeOptions.bind(this);
+        this.makeTagValue = this.makeTagValue.bind(this);
+        this.handleSelectDropdown = this.handleSelectDropdown.bind(this);
+        this.populateDropdownValue = this.populateDropdownValue.bind(this);
+        this.hasValidTags = this.hasValidTags.bind(this);
+        this.canSave = this.canSave.bind(this);
+        this.handleSave = this.handleSave.bind(this);
 
         this.state = {
-            selected:null,
+            needsTraining: false,
+            hasChanges: false,
             questions:[],
             displayedQuestions:[],
-            curQuestion:{
-                'id': -1,
-                'name': '',
-                'responses': [],
-                'patterns': [],
-                'tags': {
-                    'intent': '',
-                    'department': '',
-                    'category': '',
-                    'information': ''
-                }
-            },
+            curQuestion: cloneDeep(defaultQuestion),
             tags:{
-                'intents': [],
-                'entities': {
-                    'category': [],
-                    'department': [],
-                    'information': []
-                }
+                'intent': [],
+                'category': [],
+                'department': [],
+                'information': []
+
             },
 
             intentList: [],
@@ -68,58 +71,97 @@ export class QuestionsBox extends React.Component {
     componentDidMount() {
 
         getQuestions((questions)=> {
-            console.log(questions);
             this.setState({
                 questions:questions,
-                displayedQuestions:questions,
-                curQuestion: cloneDeep(questions[0])
+                displayedQuestions:questions
             });
         });
 
         getTags((tags)=> {
             this.setState({tags:tags}, ()=> {
                 this.setState({
-                    intentList: this.state.tags.intents.map(int => ({
-                         'value':int.id,
+                    intentList: this.state.tags.intent.map(int => ({
+                         'value':int._id,
                          'label':int.name
                     })),
-                    departmentList: this.state.tags.entities.department.map(dept => ({
-                         'value':dept.id,
+                    departmentList: this.state.tags.department.map(dept => ({
+                         'value':dept._id,
                          'label':dept.name
                     })),
-                    categoryList: this.state.tags.entities.category.map(cat => ({
-                         'value':cat.id,
+                    categoryList: this.state.tags.category.map(cat => ({
+                         'value':cat._id,
                          'label':cat.name
                     })),
-                    infoList: this.state.tags.entities.information.map(info => ({
-                         'value':info.id,
+                    infoList: this.state.tags.information.map(info => ({
+                         'value':info._id,
                          'label':info.name
                     }))
-                })
-            })
+                });
+            });
         });
 
-        getContacts((contacts)=> this.setState({contacts:contacts}));
+        getContacts((contacts)=> {
+            this.setState({contacts:contacts});
+        });
 
-        getDocuments((documents)=> this.setState({documents:documents}));
+        getDocuments((documents)=> {
+            this.setState({documents:documents});
+        });
+    }
+
+    hasChanges() {
+        if (this.state.curQuestion._id === '') {
+            return !isEqual(defaultQuestion, this.state.curQuestion);
+        } else {
+            let question = this.state.questions.filter(q=>
+                q._id === this.state.curQuestion._id)[0];
+            return !isEqual(question, this.state.curQuestion);
+        }
+    }
+
+    hasTrainableChanges() {
+        
+        if (this.state.curQuestion._id === '') {
+        /*
+            If the question is a new one, it has to be changed regardless. 
+            If it has changes, they're trainable ones.
+        */
+            return this.hasChanges();
+        } else {
+            let trainableChanges = false;
+            let question = this.state.questions.filter(q=>
+                q._id === this.state.curQuestion._id)[0];
+            fieldsRequiringTraining.forEach(field=> {
+                if (!isEqual(question[field], this.state.curQuestion[field])) {
+                    trainableChanges = true;
+                }
+            });
+            return trainableChanges;
+        }
+        
     }
 
     selectItem(event, item) {
         event.preventDefault();
-        if (this.state.selected !== event.target) {
-            if (this.state.selected !== null) {
-                this.state.selected.setAttribute('src', arrowB);
-                let selectedParent = this.state.selected.parentNode;
-                selectedParent.parentNode.className = 'selection-option';
+        if (this.state.curQuestion._id !== item._id) {
+            if (this.hasChanges()) {
+                confirmAlert({
+                    title:"You have unsaved changes",
+                    message: "Do you want to leave without saving your changes?",
+                    buttons: [
+                        {
+                            label: "Yes",
+                            onClick: ()=>this.setState({curQuestion: cloneDeep(item), hasChanges:false}) 
+                        },
+                        {
+                            label: "No",
+                            onClick: ()=>{}
+                        }
+                    ]
+                    })
+            } else {
+                this.setState({curQuestion: cloneDeep(item), hasChanges:false});
             }
-
-            this.setState({
-             selected: event.target,
-             curQuestion: cloneDeep(item)}, ()=> {
-                let parent = event.target.parentNode;
-                event.target.setAttribute('src', arrowG);
-                parent.parentNode.className = 'selected-option';
-            });
         }
     }
 
@@ -128,24 +170,21 @@ export class QuestionsBox extends React.Component {
         let dis = questions.filter(q=> {
             let contained = q.name.toLowerCase().includes(event.target.value.toLowerCase())
             if (!contained) {
-                q.responses.forEach(r=> {
-                    if (r.toLowerCase().includes(event.target.value.toLowerCase())) {
-                        contained = true;
-                        return contained;
-                    }
-                })
+                if (q.response.toLowerCase().includes(event.target.value.toLowerCase())) {
+                    contained = true;
+                }
             }
             return contained; 
         });
         this.setState({displayedQuestions: dis});
     }
 
-    changeResponse(event, num) {
+    changeResponse(event) {
         event.preventDefault();
         let question = this.state.curQuestion;
-        let responses = question.responses;
-        responses[num] = event.target.value;
-        question.responses = responses;
+        let response = question.responses;
+        response= event.target.value;
+        question.response = response;
         this.setState({curQuestion:question});
     }
 
@@ -183,24 +222,169 @@ export class QuestionsBox extends React.Component {
 
     handleSelectTag(e, tag) {
         let question = this.state.curQuestion;
-        question.tags[tag] = e.value;
-        this.setState({curQuestion:question})
+        question.tags[tag] = e.label;
+        this.setState({curQuestion:question});
     }
 
-    handleSelectFollowUp(e) {
+    makeTagValue(key) {
+        if (this.state.curQuestion.tags[key] === '') {
+            return '';
+        } else {
+            return {
+                value:(()=> {
+                    let tag = this.state.tags[key].filter(t=>
+                    t.name === this.state.curQuestion.tags[key])[0]
+                    return tag === undefined ? '':tag._id
+                })(),
+                label:this.state.curQuestion.tags[key]
+            };
+        }
+    }
+
+    handleSelectDropdown(e, key) {
         let question = this.state.curQuestion;
-        question['follow-up'] = e.value;
-        console.log(e.value);
-        this.setState({curQuestion:question}, ()=>console.log(this.state.curQuestion))
+        question[key] = e.value;
+        this.setState({curQuestion:question});
     }
 
-    makeOptions(values) {
-        let options = values.map(val=> ({
-            value:val.id,
-            label:val.name   
-        }));
-        options.unshift({value:0,label:'None'});
-        return options
+    populateDropdownValue(skey, qkey) {
+        if (this.state.curQuestion[qkey] === undefined) {
+            return '';
+        } else if (this.state.curQuestion[qkey] === '0') {
+            return {
+                value:'0', 
+                label:'None'
+            };
+
+        } else {
+            return {
+                value:this.state.curQuestion[qkey],
+                label: this.state[skey].filter(
+                    val=>val._id===this.state.curQuestion[qkey])[0].name
+            };
+        }                                      
+    }
+
+    hasValidTags() {
+        let check = this.state.questions.filter(q=> {
+          return isEqual(this.state.curQuestion.tags, q.tags);
+        })[0];
+      
+        if (check === undefined) {
+          return {
+              valid:true,
+              name:''
+          };
+        } else {
+          return {
+              valid: check._id === this.state.curQuestion._id,
+              name: check.name
+            };
+        }
+    }
+
+    canSave() {
+        return this.hasValidTags().valid && this.hasChanges()
+    }
+
+    handleSave(event) {
+        event.preventDefault();
+        if (this.canSave()) {
+            if (this.hasTrainableChanges()) {
+                console.log(this.props.updateTrain);
+                confirmAlert({
+                    title:'You\'ve made changes which require the system to be retrained.',
+                    message: 'Would you like to save your changes and retrain now?',
+                    buttons: [
+                        {
+                            label: 'Save and Retrain',
+                            onClick: ()=> saveQuestionAndTrain(this.state.curQuestion, this.props.updateTrain, response=> {
+                                if (response.success) {
+                                    let questions = this.state.questions;
+                                    let question = questions.filter(q=>
+                                        q._id === this.state.curQuestion._id)[0];
+                                    if (question === undefined) {
+                                        questions.push(cloneDeep(response.question));
+                                        this.setState({curQuestion:cloneDeep(response.question)});
+                                    } else {
+                                        questions[questions.indexOf(question)] = cloneDeep(response.question);
+                                    }
+                                    this.setState({questions:questions}, ()=> {
+                                        window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                        alert(response.message);
+                                    });
+                                } else {
+                                    console.error(response.message);
+                                    alert('Could not save question - \n' + response.message);
+                                }
+                            })
+                        },
+                        {
+                            label: 'Save and Don\'t Retrain',
+                            onClick: ()=>saveQuestion(this.state.curQuestion, response=> {
+                                if (response.success) {
+                                    let questions = this.state.questions;
+                                    let question = questions.filter(q=>
+                                        q._id === this.state.curQuestion._id)[0];
+                                    if (question === undefined) {
+                                        questions.push(cloneDeep(response.question));
+                                        this.setState({curQuestion:cloneDeep(response.question)});
+                                    } else {
+                                        questions[questions.indexOf(question)] = cloneDeep(response.question);
+                                    }
+                                    this.setState({questions:questions, needsTraining:true}, ()=> {
+                                        window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                        alert(response.message + '\n Please Remember to retrain the system before you log out.');
+                                        this.props.updateTrain('Needs Training');
+                                    });
+                                } else {
+                                    console.error(response.message);
+                                    alert('Could not save question - \n' + response.message);
+                                }
+                            })
+                        },
+                        {
+                            label: 'Cancel',
+                            onClick: ()=>{}
+                        }
+                    ]
+                }); 
+            } else {
+                confirmAlert({
+                    title:'Are you sure you want to save these changes?',
+                    message: '',
+                    buttons: [
+                        {
+                            label: 'Yes, please save',
+                            onClick: ()=>saveQuestion(this.state.curQuestion, response=> {
+                                if (response.success) {
+                                    let questions = this.state.questions;
+                                    let question = questions.filter(q=>
+                                        q._id === this.state.curQuestion._id)[0];
+                                    if (question === undefined) {
+                                        questions.push(cloneDeep(response.question));
+                                        this.setState({curQuestion:cloneDeep(response.question)});
+                                    } else {
+                                        questions[questions.indexOf(question)] = cloneDeep(response.question);
+                                    }
+                                    this.setState({questions:questions}, ()=> {
+                                        window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                        alert(response.message);
+                                    });
+                                } else {
+                                    console.error(response.message);
+                                    alert('Could not save question - \n' + response.message);
+                                }
+                            })
+                        },
+                        {
+                            label: 'No, continue working',
+                            onClick: ()=>{}
+                        }
+                    ]
+                });
+            }
+        }
     }
     
     render () {
@@ -223,12 +407,13 @@ export class QuestionsBox extends React.Component {
                             
                         }))}
                         update={this.selectItem} 
+                        curItem={this.state.curQuestion}
                         />
                         <div id='new-question-selection'>
                             <p className='new-question-text'>
                                 Add New Question
                             </p>
-                            <div className='plus-select'>
+                            <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultQuestion)}>
                                 +
                             </div>
                         </div>
@@ -250,28 +435,32 @@ export class QuestionsBox extends React.Component {
                                 this.setState({curQuestion:question});
                              }}
                              />
-                            {/* <div className='button save-button'>Save Changes</div>
-                            <div className='button delete-button'>Delete Question</div> */}
+                            <div 
+                                className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
+                                onClick={this.handleSave}
+                            >
+                                 Save Changes
+                            </div>
+                            {/* <div className='button delete-button'>Delete Question</div> */}
                         </div>
                         <div id='question-content'>
                             <div id='entity-box'>
                                 <h2>Tags</h2>
+                                <div className={this.hasValidTags().valid ? 'hide invalid-tags' : 'show invalid-tags'}>
+                                    Question already exists with the given combination of tags:<br/> "{this.hasValidTags().name}"
+                                </div>
                                 <div id='entities'>
                                     <div className='entity-selection-box'>
                                         <label className='entity-label' htmlFor='intent-choice'>
                                             Intent
                                         </label>
                                         <Select 
-                                        className='entity-select'
+                                        className={
+                                            this.hasValidTags().valid ? 
+                                                 'entity-select' : 'entity-select invalid-combo' 
+                                        }
                                         id='intent-choice' 
-                                        value={({
-                                            value:(()=> {
-                                                let tag = this.state.tags.intents.filter(t=>
-                                                t.name === this.state.curQuestion.tags.intent)[0]
-                                                return tag === undefined ? '':tag.id
-                                            })(),
-                                            label:this.state.curQuestion.tags.intent
-                                        })}
+                                        value={this.makeTagValue('intent')}
                                         options={this.state.intentList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'intent')}
                                         />
@@ -281,16 +470,12 @@ export class QuestionsBox extends React.Component {
                                             Department
                                         </label>
                                         <Select 
-                                        className='entity-select' 
+                                        className={
+                                            this.hasValidTags().valid ? 
+                                                 'entity-select' : 'entity-select invalid-combo' 
+                                        }
                                         id='department-choice' 
-                                        value={{
-                                            value:(()=> {
-                                                let tag = this.state.tags.entities.department.filter(t=>
-                                                t.name === this.state.curQuestion.tags.department)[0]
-                                                return tag === undefined ? '':tag.id
-                                            })(),
-                                            label:this.state.curQuestion.tags.department
-                                        }}
+                                        value={this.makeTagValue('department')}
                                         options={this.state.departmentList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'department')}
                                         />
@@ -300,16 +485,12 @@ export class QuestionsBox extends React.Component {
                                             Category
                                         </label>
                                         <Select 
-                                        className='entity-select' 
+                                        className={
+                                            this.hasValidTags().valid ? 
+                                                 'entity-select' : 'entity-select invalid-combo' 
+                                        }
                                         id='category-choice'
-                                        value={{
-                                            value:(()=> {
-                                                let tag = this.state.tags.entities.category.filter(t=>
-                                                t.name === this.state.curQuestion.tags.category)[0]
-                                                return tag === undefined ? '':tag.id
-                                            })(),
-                                            label:this.state.curQuestion.tags.category
-                                        }}
+                                        value={this.makeTagValue('category')}
                                         options={this.state.categoryList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'category')}
                                         />
@@ -319,16 +500,12 @@ export class QuestionsBox extends React.Component {
                                             Information
                                         </label>
                                         <Select 
-                                        className='entity-select' 
+                                        className={
+                                            this.hasValidTags().valid ? 
+                                                 'entity-select' : 'entity-select invalid-combo' 
+                                        }
                                         id='information-choice'
-                                        value={{
-                                            value:(()=> {
-                                                let tag = this.state.tags.entities.information.filter(t=>
-                                                t.name === this.state.curQuestion.tags.information)[0]
-                                                return tag === undefined ? '':tag.id
-                                            })(),
-                                            label:this.state.curQuestion.tags.information
-                                        }}
+                                        value={this.makeTagValue('information')}
                                         options={this.state.infoList} 
                                         onChange={(e)=>this.handleSelectTag(e, 'information')}
                                         />
@@ -338,19 +515,12 @@ export class QuestionsBox extends React.Component {
                             <div id='entered-fields'>
                                 <div id='patterns-and-responses'>
                                     <div id='response-box'>
-                                        <h2>Responses to Question</h2>
-                                        <div className='responses'>
-                                            {this.state.curQuestion.responses.map((res, index) => {
-                                                return <Response 
-                                                num={index} 
-                                                response={res} 
-                                                change={this.changeResponse} 
-                                                />
-                                            })}
-                                            <div className='plus' onClick={this.addResponse}>
-                                            +
-                                            </div>
-                                        </div>
+                                        <h2>Response to Question</h2>
+                                        <textarea 
+                                            id='response'
+                                            value={this.state.curQuestion.response} 
+                                            onChange={this.changeResponse} 
+                                        />
                                     </div>
                                     <div id='patterns-box'>
                                         <h2>Patterns</h2>
@@ -367,6 +537,7 @@ export class QuestionsBox extends React.Component {
                                             </div>
                                         </div>
                                     </div>
+                                    
                                 </div>
                                 <div id='contacts-and-forms'>
                                     <div id='contacts-box'>
@@ -374,8 +545,10 @@ export class QuestionsBox extends React.Component {
                                         <div className='contacts field-box'>
                                             <Select 
                                             className='contact field' 
-                                            id='contact-1'
-                                            options={this.makeOptions(this.state.contacts)}
+                                            id='contact-1' 
+                                            value={this.populateDropdownValue('contacts', 'contact')} 
+                                            options={makeOptions(this.state.contacts)} 
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'contact')} 
                                             />
                                         </div>
                                     </div>
@@ -385,7 +558,9 @@ export class QuestionsBox extends React.Component {
                                             <Select  
                                             className='document field' 
                                             id='document-1' 
-                                            options={this.makeOptions(this.state.documents)}
+                                            value={this.populateDropdownValue('documents', 'document')} 
+                                            options={makeOptions(this.state.documents)} 
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'document')} 
                                             />
                                         </div>
                                     </div>
@@ -395,20 +570,11 @@ export class QuestionsBox extends React.Component {
                                             <Select  
                                             className='follow-up field' 
                                             id='follow-up-1'
-                                            value={ this.state.curQuestion['follow-up'] === undefined ? '' :
-                                            this.state.curQuestion['follow-up'] === 0 ? { 
-                                                value:0, 
-                                                label:'None'
-                                            } : {
-                                                value:this.state.curQuestion['follow-up'],
-                                                label: this.state.questions.filter(
-                                                    q=>q.id===this.state.curQuestion['follow-up'])[0].name
-                                            }}
-
-                                            options={this.makeOptions(
+                                            value={this.populateDropdownValue('questions', 'follow-up')} 
+                                            options={makeOptions(
                                                 this.state.questions.filter(
-                                                    q=>q.id!==this.state.curQuestion.id))}
-                                            onChange={this.handleSelectFollowUp}
+                                                    q=>q._id!==this.state.curQuestion._id))} 
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'follow-up')} 
                                             />
                                         </div>
                                     </div>
@@ -426,21 +592,21 @@ export default QuestionsBox;
 
 
 
-function Response(props) {
+// function Response(props) {
 
-    return(
-        <div className='response'>
-            <input 
-            type='text' 
-            className='response-text' 
-            placeholder='New Response' 
-            num={props.num} 
-            value={props.response} 
-            onChange={(event)=>props.change(event, props.num)}
-            />
-        </div>
-    );
-}
+//     return(
+//         <div className='response'>
+//             <input 
+//             type='text' 
+//             className='response-text' 
+//             placeholder='New Response' 
+//             num={props.num} 
+//             value={props.response} 
+//             onChange={(event)=>props.change(event, props.num)}
+//             />
+//         </div>
+//     );
+// }
 
 function Pattern(props) {
     return(

@@ -5,10 +5,12 @@ p {
     display:flex;
     height:100%;
 }
-
+#sidebox {
+    flex:1;
+    height: 100%;
+}
 #navbar {
     overflow: auto;
-    flex:1;
     height: 100%;
     border: 1px solid black;
 }
@@ -34,6 +36,7 @@ p {
 #content {
     display:block;
     flex:3;
+    overflow:auto;
 }
 
 #search-bar {
@@ -103,8 +106,6 @@ p {
 
 .button {
     border: 1px solid black;
-    font-weight: bold;
-    cursor: pointer;
     border-radius: 10px;
     margin-left:3%;
     max-height: 50%;
@@ -115,14 +116,25 @@ p {
     justify-content: center; 
 }
 
-.button:hover {
+.non-selectable {
+    background-color: #dcdcdc;
+    cursor: default;
+}
+
+.selectable {
+    background-color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.selectable:hover {
     box-shadow: 0 0 0 2px black;
     -moz-box-shadow: 0 0 0 2px black;
     -webkit-box-shadow: 0 0 0 2px black;
     text-decoration: underline;
 }
 
-.button:active {
+.selectable:active {
     box-shadow: 0 0 0 1px black;
     -moz-box-shadow: 0 0 0 1px black;
     -webkit-box-shadow: 0 0 0 1px black;
@@ -132,4 +144,40 @@ p {
 .delete-button {
     background-color: red;
     color:white;  
+}
+
+.train-button {
+    margin-top:5%;
+    margin-right:3%;
+}
+
+.trained {
+    background-color: green;
+    color:white;
+    cursor: default;
+}
+
+.training {
+    background-color: orange;
+    cursor: default;
+}
+
+.need-training {
+    background-color: red;
+    color:white;
+    cursor: pointer;
+}
+
+.need-training:hover {
+    box-shadow: 0 0 0 2px black;
+    -moz-box-shadow: 0 0 0 2px black;
+    -webkit-box-shadow: 0 0 0 2px black;
+    text-decoration: underline;
+}
+
+.need-training:active {
+    box-shadow: 0 0 0 1px black;
+    -moz-box-shadow: 0 0 0 1px black;
+    -webkit-box-shadow: 0 0 0 1px black;
+    border: 1px solid black;
 }
