@@ -1,4 +1,12 @@
 
+export const defaultTag = {
+  _id:'',
+  name:'',
+  type: ''
+}
+
+
+
 export function getTags(callback) {
   let tfs = window.sessionStorage.getItem('tags');
   if (tfs === null) {
