@@ -391,7 +391,7 @@ export class QuestionsBox extends React.Component {
         return (
             <>
                 <div id='content-wrapper'>
-                    <div id='selection-wrapper'>
+                    <div id='question-selection-wrapper'>
                         <div className='section-title'>
                             Questions
                         </div>

@@ -1,3 +1,24 @@
+#tag-selection-wrapper {
+    display:flex;
+    flex:2;
+    border-right: 1px solid black;
+}
+
+#type-selection {
+    flex:1;
+}
+
+#tag-selection {
+    flex:1;
+    overflow: auto;
+}
+
+#content {
+    display:block;
+    flex:3;
+    overflow:auto;
+}
+
 #new-tag-selection {
     height: 12%;
     display: flex;

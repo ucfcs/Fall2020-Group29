@@ -87,14 +87,14 @@ export class TagsBox extends React.Component {
     handleSelectType(event) {
         let tag = this.state.curTag;
         tag.type = event.value;
-        this.setState({curTag:tag});
+        this.setState({curTag:cloneDeep(tag)});
     }
 
     render() {
         return (
             <>
                 <div id="content-wrapper">
-                    <div id='selection-wrapper'>
+                    <div id='tag-selection-wrapper'>
                         <div id='type-selection'>
                             <div className='section-title'>
                                 Tag Type

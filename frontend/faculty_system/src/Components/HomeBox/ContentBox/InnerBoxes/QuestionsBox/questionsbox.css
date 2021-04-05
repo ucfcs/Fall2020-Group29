@@ -1,3 +1,22 @@
+#content-box {
+    flex:5;
+    height:100%;
+    border: 1px solid black;
+}
+
+#question-selection-wrapper {
+    display:block;
+    flex:1;
+    border-right: 1px solid black;
+    overflow: auto;
+}
+
+#content {
+    display:block;
+    flex:3;
+    overflow:auto;
+}
+
 #new-question-selection {
     height: 12%;
     display: flex;

@@ -1,14 +1,17 @@
 p {
     margin:0px;
 }
+
 #home-box {
     display:flex;
     height:100%;
 }
+
 #sidebox {
     flex:1;
     height: 100%;
 }
+
 #navbar {
     overflow: auto;
     height: 100%;
@@ -24,19 +27,6 @@ p {
 #content-wrapper {
     display:flex;
     height:94vh;
-}
-
-#selection-wrapper {
-    display:block;
-    flex:1;
-    border-right: 1px solid black;
-    overflow: auto;
-}
-
-#content {
-    display:block;
-    flex:3;
-    overflow:auto;
 }
 
 #search-bar {
