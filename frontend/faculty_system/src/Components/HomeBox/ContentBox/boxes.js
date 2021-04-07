@@ -8,7 +8,7 @@ export function ContentBox(props) {
         <div id='content-box'>
             {
                 {
-                    'navbox-questions' : <QuestionsBox/>,
+                    'navbox-questions' : <QuestionsBox updateTrain={props.updateTrain}/>,
                     'navbox-tags' : <TagsBox  isAdmin={true}/>,
                     'navbox-contacts' : <ContactsBox />
                 }[props.selection]

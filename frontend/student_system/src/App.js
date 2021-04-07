@@ -1,129 +1,20 @@
 import "./App.css";
 import Knugget from "./Knugget.jpg";
 import React, { useState, useEffect, Component } from "react";
-import ChatBot, { Loading } from "react-simple-chatbot";
+import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
-import axios from "axios";
-import PropTypes from "prop-types";
-
-class Result extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      loading: true,
-      department: "",
-      category: "",
-      result: "",
-      trigger: false,
-    };
-
-    this.triggetNext = this.triggetNext.bind(this);
-  }
-  async componentDidMount() {
-    const { steps } = this.props;
-    const lookup = steps.userInput.value;
-    const input = { name: lookup };
-    const api_response = await axios.post(
-      "http://127.0.0.1:5000/api/user-response",
-      input
-    );
-    this.setState({
-      loading: false,
-      result: api_response.data.answer,
-      department: api_response.data.department,
-      category: api_response.data.category,
-    });
-  }
-  triggetNext() {
-    this.setState({ trigger: true }, () => {
-      this.props.triggerNextStep();
-    });
-  }
-  render() {
-    const { trigger, loading, department, category, result } = this.state;
-    // console.log(department);
-    // console.log(category);
-    console.log(result);
-    return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: 15,
-          margin: 30,
-          fontFamily: "Arial",
-          fontSize: "12pt",
-          backgroundColor: "#eee",
-          borderRadius: 25,
-        }}
-      >
-        {loading ? (
-          <Loading />
-        ) : (
-          result
-        )}
-        {!loading && (
-          <div
-            style={{
-              textAlign: "center",
-              margin: 20,
-            }}
-          >
-            {!trigger && (
-              <button onClick={() => this.triggetNext()}>Try again</button>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  }
-}
-Result.propTypes = {
-  steps: PropTypes.object,
-  triggerNextStep: PropTypes.func,
-};
-
-Result.defaultProps = {
-  steps: undefined,
-  triggerNextStep: undefined,
-};
+import Result from "./Components/Result";
 
 function App(props) {
-  // const [result, setResult] = useState(null);
-  // // const [userData, setUserData] = useState(null);
-  // // const [category, setCategory] = useState(null);
-  // // const [department, setDepartment] = useState(null);
+  // const [count, setCount] = useState(0);
 
-  // // UseEffect Hook to make a POST request
-  // // console.log(userData);
-  // useEffect(() => {
-  //   if (userData != null) {
-  //     // POST request using axios inside useEffect React hook
-  //     const getResponse = async () => {
-  //       const article = { name: userData };
-  //       let api_data = await axios.post(
-  //         "http://127.0.0.1:5000/api/user-response",
-  //         article
-  //       );
-  //       setResult(api_data.data.dept);
-  //       console.log(api_data.data.dept, typeof api_data.data);
-  //     };
-  //     getResponse();
-  //   }
-  // console.log(userData);
-  // }, [userData]);
-  // console.log("result", result);
-  // let newResult = JSON.stringify(result);
-  // console.log(newResult);
-
-  function dummy(value) {
-    // console.log(value);
-    // setUserData(value);
-
+  // Dummy Function to return some data to the chatbot
+  const dummy = (value) => {
     return "Let me see what I can do to help with " + value;
-  }
-  let nextResponse = "Understandable, have a nice day!";
+  };
 
+  let nextResponse = "Understandable, have a nice day!";
+  // setCount(34);
   const config = {
     width: "300px",
     height: "400px",
@@ -144,12 +35,12 @@ function App(props) {
     {
       id: "2",
       options: [
-        { value: 1, label: "Yes", trigger: "3" },
+        { value: 1, label: "Yes", trigger: "More Help" },
         { value: 2, label: "No", trigger: "4" },
       ],
     },
     {
-      id: "3",
+      id: "More Help",
       message: "How can I help?",
       trigger: "userInput",
     },
@@ -175,7 +66,33 @@ function App(props) {
       id: "7",
       component: <Result />,
       waitAction: true,
-      trigger: "Greeting",
+      trigger: "More Help",
+    },
+
+    {
+      id: "Even More Help",
+      message: "Is there something else I can assist you with?",
+      trigger: "help options",
+    },
+
+    {
+      id: "help options",
+      // message: "Heloooo",
+      options: [
+        { value: 1, label: "Yes", trigger: "More Help" },
+        { value: 2, label: "No", trigger: "Thank you" },
+      ],
+    },
+    {
+      id: "Thank you",
+      message: "Perfect! Glad I could help!",
+      // trigger: "Feedback",
+      end: true,
+    },
+    {
+      id: "Sorry Thank you",
+      message: "I am Sorry, I wish I could be of more help.",
+      end: true,
     },
   ];
 
