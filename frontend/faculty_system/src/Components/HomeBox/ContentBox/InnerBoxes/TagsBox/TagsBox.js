@@ -61,27 +61,52 @@ export class TagsBox extends React.Component {
 
     selectItem(event, item) {
         event.preventDefault();
-        if (this.state.curTag._id !==item._id) {
-            let tag = cloneDeep(item);
-            if (isEqual(tag, defaultTag)) {
-                tag.type = this.state.curType === 'all' ? '' : this.state.curType;
+        if (this.state.curTag._id !== item._id) {
+            if (this.hasChanges()) {
+                confirmAlert({
+                    title:"You have unsaved changes",
+                    message: "Do you want to leave without saving your changes?",
+                    buttons: [
+                        {
+                            label: "Yes",
+                            onClick: ()=>{
+                                let tag = cloneDeep(item);
+                                if (isEqual(tag, defaultTag)) {
+                                    tag.type = this.state.curType === 'all' ? '' : this.state.curType;
+                                }
+                                this.setState({curTag:tag});
+                            }
+                        },
+                        {
+                            label: "No",
+                            onClick: ()=>{}
+                        }
+                    ]});
+            } else {
+                let tag = cloneDeep(item);
+                if (isEqual(tag, defaultTag)) {
+                    tag.type = this.state.curType === 'all' ? '' : this.state.curType;
+                }
+                this.setState({curTag:tag});
             }
-            this.setState({curTag:tag});
         }
     }
 
     selectType(event, item) {
         event.preventDefault();
         if (this.state.curType !== item.name) {
-            this.setState({curType:item.name}, ()=>{
-                let tags = this.concatTags();
-                let dis = tags.filter(t=>{
-                    return this.state.curType === 'all' || t.type === this.state.curType;
-                });
-                this.setState({displayedTags:dis});
-            })
-        }
+            
 
+            
+                this.setState({curType:item.name}, ()=>{
+                    let tags = this.concatTags();
+                    let dis = tags.filter(t=>{
+                        return this.state.curType === 'all' || t.type === this.state.curType;
+                    });
+                    this.setState({displayedTags:dis});
+                });
+            
+        }
     }
 
     filterSearch(event) {
