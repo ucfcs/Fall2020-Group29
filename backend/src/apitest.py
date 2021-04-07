@@ -196,60 +196,7 @@ def get_question_via_ID( _id = "6065f38bac9dc35cb433ea88" ):
   
   return jsonify(found) #return result as json
 
-#delete
-@app.route('/delete_question', methods=['DELETE']) # delete a question based on tags
-def delete_question(tags = ['beep boop', 'noop', 'yoop', 'ploop']):
-  found = mongo.db.questions.find_one({'tags':{ '$all': [x.lower() for x in tags] }}) #finds the entry with the exact set of tags 
-
-  if (found is None): # if there is no match
-    return jsonify({'result':'no match'})
-  
-  mongo.db.questions.remove( {'tags':{ '$all': [x.lower() for x in tags] }} )
-  return jsonify({'result':'deleted'}) #return result as json
-
-# delete one pattern
-@app.route('/remove_one_pattern', methods=['PUT']) # delete a pattern from a question found based on tags
-def remove_one_pattern(tags = ['beep boop', 'noop', 'yoop', 'ploop'], pattern = 'yoop doop'):
-  found = mongo.db.questions.find_one_and_update( 
-    {
-      '$and': [
-        {'tags': { '$all': [x.lower() for x in tags] }},
-        {'patterns': pattern }
-      ]
-    }, 
-    {
-      '$pull': { 'patterns': pattern }
-    },
-    return_document=ReturnDocument.AFTER
-    )
-  if (found is None): # if there is no match
-    return jsonify({'result':'no match'})
-
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
-  found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
-
-  return jsonify(found) #return result as json
-
-# add one pattern
-@app.route('/add_one_pattern', methods=['PUT']) # delete a pattern from a question found based on tags
-def add_one_pattern(tags = ['beep boop', 'noop', 'yoop', 'ploop'], pattern = 'yoop doop'):
-  found = mongo.db.questions.find_one_and_update( 
-    {
-      'tags': { '$all': [x.lower() for x in tags] },
-    }, 
-    {
-      '$addToSet': { 'patterns': pattern }
-    },
-    return_document=ReturnDocument.AFTER
-    )
-  if (found is None): # if there is no match
-    return jsonify({'result':'no match'})
-
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
-  found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
-
-  return jsonify(found) #return result as json
-
+# TODO: delete one pattern
 
 ### contacts collection ###
 #contacts should have dept and maybe grad/undergrad
@@ -295,8 +242,36 @@ def update_contact(name = 'Mark Heinrich', title = 'CS Advisor', itemToUpdate = 
 ## tags collection ##
 
 # TODO: create - tag name & tag type
+@app.route('/add_tag', methods=['POST']) # add a question to the database with Name, Responses, and Tags, returns this new document. pls check if it exists first.
+def add_tag( name = 'testo',  type = 'cat'):
+  new_tag = {'name': name, 'type': type} # we make sure all tags are lower case
+  
+  InsertOneResult_Obj = mongo.db.tags.insert_one(new_tag) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
+  
+  new_tag.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_question with the ObjectID (as a string) so that we can actually return something that resembles a document :/
+ 
+  return jsonify(new_tag)
 
 # TODO: search tags
+@app.route('/get_tag', methods=['GET'])
+def get_tag( name = 'testo', type = 'cat' ):
+  found = mongo.db.tags.find_one(
+    {
+      '$and': [
+        {'name':name},
+        {'type':type}
+      ]
+    }
+
+  ) #finds the entry with the exact name and type
+
+  if (found is None): # if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(found) #return result as json
 
 # TODO: search a triplet of entities
 
