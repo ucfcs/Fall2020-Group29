@@ -102,8 +102,8 @@ export function saveQuestion(question, callback) {
     method = 'POST';
     succMessage = 'Question Successfully Added to System.';
   } else {
-    method = 'PUT';
     call = 'update_question';
+    method = 'PUT';
     succMessage = 'Question Successfully Updated.'
   }
 

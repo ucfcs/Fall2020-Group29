@@ -1,8 +1,9 @@
 import { cloneDeep, isEqual } from 'lodash';
 import React from 'react';
 import Select from 'react-select';
+import {confirmAlert} from 'react-confirm-alert';
 import SelectionBox from '../SelectionBox';
-import { defaultTag, getTags, tagTypes } from './tags';
+import { defaultTag, getTags, tagTypes, hasAllFields, saveTag } from './tags';
 import './tagsbox.css';
 
 export class TagsBox extends React.Component {
@@ -16,6 +17,9 @@ export class TagsBox extends React.Component {
         this.filterSearch = this.filterSearch.bind(this);
         this.handleSelectType = this.handleSelectType.bind(this);
         this.hasValidChanges = this.hasValidChanges.bind(this);
+        this.hasChanges = this.hasChanges.bind(this);
+        this.canSave = this.canSave.bind(this);
+        this.handleSave = this.handleSave.bind(this);
 
         this.state = {
             selected:null,
@@ -111,6 +115,49 @@ export class TagsBox extends React.Component {
         }
     }
 
+    hasChanges() {
+        if (this.state.curTag._id === '') {
+            return !isEqual(this.state.curTag, defaultTag);
+        } else {
+            let tags = this.concatTags();
+            let cur = tags.filter(t=>{
+                return t._id === this.state.curTag._id;
+            })[0];
+            return !isEqual(this.state.curTag, cur);
+        }
+    }
+
+    canSave() {
+        return this.hasChanges() && this.hasValidChanges() && hasAllFields(this.state.curTag).hasFields;
+    }
+
+    handleSave(event) {
+        event.preventDefault();
+        if (this.canSave()) {
+            confirmAlert({
+                title:'Are you sure you want to save these changes?',
+                message: '',
+                buttons: [
+                    {
+                        label: 'Yes, please save',
+                        onClick: ()=>saveTag(this.state.curTag, response=> {
+                            if (response.success) {
+                                
+                            } else {
+                                console.error(response.message);
+                                alert('Could not save tag - \n' + response.message);
+                            }
+                        })
+                    },
+                    {
+                        label: 'No, continue working',
+                        onClick: ()=>{}
+                    }
+                ]
+            });
+        }
+    }
+
     render() {
         return (
             <>
@@ -144,22 +191,24 @@ export class TagsBox extends React.Component {
                             <div id='search-bar'>
                                 <input type='text' placeholder='Search' onChange={this.filterSearch}/>
                             </div>
-                            <SelectionBox 
-                            name='tags' 
-                            content={this.state.displayedTags}
-                            titles={this.state.displayedTags.map(tag=>({
-                                title:tag.name,
-                                name:tag.type
-                            }))}
-                            update={this.selectItem} 
-                            curItem={this.state.curTag}
-                            />
-                            <div id='new-tag-selection'>
-                                <p className='new-tag-text'>
-                                    Add New Tag
-                                </p>
-                                <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultTag)}>
-                                    +
+                            <div id='tag-select-wrapper'>
+                                <SelectionBox 
+                                name='tags' 
+                                content={this.state.displayedTags}
+                                titles={this.state.displayedTags.map(tag=>({
+                                    title:tag.name,
+                                    name:tag.type
+                                }))}
+                                update={this.selectItem} 
+                                curItem={this.state.curTag}
+                                />
+                                <div id='new-tag-selection'>
+                                    <p className='new-tag-text'>
+                                        Add New Tag
+                                    </p>
+                                    <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultTag)}>
+                                        +
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -181,6 +230,12 @@ export class TagsBox extends React.Component {
                                 this.setState({curTag:tag});
                              }}
                              />
+                            <div 
+                                className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
+                                onClick={this.handleSave}
+                            >
+                                 Save Changes
+                            </div>
                         </div>
                         <div id='tag-content'>
                              <Select 

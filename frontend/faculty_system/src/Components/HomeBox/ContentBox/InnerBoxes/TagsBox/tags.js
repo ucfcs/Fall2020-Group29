@@ -7,6 +7,24 @@ export const defaultTag = {
 
 export const tagTypes = ['intent', 'department', 'category', 'information']
 
+export const tagFields = ['name', 'type']
+
+export function hasAllFields(tag) {
+  let hasFields = true;
+  let missingFields = [];
+  tagFields.forEach(field=> {
+    if (tag[field] === '') {
+      hasFields = false;
+      missingFields.push(field);
+    }
+  });
+
+  return {
+    hasFields: hasFields,
+    missingFields: missingFields
+  };
+}
+
 
 
 export function getTags(callback) {
@@ -41,4 +59,49 @@ export function getTags(callback) {
   } else {
     callback(JSON.parse(tfs));
   }
+}
+
+export function saveTag(tag, callback) {
+  let call = '';
+  let method = '';
+  let succMessage = '';
+
+  if (tag._id === '') {
+    call = 'add_tag';
+    method = 'POST';
+    succMessage = 'Tag successfully added.';
+  } else {
+    call = 'update_tag';
+    method = 'PUT';
+    succMessage = 'Tag successfully updated.';
+  }
+
+  let options = {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': window.sessionStorage.getItem('token')
+    },
+    body: JSON.stringify({'tag': tag})
+  };
+
+  fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
+    .then((res)=> {
+      if (res.status === 200) {
+        res.json.then((res)=> {
+          callback({
+            success: true,
+            message: succMessage,
+            tag: res.tag
+          });
+        });
+      } else {
+        res.json().then((res)=> {
+          callback({
+            success: false,
+            message: res.message
+          });
+        });
+      }
+    });
 }

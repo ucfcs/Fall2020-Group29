@@ -74,7 +74,6 @@ export class HomeBox extends React.Component {
                 <div id='sidebox'>
                     <div id='navbar'>
                         <div id='nav-header'>
-                    
                         </div>
                         <NavBox 
                             sectionName='Questions' 

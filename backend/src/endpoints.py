@@ -9,6 +9,8 @@ from .database_manager import return_all, update_question, add_question
 from .train import train
 import json
 
+######################################################## Server Initialization ########################################
+
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
 app.config["JWT_SECRET_KEY"] = "Test_Secret_Key" #Change for actual production
@@ -21,7 +23,7 @@ jwt = JWTManager(app)
 #The "dnspython" module must be installed to use mongodb+srv:
 mongo = PyMongo(app)
 
-
+######################################################### Login #######################################################
 
 #Faculty_System_API
 @app.route("/api/faculty/login", methods=["GET", "POST"])
@@ -53,6 +55,8 @@ def login():
         return jsonify(message="Users must login from within the UCF network"), 401
     except LDAPBindError:
         return jsonify(message="Invalid credentials"), 401
+
+######################################################## Get Data #####################################################
 
 @app.route("/api/faculty/get_questions", methods=["GET"])
 def get_questions():
@@ -126,6 +130,8 @@ def get_documents():
         })
     return jsonify(documents=documents)
 
+######################################################## Add/Update Data ##############################################
+
 @app.route("/api/faculty/add_question", methods=["POST"])
 def add_q():
     req = request.get_json()
@@ -160,6 +166,16 @@ def update_q():
 def retrain_model():
     train(db=mongo)
     return jsonify(message="Model successfully retrained")
+
+@app.route("/api/faculty/add_tag", methods=["POST"])
+def add_tag():
+    return jsonify(message="Endpoint not implemented yet."), 503
+
+@app.route("/api/faculty/update_tag", methods=["PUT"])
+def update_tag():
+    return jsonify(message="Endpoint not implemented yet."), 503
+
+
 ####################################################### Dummy Data ####################################################
 
 

@@ -11,7 +11,7 @@
 
 #tag-selection {
     flex:1;
-    overflow: auto;
+    
 }
 
 #content {
@@ -37,6 +37,11 @@
 
 #tag-label {
     display: block;
+}
+
+#tag-select-wrapper {
+    height:84%;
+    overflow: auto;
 }
 
 .new-tag-text {
