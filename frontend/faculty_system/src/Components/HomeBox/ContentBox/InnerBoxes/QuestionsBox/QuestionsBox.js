@@ -205,6 +205,26 @@ export class QuestionsBox extends React.Component {
 
     deletePattern(event, num) {
         event.preventDefault();
+        confirmAlert({
+            title: 'Are you sure you want to delete this pattern?',
+            message: '',
+            buttons: [
+                {
+                    label: 'Delete Pattern',
+                    onClick: ()=> {
+                        let question = this.state.curQuestion;
+                        let patterns = question.patterns;
+                        patterns.splice(num, 1);
+                        question.patterns = patterns;
+                        this.setState({curQuestion: question});
+                    }
+                },
+                {
+                    label: 'Cancel',
+                    onClick: ()=>{}
+                }
+            ]
+        })
     }
 
     handleSelectTag(e, tag) {
