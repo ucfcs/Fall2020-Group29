@@ -1,6 +1,6 @@
 import React from 'react';
 import { ContentBox } from './ContentBox/boxes';
-import {retrain} from './home'
+import {retrain, logOut} from './home'
 import {confirmAlert} from 'react-confirm-alert';
 import './homebox.css';
 
@@ -115,6 +115,9 @@ export class HomeBox extends React.Component {
                         onClick={this.handleRetrain}
                     >
                         {this.state.needsTraining}
+                    </div>
+                    <div id='log-out' className='button log-out-button' onClick={(event)=>{event.preventDefault();logOut();}}>
+                        Log Out
                     </div>
                 </div>
                 <ContentBox selection={this.state.selection} updateTrain={this.handleUpdateTrain}/>

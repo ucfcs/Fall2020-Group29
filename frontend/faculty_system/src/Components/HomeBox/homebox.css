@@ -8,13 +8,17 @@ p {
 }
 
 #sidebox {
+    display:flex;
     flex:1;
-    height: 100%;
+    flex-direction: column; 
+    height: 94vh;
+    font-size: x-large;
 }
 
 #navbar {
     overflow: auto;
     height: 100%;
+    flex:2;
     border: 1px solid black;
 }
 
@@ -143,7 +147,30 @@ p {
     color:white;  
 }
 
+.log-out-button {
+    flex:1;
+    cursor:pointer;
+    margin-right:3%;
+    margin-top:5%;
+}
+
+.log-out-button:hover {
+    box-shadow: 0 0 0 2px black;
+    -moz-box-shadow: 0 0 0 2px black;
+    -webkit-box-shadow: 0 0 0 2px black;
+    text-decoration: underline;
+}
+
+.log-out-button:active {
+    font-weight:bold;
+    box-shadow: 0 0 0 1px black;
+    -moz-box-shadow: 0 0 0 1px black;
+    -webkit-box-shadow: 0 0 0 1px black;
+    border: 1px solid black;
+}
+
 .train-button {
+    flex:1;
     margin-top:5%;
     margin-right:3%;
 }

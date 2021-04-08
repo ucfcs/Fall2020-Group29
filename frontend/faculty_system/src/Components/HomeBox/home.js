@@ -1,3 +1,11 @@
+const storedFields = [
+  'token',
+  'questions',
+  'tags',
+  'contacts',
+  'documents'
+]
+
 export function retrain(callback) {
     let options = {
         method: 'GET',
@@ -23,4 +31,9 @@ export function retrain(callback) {
             });
         }
       });
+}
+
+export function logOut() {
+window.sessionStorage.clear();
+window.location.href = '/';
 }
