@@ -28,10 +28,9 @@ export class QuestionsBox extends React.Component {
         this.selectItem = this.selectItem.bind(this);
         this.filterSearch = this.filterSearch.bind(this);
         this.changeResponse = this.changeResponse.bind(this);
-        this.deleteResponse = this.deleteResponse.bind(this);
-        this.addResponse = this.addResponse.bind(this);
         this.changePattern = this.changePattern.bind(this);
         this.addPattern = this.addPattern.bind(this);
+        this.deletePattern = this.deletePattern.bind(this);
         this.handleSelectTag = this.handleSelectTag.bind(this);
         this.makeTagValue = this.makeTagValue.bind(this);
         this.handleSelectDropdown = this.handleSelectDropdown.bind(this);
@@ -188,22 +187,6 @@ export class QuestionsBox extends React.Component {
         this.setState({curQuestion:question});
     }
 
-    deleteResponse(event, num) {
-        event.preventDefault();
-        if (window.confirm('Are you sure you want to delete this response?')) {
-            let question = this.state.curQuestion;
-            question.responses.splice(num, 1);
-            this.setState({curQuestion:question});
-        }
-    }
-
-    addResponse(event) {
-        event.preventDefault();
-        let question = this.state.curQuestion;
-        question.responses.push('');
-        this.setState({curQuestion:question});
-    }
-
     changePattern(event, num) {
         event.preventDefault();
         let question = this.state.curQuestion;
@@ -218,6 +201,10 @@ export class QuestionsBox extends React.Component {
         let question = this.state.curQuestion;
         question.patterns.push('');
         this.setState({curQuestion:question});
+    }
+
+    deletePattern(event, num) {
+        event.preventDefault();
     }
 
     handleSelectTag(e, tag) {
@@ -528,11 +515,13 @@ export class QuestionsBox extends React.Component {
                                         <h2>Patterns</h2>
                                         <div className='patterns'>
                                             {this.state.curQuestion.patterns.map((pat, index) => {
-                                                return <Pattern 
-                                                num={index} 
-                                                pattern={pat} 
-                                                change={this.changePattern} 
-                                                />
+                                                return (
+                                                <Pattern 
+                                                    num={index} 
+                                                    pattern={pat} 
+                                                    change={this.changePattern}
+                                                    delete={this.deletePattern} 
+                                                />)
                                             })}
                                             <div className='plus' onClick={this.addPattern}>
                                             +
@@ -592,24 +581,6 @@ export class QuestionsBox extends React.Component {
 
 export default QuestionsBox;
 
-
-
-// function Response(props) {
-
-//     return(
-//         <div className='response'>
-//             <input 
-//             type='text' 
-//             className='response-text' 
-//             placeholder='New Response' 
-//             num={props.num} 
-//             value={props.response} 
-//             onChange={(event)=>props.change(event, props.num)}
-//             />
-//         </div>
-//     );
-// }
-
 function Pattern(props) {
     return(
         <div className='pattern'>
@@ -621,6 +592,9 @@ function Pattern(props) {
             value={props.pattern} 
             onChange={(event)=>props.change(event, props.num)}
             />
+            <div className='pattern-delete' onClick={(event)=>props.delete(event, props.num)}>
+                X
+            </div>
         </div>
     );
 }
