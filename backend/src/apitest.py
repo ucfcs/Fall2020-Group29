@@ -62,7 +62,7 @@ def add_question( name = 'testo',  patterns = ['swoop', 'yoop doop', 'hopla?'], 
  
   return jsonify(new_question)
 
-# retrive
+# search
 @app.route('/get_question', methods=['GET']) # retrive a question based on Tags
 def get_question( tags = ['Advising', 'Cecs-Csit', 'Major-CS', 'Credit-Hours'] ):
   found = mongo.db.questions.find_one({'tags': { '$all': [x.lower() for x in tags] }}) #finds the entry with the exact set of Tags
@@ -139,8 +139,8 @@ def put_contact(tags = ['beep boop', 'noop', 'yoop', 'ploop'], contact = 'heinri
 
   return jsonify(updated)
 
-# add a field follow up question 
-@app.route('/put_related_questions', methods=['PUT']) # delete a pattern from a question found based on tags
+# add a field for follow up question 
+@app.route('/put_related_questions', methods=['PUT']) 
 def put_related_questions(tags = ['beep boop', 'noop', 'yoop', 'ploop'], followUp_ID = ['6065f38bac9dc35cb433ea88']):
   found = mongo.db.questions.find_one_and_update( 
     {
@@ -156,7 +156,6 @@ def put_related_questions(tags = ['beep boop', 'noop', 'yoop', 'ploop'], followU
 
   fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
-  
 
   return jsonify(found) #return result as json
 
@@ -186,7 +185,7 @@ def remove_one_field(tags = ['beep boop', 'noop', 'yoop', 'ploop'], field = 'rel
 # search via ObjectID
 @app.route('/get_question_via_ID', methods=['GET']) # retrive a question based on id
 def get_question_via_ID( _id = "6065f38bac9dc35cb433ea88" ):
-  found = mongo.db.questions.find_one({'_id': ObjectId(_id) }) #finds the entry with the exact set of tags 
+  found = mongo.db.questions.find_one({'_id': ObjectId(_id) })
 
   if (found is None): # if there is no match
     return jsonify({'result':'no match'})
@@ -236,7 +235,28 @@ def update_contact(name = 'Mark Heinrich', title = 'CS Advisor', itemToUpdate = 
   return jsonify(updated)
 
 # TODO: add a link
-# TODO: delete
+# delete
+@app.route('/delete_question', methods=['DELETE']) 
+def delete_question(tags = ['beep boop', 'noop', 'yoop', 'ploop'] ):
+  found = mongo.db.questions.find_one({'tags': { '$all': [x.lower() for x in tags] }}) #finds the entry with the exact set of tags
+  if (found is None):
+    return jsonify({'result':'no match'})
+
+  found2 = mongo.db.questions.find({'related questions':str(found['_id'])})
+  # we can delete it if no question is refrencing it
+  if (found2.count() == 0):
+    to_delete = mongo.db.questions.delete_one({'_id': found['_id']})
+    if (to_delete.deleted_count == 0): #if there is no match
+      return jsonify({'result':'no match'})
+    
+    return jsonify({'result':'deleted'})
+  else:
+    list = []
+    for i in found2: # itterate over curor 
+      fickleID = i.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+      i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+      list.append(i)
+    return jsonify(list)
 
 
 ## tags collection ##
@@ -324,7 +344,7 @@ def replace_all_with_tag( tag = 'ploop', type = 'info', replace = 'presto' ):
       'tags.'+str(element):tag
     },
     {
-      '$set': { 'tags.'+str(element):replace } 
+      '$set': { 'tags.'+str(element):replace }
     },
     upsert=False, # upsert = if thing does not exist, make it exist
     )
@@ -332,15 +352,9 @@ def replace_all_with_tag( tag = 'ploop', type = 'info', replace = 'presto' ):
   if (found is None): # if it comes back empty
     return jsonify({'result':'no results'})
 
-  # list = []
-  # for i in found.raw_result: # itterate over curor 
-  #   fickleID = i.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
-  #   i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
-  #   list.append(i)
-
   return jsonify(found.acknowledged) # update_many doesn't return a document
 
-# TODO: delete - garbage collection, cannot delete if a question exists
+# delete - garbage collection, cannot delete if a question exists
 @app.route('/delete_tag', methods=['DELETE']) 
 def delete_tag(name = 'ploop', type = 'info'):
   element = -1
