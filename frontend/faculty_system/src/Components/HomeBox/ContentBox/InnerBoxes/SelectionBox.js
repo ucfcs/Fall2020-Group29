@@ -5,7 +5,7 @@ import arrowG from './images/sidearrow_g.png';
 export function SelectionBox(props) {
 
     return (
-        <>
+        <div id='selection-box'>
             {props.content.map((item, index) => (
                 <Selection 
                 item={item} 
@@ -14,13 +14,13 @@ export function SelectionBox(props) {
                 update={props.update}
                 />
             ))}
-        </>
+        </div>
     )
 }
 
 function Selection(props) {
     return (
-        <div className={props.selected ? 'selected-option':'selection-option'}>
+        <div className={'selection ' + (props.selected ? 'selected-option':'selection-option')}>
             <div className="selection-title-box">
                 <p className='selection-title'>{props.title.title}</p>
                 <p className='selection-name'>{props.title.name}</p>

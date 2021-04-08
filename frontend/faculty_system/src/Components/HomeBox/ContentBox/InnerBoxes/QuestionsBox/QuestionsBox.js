@@ -391,30 +391,32 @@ export class QuestionsBox extends React.Component {
         return (
             <>
                 <div id='content-wrapper'>
-                    <div id='question-selection-wrapper'>
+                    <div id='question-selection'>
                         <div className='section-title'>
                             Questions
                         </div>
-                        <div id='search-bar'>
-                            <input type='text' placeholder='Search' onChange={this.filterSearch}/>
-                        </div>
-                        <SelectionBox 
-                        name='questions' 
-                        content={this.state.displayedQuestions} 
-                        titles={this.state.displayedQuestions.map(q=> ({
-                            title:`${q.tags.department}:${q.tags.category}:${q.tags.information}`,
-                            name: q.name
+                            <div id='search-bar-wrapper'>
+                                <input id='search-bar' type='text' placeholder='Search' onChange={this.filterSearch}/>
+                            </div>
+                        <div className='selection-wrapper'>
+                            <SelectionBox 
+                                name='questions' 
+                                content={this.state.displayedQuestions} 
+                                titles={this.state.displayedQuestions.map(q=> ({
+                                    title:`${q.tags.department}:${q.tags.category}:${q.tags.information}`,
+                                    name: q.name
                             
-                        }))}
-                        update={this.selectItem} 
-                        curItem={this.state.curQuestion}
-                        />
-                        <div id='new-question-selection'>
-                            <p className='new-question-text'>
-                                Add New Question
-                            </p>
-                            <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultQuestion)}>
-                                +
+                                }))}
+                                update={this.selectItem} 
+                                curItem={this.state.curQuestion}
+                            />
+                            <div id='new-item-selection'>
+                                <p className='new-question-text'>
+                                    Add New Question
+                                </p>
+                                <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultQuestion)}>
+                                    +
+                                </div>
                             </div>
                         </div>
                     </div>

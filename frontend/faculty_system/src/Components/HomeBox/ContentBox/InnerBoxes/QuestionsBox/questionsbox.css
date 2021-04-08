@@ -4,24 +4,17 @@
     border: 1px solid black;
 }
 
-#question-selection-wrapper {
-    display:block;
+#question-selection{
+    display:flex;
+    flex-direction: column; 
     flex:1;
     border-right: 1px solid black;
-    overflow: auto;
 }
 
 #content {
     display:block;
     flex:3;
     overflow:auto;
-}
-
-#new-question-selection {
-    height: 12%;
-    display: flex;
-    align-items: center;
-    text-align: center;
 }
 
 #question-content {
@@ -44,7 +37,6 @@
 #question-label {
     display: block;
 }
-
 
 #contacts-and-forms {
     flex:1;
@@ -87,6 +79,10 @@
     border-right: 1px solid black;
     border-bottom: 1px solid black;
     background-color: #e0e0e0;
+}
+
+.question-selection-title {
+    flex:1;
 }
 
 .new-question-text {

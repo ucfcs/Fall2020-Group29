@@ -265,47 +265,49 @@ export class TagsBox extends React.Component {
         return (
             <>
                 <div id="content-wrapper">
-                    <div id='tag-selection-wrapper'>
+                    <div id='tag-and-type-selection'>
                         <div id='type-selection'>
                             <div className='section-title'>
                                 Tag Type
                             </div>
-                            <SelectionBox 
-                            name='tag-types' 
-                            content={['all'].concat(tagTypes).map((tag, index)=>({
-                                _id:index,
-                                name:tag
-                            }))}
-                            titles={['all'].concat(tagTypes).map(tag=>({
-                                title:tag,
-                                name:''
-                            }))}
-                            update={this.selectType}
-                            curItem={{
-                                _id:this.state.curType === 'all' ? 0 : (tagTypes.indexOf(this.state.curType) + 1),
-                                name:this.state.curType
-                            }}
-                            />
+                            <div className='selection-wrapper'>
+                                <SelectionBox 
+                                    name='tag-types' 
+                                    content={['all'].concat(tagTypes).map((tag, index)=>({
+                                        _id:index,
+                                        name:tag
+                                    }))}
+                                    titles={['all'].concat(tagTypes).map(tag=>({
+                                        title:tag,
+                                        name:''
+                                    }))}
+                                    update={this.selectType}
+                                    curItem={{
+                                        _id:this.state.curType === 'all' ? 0 : (tagTypes.indexOf(this.state.curType) + 1),
+                                        name:this.state.curType
+                                    }}
+                                />
+                            </div>
                         </div>
                         <div id='tag-selection'>
-                            <div className='section-title'>
+                            <div className='tag-section-title section-title'>
                                 Tags
                             </div>
                             <div id='search-bar-wrapper'>
                                 <input id='search-bar' type='text' placeholder='Search' onChange={this.filterSearch}/>
                             </div>
-                            <div id='tag-select-wrapper'>
+                            <div className='selection-wrapper'>
                                 <SelectionBox 
-                                name='tags' 
-                                content={this.state.displayedTags}
-                                titles={this.state.displayedTags.map(tag=>({
-                                    title:tag.name,
-                                    name:tag.type
-                                }))}
-                                update={this.selectItem} 
-                                curItem={this.state.curTag}
+                                    name='tags' 
+                                    content={this.state.displayedTags}
+                                    titles={this.state.displayedTags.map(tag=>({
+                                        title:tag.name,
+                                        name:tag.type
+                                    }))}
+                                    update={this.selectItem}
+                                    curItem={this.state.curTag}
                                 />
-                                <div id='new-tag-selection'>
+                                <div id='new-item-selection'>
                                     <p className='new-tag-text'>
                                         Add New Tag
                                     </p>
