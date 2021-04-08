@@ -1,6 +1,6 @@
 import React from 'react';
 import { ContentBox } from './ContentBox/boxes';
-import {retrain, logOut} from './home'
+import {sections, retrain, logOut} from './home'
 import {confirmAlert} from 'react-confirm-alert';
 import './homebox.css';
 
@@ -75,7 +75,12 @@ export class HomeBox extends React.Component {
                     <div id='navbar'>
                         <div id='nav-header'>
                         </div>
-                        <NavBox 
+                        {sections.map(section=>(<NavBox 
+                            sectionName={section} 
+                            selected={this.state.selection === ('navbox-'+(section.toLowerCase()))}
+                            clicked={this.changeSelected}
+                        />))}
+                        {/* <NavBox 
                             sectionName='Questions' 
                             selected={this.state.selection === 'navbox-questions'}  
                             clicked={this.changeSelected}
@@ -104,7 +109,7 @@ export class HomeBox extends React.Component {
                             sectionName='Statistics' 
                             selected={this.state.selection === 'navbox-statistics'} 
                             clicked={this.changeSelected} 
-                        />
+                        /> */}
                     </div>
                     <div 
                         className={'button train-button ' + ({

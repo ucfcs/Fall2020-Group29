@@ -1,9 +1,10 @@
-const storedFields = [
-  'token',
-  'questions',
-  'tags',
-  'contacts',
-  'documents'
+export const sections = [
+  'Questions',
+  'Tags'
+  // 'Contacts',
+  // 'Documents',
+  // 'Users',
+  // 'Statistics'
 ]
 
 export function retrain(callback) {
@@ -34,6 +35,6 @@ export function retrain(callback) {
 }
 
 export function logOut() {
-window.sessionStorage.clear();
-window.location.href = '/';
+  window.sessionStorage.clear();
+  window.location.href = '/';
 }
