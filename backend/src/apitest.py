@@ -241,8 +241,8 @@ def update_contact(name = 'Mark Heinrich', title = 'CS Advisor', itemToUpdate = 
 
 ## tags collection ##
 
-# TODO: create - tag name & tag type
-@app.route('/add_tag', methods=['POST']) # add a question to the database with Name, Responses, and Tags, returns this new document. pls check if it exists first.
+# create - tag name & tag type
+@app.route('/add_tag', methods=['POST']) # add a tag to the database with name, and type, returns this new document. pls check if it exists first.
 def add_tag( name = 'testo',  type = 'cat'):
   new_tag = {'name': name, 'type': type} # we make sure all tags are lower case
   
@@ -275,11 +275,110 @@ def get_tag( name = 'testo', type = 'cat' ):
 
 # TODO: search a triplet of entities
 
-# TODO: update
-# TODO: update all questions in the database with this tag
+# update
+@app.route('/update_tag', methods=['PUT']) # give an existing tag a file, returns updated document
+def update_tag(old_dict = {'_id':'606e229c6770b2683d9d44ad', 'name':'testo', 'type':'cat'}, update = {'name':'testo2', 'type':'cat'}):
+  updated = mongo.db.tags.find_one_and_update(
+    {
+      '_id': ObjectId(old_dict['_id'])
+    }, 
+    {
+      '$set': update
+    },
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
 
-# TODO: delete
+  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
+  # update all questions which use this tag
+  replace_all_with_tag(old_dict['name'], old_dict['type'], update['name'])
+
+  return jsonify(updated)
+
+# Order for Tags:
+# 1. Intent (intents)
+# 2. Department (dept)
+# 3. Category (cat)
+# 4. Information (info)
+
+# update all questions in the database with this tag
+#@app.route('/replace_all_with_tag', methods=['PUT']) 
+def replace_all_with_tag( tag = 'ploop', type = 'info', replace = 'presto' ):
+  element = -1
+  if (type == 'intents'):
+    element = 0
+  elif (type == 'dept'):
+    element = 1
+  elif (type == 'cat'):
+    element = 2
+  elif (type == 'info'):
+    element = 3
+  else:
+    return jsonify({'result':'incorrect type. valid types: intents, dept, cat, info'})
+
+  found = mongo.db.questions.update_many(
+    {
+      'tags.'+str(element):tag
+    },
+    {
+      '$set': { 'tags.'+str(element):replace } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    )
+  
+  if (found is None): # if it comes back empty
+    return jsonify({'result':'no results'})
+
+  # list = []
+  # for i in found.raw_result: # itterate over curor 
+  #   fickleID = i.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  #   i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+  #   list.append(i)
+
+  return jsonify(found.acknowledged) # update_many doesn't return a document
+
+# TODO: delete - garbage collection, cannot delete if a question exists
+@app.route('/delete_tag', methods=['DELETE']) 
+def delete_tag(name = 'ploop', type = 'info'):
+  element = -1
+  if (type == 'intents'):
+    element = 0
+  elif (type == 'dept'):
+    element = 1
+  elif (type == 'cat'):
+    element = 2
+  elif (type == 'info'):
+    element = 3
+  else:
+    return jsonify({'result':'incorrect type. valid types: intents, dept, cat, info'})
+
+  # if no question is using this tag, we may delete it:
+  found = mongo.db.questions.find({'tags.'+str(element):name}) 
+  if (found.count() == 0):
+    to_delete = mongo.db.tags.delete_one(
+      {
+        '$and': [
+          {'name':name},
+          {'type':type}
+        ]
+      }
+      )
+    if (to_delete.deleted_count == 0): #if there is no match
+      return jsonify({'result':'no match'})
+    
+    return jsonify({'result':'deleted'})
+  else:
+    list = []
+    for i in found: # itterate over curor 
+      fickleID = i.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+      i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+      list.append(i)
+
+    return jsonify(list)
+  
 
 ## files collection ##
 
