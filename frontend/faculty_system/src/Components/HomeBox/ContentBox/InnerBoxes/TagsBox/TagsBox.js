@@ -3,7 +3,7 @@ import React from 'react';
 import Select from 'react-select';
 import {confirmAlert} from 'react-confirm-alert';
 import SelectionBox from '../SelectionBox';
-import { defaultTag, getTags, tagTypes, hasAllFields, saveTag } from './tags';
+import { defaultTag, getTags, tagTypes, hasAllFields, addTag, updateTag } from './tags';
 import './tagsbox.css';
 
 export class TagsBox extends React.Component {
@@ -20,6 +20,8 @@ export class TagsBox extends React.Component {
         this.hasValidChanges = this.hasValidChanges.bind(this);
         this.hasChanges = this.hasChanges.bind(this);
         this.canSave = this.canSave.bind(this);
+        this.handleAddTag = this.handleAddTag.bind(this);
+        this.handleUpdateTag = this.handleUpdateTag.bind(this);
         this.handleSave = this.handleSave.bind(this);
 
         this.state = {
@@ -106,17 +108,14 @@ export class TagsBox extends React.Component {
             t.name.toLowerCase().includes(searchVal.toLowerCase());
         });
         this.setState({displayedTags:dis});
-        
-
     }
 
     selectType(event, item) {
         event.preventDefault();
         if (this.state.curType !== item.name) {
-                this.setState({curType:item.name}, ()=>{
-                    this.updateDisplayedTags();
-                });
-            
+            this.setState({curType:item.name}, ()=>{
+                this.updateDisplayedTags();
+            });
         }
     }
 
@@ -163,6 +162,77 @@ export class TagsBox extends React.Component {
         return this.hasChanges() && this.hasValidChanges() && hasAllFields(this.state.curTag).hasFields;
     }
 
+    handleAddTag() {
+        addTag(this.state.curTag, (response) => {
+            if (response.success) {
+                let newTag = response.tag;
+                let tags = this.state.tags;
+                let tagTypeList = tags[newTag.type];
+                tagTypeList.push(cloneDeep(newTag));
+                this.setState({curTag:cloneDeep(newTag)});
+
+                tags[newTag.type] = tagTypeList;
+                this.setState({tags:tags}, ()=> {
+                    window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
+                    this.updateDisplayedTags();
+                    alert(response.message);
+                });
+            } else {
+                console.error(response.message);
+                alert('Could not save tag - \n' + response.message);
+            }
+        });
+    }
+
+    handleUpdateTag() {
+        console.log('Updating the Tag.');
+        updateTag({newTag:this.state.curTag, oldTag:this.concatTags().filter(tag=> {
+            return tag._id === this.state.curTag._id;
+        })[0]}, (response)=> {
+            if (response.success) {
+                let newTag = response.tag;
+                console.log(newTag);
+                let tags = this.state.tags;
+                let tagTypeList = tags[newTag.type];
+                let check = tagTypeList.filter(tag=> {
+                    return tag._id === newTag._id;
+                })[0];
+
+                /* 
+                When updating a tag name, go through the questions stored in local storage and 
+                change any instance of the old tag name to the new tag name for the corresponding
+                type.
+                */
+                let qfs = window.sessionStorage.getItem('questions');
+                if (qfs !== null) {
+                    let questions = JSON.parse(qfs);
+                    questions.forEach(question => {
+                        if (question.tags[newTag.type] === check.name) {
+                            question.tags[newTag.type] = newTag.name;
+                        }
+                    });
+                    window.sessionStorage.setItem('questions', JSON.stringify(questions));
+                }
+                
+                tagTypeList[tagTypeList.indexOf(check)] = newTag;
+                tags[newTag.type] = tagTypeList;
+                this.setState({tags:tags, curTag:cloneDeep(newTag)}, ()=> {
+                    window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
+                    this.updateDisplayedTags();
+                    alert(response.message);
+                });
+
+            } else if (response.dependent) {
+                alert('Cannot update tag, there are currently questions which rely on this tag with its current type. ' +
+                'If you want a similar tag with a different type, please create a new tag.\n The following questions are dependent on this tag:\n\n' +
+                response.dependentQuestions.join('\n'));
+            } else {
+                console.error(response.message);
+                alert('Could not save tag - \n' + response.message);
+            }
+        });
+    }
+
     handleSave(event) {
         event.preventDefault();
         if (this.canSave()) {
@@ -172,51 +242,15 @@ export class TagsBox extends React.Component {
                 buttons: [
                     {
                         label: 'Yes, please save',
-                        onClick: ()=> saveTag(this.state.curTag._id === '' ? {
-                            newTag:this.state.curTag
-                        } : {newTag:this.state.curTag, oldTag:this.concatTags().filter(tag=> {
-                            return tag._id === this.state.curTag._id;
-                        })[0]
-                        }, response=> {
-                            if (response.success) {
-                                let newTag = response.tag;
-                                let tags = this.state.tags;
-                                let tagTypeList = tags[newTag.type];
-                                let check = tagTypeList.filter(tag=> {
-                                    return tag._id === newTag._id;
-                                })[0];
-                                if (check === undefined) {
-                                    tagTypeList.push(cloneDeep(newTag));
-                                    this.setState({curTag:cloneDeep(newTag)})
-                                } else {
-                                    /* 
-                                    When updating a tag name, go through the questions stored in local storage and 
-                                    change any instance of the old tag name to the new tag name for the corresponding
-                                    type.
-                                    */
-                                    let qfs = window.sessionStorage.getItem('questions');
-                                    if (qfs !== null) {
-                                        let questions = JSON.parse(qfs);
-                                        questions.forEach(question => {
-                                            if (question.tags[newTag.type] === check.name) {
-                                                question.tags[newTag.type] = newTag.name;
-                                            }
-                                        });
-                                        window.sessionStorage.setItem('questions', questions);
-                                    }
-                                }
-                                tags[newTag.type] = tagTypeList;
-                                this.setState({tags:tags}, ()=> {
-                                    window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
-                                    this.updateDisplayedTags();
-                                    alert(response.message);
-                                })
-
+                        onClick: ()=> {
+                            if (this.state.curTag._id === '') {
+                                console.log('Add Tag');
+                                this.handleAddTag();
                             } else {
-                                console.error(response.message);
-                                alert('Could not save tag - \n' + response.message);
+                                console.log('Update Tag');
+                                this.handleUpdateTag();
                             }
-                        })
+                        }
                     },
                     {
                         label: 'No, continue working',

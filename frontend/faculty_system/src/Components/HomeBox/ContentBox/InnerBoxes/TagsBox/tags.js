@@ -1,3 +1,4 @@
+import {getQuestions} from '../QuestionsBox/questions';
 
 export const defaultTag = {
   _id:'',
@@ -61,48 +62,77 @@ export function getTags(callback) {
   }
 }
 
-export function saveTag(tags, callback) {
-  let call = '';
-  let method = '';
-  let succMessage = '';
-  let options = {};
+export function updateTag(tags, callback) {
+  getQuestions((questions)=>{
+    let canUpdate = true;
+    let dependentQuestions = []
+    if (tags.oldTag.type !== tags.newTag.type) {
+      questions.forEach(q=> {
+        if (q.tags[tags.oldTag.type] === tags.oldTag.name) {
+          canUpdate = false;
+          dependentQuestions.push(q.name);
+        }
+      });
+    }
+    console.log(canUpdate);
+    if (canUpdate) {
+      let options = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': window.sessionStorage.getItem('token')
+        },
+        body: JSON.stringify({'new_tag': tags.newTag, 'old_tag': tags.oldTag})
+      };
+      fetch('http://127.0.0.1:5000/api/faculty/update_tag', options)
+        .then((res)=> {
+          if (res.status === 200) {
+            res.json().then((res)=> {
+              callback({
+                success: true,
+                message: 'Tag successfully updated.',
+                tag: res.tag
+              });
+            });
+          } else {
+            res.json().then((res)=> {
+              callback({
+                success: false,
+                dependent: false,
+                message: res.message
+              });
+            });
+          }
+      });
+    } else {
+      console.log('sending callback');
+      callback({
+        success: false,
+        message: 'Cannot update type for tag with dependent questions.',
+        dependent: true,
+        dependentQuestions: dependentQuestions
+      });
+    }
+  });
+}
 
-  if (tags.newTag._id === '') {
-    call = 'add_tag';
-    method = 'POST';
-    succMessage = 'Tag successfully added.';
-    options = {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': window.sessionStorage.getItem('token')
-      },
-      body: JSON.stringify({'tag': tags.newTag})
-    };
-  } else {
-    call = 'update_tag';
-    method = 'PUT';
-    succMessage = 'Tag successfully updated.';
-    call = 'add_tag';
-    method = 'POST';
-    succMessage = 'Tag successfully added.';
-    options = {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': window.sessionStorage.getItem('token')
-      },
-      body: JSON.stringify({'new_tag': tags.newTag, 'old_tag': tags.oldTag})
-    };
-  }
+export function addTag(tag, callback) {
+  let options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': window.sessionStorage.getItem('token')
+    },
+    body: JSON.stringify({'tag': tag})
+  };
 
-  fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
+  fetch('http://127.0.0.1:5000/api/faculty/add_tag', options)
     .then((res)=> {
       if (res.status === 200) {
         res.json().then((res)=> {
           callback({
             success: true,
-            message: succMessage,
+            message: 'Tag successfully added.',
             tag: res.tag
           });
         });

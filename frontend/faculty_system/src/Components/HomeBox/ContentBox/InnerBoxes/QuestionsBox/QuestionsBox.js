@@ -293,7 +293,7 @@ export class QuestionsBox extends React.Component {
             if (this.hasTrainableChanges()) {
                 console.log(this.props.updateTrain);
                 confirmAlert({
-                    title:'You\'ve made changes which require the system to be retrained.',
+                    title:'You\'ve made changes that require the system to be retrained.',
                     message: 'Would you like to save your changes and retrain now?',
                     buttons: [
                         {
