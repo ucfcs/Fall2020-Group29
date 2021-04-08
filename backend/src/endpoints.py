@@ -171,10 +171,20 @@ def retrain_model():
 def add_t():
     req = request.get_json()
     tag = req["tag"]
+    tag_type = tag["type"]
+    if (tag_type == "intent"):
+        tag["type"] = "intents"
+    elif (tag_type == "department"):
+        tag["type"] = "dept"
+    elif (tag_type == "category"):
+        tag["type"] = "cat"
+    elif (tag_type == "information"):
+        tag["type"] = "info"
     new_tag = add_tag(mongo, tag["name"], tag["type"])
     if (new_tag != None):
         return jsonify(tag=new_tag)
     else:
+        new_tag["type"] = tag_type
         return jsonify(message="Tag already exists in database."), 500
 
 @app.route("/api/faculty/update_tag", methods=["PUT"])
@@ -184,10 +194,31 @@ def update_t():
     new_tag = req["new_tag"]
     new_tag.pop("_id")
 
+    tag_type = new_tag["type"]
+    if (tag_type == "intent"):
+        new_tag["type"] = "intents"
+    elif (tag_type == "department"):
+        new_tag["type"] = "dept"
+    elif (tag_type == "category"):
+        new_tag["type"] = "cat"
+    elif (tag_type == "information"):
+        new_tag["type"] = "info"
+
     updated = update_tag(mongo, old_tag, new_tag)
+
+    
     if updated == None:
         return jsonify(message="Tag not found."), 404
     else:
+        updated_type = updated["type"]
+        if (updated_type == "intents"):
+            updated["type"] = "intent"
+        elif (updated_type == "dept"):
+            updated["type"] = "department"
+        elif (updated_type == "cat"):
+            updated["type"] = "category"
+        elif (updated_type == "info"):
+            updated["type"] = "information"
         return jsonify(tag=updated)
 
 
