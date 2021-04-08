@@ -5,7 +5,7 @@ from flask_pymongo import PyMongo
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from .database_manager import return_all, update_question, add_question
+from .database_manager import return_all, update_question, add_question, add_tag, update_tag
 from .train import train
 import json
 
@@ -168,12 +168,27 @@ def retrain_model():
     return jsonify(message="Model successfully retrained")
 
 @app.route("/api/faculty/add_tag", methods=["POST"])
-def add_tag():
-    return jsonify(message="Endpoint not implemented yet."), 503
+def add_t():
+    req = request.get_json()
+    tag = req["tag"]
+    new_tag = add_tag(mongo, tag["name"], tag["type"])
+    if (new_tag != None):
+        return jsonify(tag=new_tag)
+    else:
+        return jsonify(message="Tag already exists in database."), 500
 
 @app.route("/api/faculty/update_tag", methods=["PUT"])
-def update_tag():
-    return jsonify(message="Endpoint not implemented yet."), 503
+def update_t():
+    req = request.get_json()
+    old_tag = req["old_tag"]
+    new_tag = req["new_tag"]
+    new_tag.pop("_id")
+
+    updated = update_tag(mongo, old_tag, new_tag)
+    if updated == None:
+        return jsonify(message="Tag not found."), 404
+    else:
+        return jsonify(tag=updated)
 
 
 ####################################################### Dummy Data ####################################################

@@ -61,34 +61,45 @@ export function getTags(callback) {
   }
 }
 
-export function saveTag(tag, callback) {
+export function saveTag(tags, callback) {
   let call = '';
   let method = '';
   let succMessage = '';
+  let options = {};
 
-  if (tag._id === '') {
+  if (tags.newTag._id === '') {
     call = 'add_tag';
     method = 'POST';
     succMessage = 'Tag successfully added.';
+    options = {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': window.sessionStorage.getItem('token')
+      },
+      body: JSON.stringify({'tag': tags.newTag})
+    };
   } else {
     call = 'update_tag';
     method = 'PUT';
     succMessage = 'Tag successfully updated.';
+    call = 'add_tag';
+    method = 'POST';
+    succMessage = 'Tag successfully added.';
+    options = {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': window.sessionStorage.getItem('token')
+      },
+      body: JSON.stringify({'new_tag': tags.newTag, 'old_tag': tags.oldTag})
+    };
   }
-
-  let options = {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': window.sessionStorage.getItem('token')
-    },
-    body: JSON.stringify({'tag': tag})
-  };
 
   fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
     .then((res)=> {
       if (res.status === 200) {
-        res.json.then((res)=> {
+        res.json().then((res)=> {
           callback({
             success: true,
             message: succMessage,

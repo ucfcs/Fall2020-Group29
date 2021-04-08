@@ -13,6 +13,7 @@ export class TagsBox extends React.Component {
 
         this.concatTags = this.concatTags.bind(this);
         this.selectItem = this.selectItem.bind(this);
+        this.updateDisplayedTags = this.updateDisplayedTags.bind(this);
         this.selectType = this.selectType.bind(this);
         this.filterSearch = this.filterSearch.bind(this);
         this.handleSelectType = this.handleSelectType.bind(this);
@@ -92,18 +93,28 @@ export class TagsBox extends React.Component {
         }
     }
 
+    updateDisplayedTags() {
+        let tags = this.concatTags();
+        let searchVal = '';
+        let search = document.getElementById('search-bar');
+        if (search !== undefined) {
+            searchVal = search.value;
+        }
+
+        let dis = tags.filter(t=>{
+            return (this.state.curType === 'all' || t.type === this.state.curType) && 
+            t.name.toLowerCase().includes(searchVal.toLowerCase());
+        });
+        this.setState({displayedTags:dis});
+        
+
+    }
+
     selectType(event, item) {
         event.preventDefault();
         if (this.state.curType !== item.name) {
-            
-
-            
                 this.setState({curType:item.name}, ()=>{
-                    let tags = this.concatTags();
-                    let dis = tags.filter(t=>{
-                        return this.state.curType === 'all' || t.type === this.state.curType;
-                    });
-                    this.setState({displayedTags:dis});
+                    this.updateDisplayedTags();
                 });
             
         }
@@ -111,11 +122,7 @@ export class TagsBox extends React.Component {
 
     filterSearch(event) {
         event.preventDefault();
-        let tags = this.concatTags();
-        let dis = tags.filter(t=>{
-            return t.name.toLowerCase().includes(event.target.value.toLowerCase());
-        });
-        this.setState({displayedTags:dis});
+        this.updateDisplayedTags();
     }
 
     handleSelectType(event) {
@@ -165,9 +172,46 @@ export class TagsBox extends React.Component {
                 buttons: [
                     {
                         label: 'Yes, please save',
-                        onClick: ()=>saveTag(this.state.curTag, response=> {
+                        onClick: ()=> saveTag(this.state.curTag._id === '' ? {
+                            newTag:this.state.curTag
+                        } : {newTag:this.state.curTag, oldTag:this.concatTags().filter(tag=> {
+                            return tag._id === this.state.curTag._id;
+                        })[0]
+                        }, response=> {
                             if (response.success) {
-                                
+                                let newTag = response.tag;
+                                let tags = this.state.tags;
+                                let tagTypeList = tags[newTag.type];
+                                let check = tagTypeList.filter(tag=> {
+                                    return tag._id === newTag._id;
+                                })[0];
+                                if (check === undefined) {
+                                    tagTypeList.push(cloneDeep(newTag));
+                                    this.setState({curTag:cloneDeep(newTag)})
+                                } else {
+                                    /* 
+                                    When updating a tag name, go through the questions stored in local storage and 
+                                    change any instance of the old tag name to the new tag name for the corresponding
+                                    type.
+                                    */
+                                    let qfs = window.sessionStorage.getItem('questions');
+                                    if (qfs !== null) {
+                                        let questions = JSON.parse(qfs);
+                                        questions.forEach(question => {
+                                            if (question.tags[newTag.type] === check.name) {
+                                                question.tags[newTag.type] = newTag.name;
+                                            }
+                                        });
+                                        window.sessionStorage.setItem('questions', questions);
+                                    }
+                                }
+                                tags[newTag.type] = tagTypeList;
+                                this.setState({tags:tags}, ()=> {
+                                    window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
+                                    this.updateDisplayedTags();
+                                    alert(response.message);
+                                })
+
                             } else {
                                 console.error(response.message);
                                 alert('Could not save tag - \n' + response.message);
@@ -213,8 +257,8 @@ export class TagsBox extends React.Component {
                             <div className='section-title'>
                                 Tags
                             </div>
-                            <div id='search-bar'>
-                                <input type='text' placeholder='Search' onChange={this.filterSearch}/>
+                            <div id='search-bar-wrapper'>
+                                <input id='search-bar' type='text' placeholder='Search' onChange={this.filterSearch}/>
                             </div>
                             <div id='tag-select-wrapper'>
                                 <SelectionBox 
