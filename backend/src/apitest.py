@@ -241,7 +241,12 @@ def update_contact(name = 'Mark Heinrich', title = 'CS Advisor', itemToUpdate = 
 
 ## tags collection ##
 
+<<<<<<< HEAD
 # create - tag name & tag type
+=======
+
+# TODO: create - tag name & tag type
+>>>>>>> 9f3ad8294467bbe58207b2e35e1655ebd4ab9e2b
 @app.route('/add_tag', methods=['POST']) # add a tag to the database with name, and type, returns this new document. pls check if it exists first.
 def add_tag( name = 'testo',  type = 'cat'):
   new_tag = {'name': name, 'type': type} # we make sure all tags are lower case
@@ -275,7 +280,7 @@ def get_tag( name = 'testo', type = 'cat' ):
 
 # TODO: search a triplet of entities
 
-# update
+# TODO: update
 @app.route('/update_tag', methods=['PUT']) # give an existing tag a file, returns updated document
 def update_tag(old_dict = {'_id':'606e229c6770b2683d9d44ad', 'name':'testo', 'type':'cat'}, update = {'name':'testo2', 'type':'cat'}):
   updated = mongo.db.tags.find_one_and_update(
@@ -293,8 +298,53 @@ def update_tag(old_dict = {'_id':'606e229c6770b2683d9d44ad', 'name':'testo', 'ty
   fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
-  # update all questions which use this tag
-  replace_all_with_tag(old_dict['name'], old_dict['type'], update['name'])
+  return_all_with_tag(old_dict['name'], old_dict['type'], update['name'])
+
+  return jsonify(updated)
+
+# Order for Tags:
+# 1. Intent (intents)
+# 2. Department (dept)
+# 3. Category (cat)
+# 4. Information (info)
+
+# update all questions in the database with this tag
+#@app.route('/return_all_with_tag', methods=['PUT']) 
+def return_all_with_tag( tag = 'ploop', type = 'info', replace = 'presto' ):
+  element = -1
+  if (type == 'intents'):
+    element = 0
+  elif (type == 'dept'):
+    element = 1
+  elif (type == 'cat'):
+    element = 2
+  elif (type == 'info'):
+    element = 3
+  else:
+    return jsonify({'result':'incorrect type. valid types: intents, dept, cat, info'})
+
+  found = mongo.db.questions.update_many(
+    {
+      'tags.'+str(element):tag
+    },
+    {
+      '$set': { 'tags.'+str(element):replace } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    )
+  
+  if (found is None): # if it comes back empty
+    return jsonify({'result':'no results'})
+
+  # list = []
+  # for i in found.raw_result: # itterate over curor 
+  #   fickleID = i.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  #   i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+  #   list.append(i)
+
+  return jsonify(found.acknowledged) # update_many doesn't return a document
+
+# TODO: delete - garbage collection, cannot delete if a question exists
 
   return jsonify(updated)
 
