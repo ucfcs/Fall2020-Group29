@@ -8,7 +8,10 @@ export class HomeBox extends React.Component {
 
     constructor(props) {
         super(props);
+        this.contentRef = React.createRef();
 
+        this.hasChanges = this.hasChanges.bind(this);
+        this.handleSelected = this.handleSelected.bind(this);
         this.changeSelected = this.changeSelected.bind(this);
         this.handleRetrain = this.handleRetrain.bind(this);
         this.handleUpdateTrain = this.handleUpdateTrain.bind(this);
@@ -20,17 +23,40 @@ export class HomeBox extends React.Component {
         }
     }
 
-    changeSelected(event) {
+    hasChanges() {
+        return this.contentRef.current.hasChanges();
+    }
 
+    
+
+    handleSelected(event) {
         event.preventDefault();
-        console.log(this.state.selectedNode);
-        
+        console.log(this.hasChanges());
+        if (this.hasChanges()) {
+            confirmAlert({
+                title:"You have unsaved changes",
+                message: "Do you want to leave without saving your changes?",
+                buttons: [
+                    {
+                        label: "Yes",
+                        onClick: ()=> this.changeSelected(event.target.id, event.target)
+                    },
+                    {
+                        label: "No",
+                        onClick: ()=>{}
+                    }
+                ]});
+        } else {
+            this.changeSelected(event.target.id, event.target)
+        }       
+    }
 
+    changeSelected(id, target) {
         let item = this.state.selectedNode;
-        if (item === '') {
-            item = document.getElementById('navbox-questions')
-        }
-        this.setState({selection:event.target.id, selected:event.target});        
+            if (item === '') {
+                item = document.getElementById('navbox-questions')
+            }
+            this.setState({selection:id, selected:target});
     }
 
     handleRetrain(event) {
@@ -75,41 +101,13 @@ export class HomeBox extends React.Component {
                     <div id='navbar'>
                         <div id='nav-header'>
                         </div>
-                        {sections.map(section=>(<NavBox 
-                            sectionName={section} 
-                            selected={this.state.selection === ('navbox-'+(section.toLowerCase()))}
-                            clicked={this.changeSelected}
-                        />))}
-                        {/* <NavBox 
-                            sectionName='Questions' 
-                            selected={this.state.selection === 'navbox-questions'}  
-                            clicked={this.changeSelected}
-                        />
-                        <NavBox 
-                            sectionName='Tags' 
-                            selected={this.state.selection === 'navbox-tags'} 
-                            clicked={this.changeSelected} 
-                        />
-                        <NavBox 
-                            sectionName='Contacts' 
-                            selected={this.state.selection === 'navbox-contacts'} 
-                            clicked={this.changeSelected} 
-                        />
-                        <NavBox 
-                            sectionName='Documents' 
-                            selected={this.state.selection === 'navbox-documents'} 
-                            clicked={this.changeSelected} 
-                        />
-                        <NavBox 
-                            sectionName='Users' 
-                            selected={this.state.selection === 'navbox-users'} 
-                            clicked={this.changeSelected} 
-                        />
-                        <NavBox 
-                            sectionName='Statistics' 
-                            selected={this.state.selection === 'navbox-statistics'} 
-                            clicked={this.changeSelected} 
-                        /> */}
+                        {sections.map(section=>
+                            <NavBox 
+                                sectionName={section} 
+                                selected={this.state.selection === ('navbox-'+(section.toLowerCase()))}
+                                clicked={this.handleSelected}
+                            />
+                        )}
                     </div>
                     <div 
                         className={'button train-button ' + ({
@@ -125,7 +123,7 @@ export class HomeBox extends React.Component {
                         Log Out
                     </div>
                 </div>
-                <ContentBox selection={this.state.selection} updateTrain={this.handleUpdateTrain}/>
+                <ContentBox ref={this.contentRef} selection={this.state.selection} updateTrain={this.handleUpdateTrain}/>
             </div>
         );
     }

@@ -34,7 +34,7 @@ export class TagsBox extends React.Component {
 
             },
             displayedTags:[],
-            curTag: defaultTag,
+            curTag: cloneDeep(defaultTag),
             curType: 'all'
         }
     }

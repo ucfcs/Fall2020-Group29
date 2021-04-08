@@ -1,18 +1,29 @@
 import {QuestionsBox} from './InnerBoxes/QuestionsBox/QuestionsBox';
 import {TagsBox} from './InnerBoxes/TagsBox/TagsBox';
-import {ContactsBox} from './InnerBoxes/ContactsBox/ContactsBox';
+import React from 'react';
 
 
-export function ContentBox(props) {
-    return (
-        <div id='content-box'>
-            {
+export class ContentBox extends React.Component {
+    constructor(props) {
+        super(props);
+        this.contentRef = React.createRef();
+
+        this.hasChanges = this.hasChanges.bind(this);
+    }
+    hasChanges() {
+        return this.contentRef.current.hasChanges();
+    }
+
+    render() {
+        return (
+            <div id='content-box'>
                 {
-                    'navbox-questions' : <QuestionsBox updateTrain={props.updateTrain}/>,
-                    'navbox-tags' : <TagsBox  isAdmin={true}/>,
-                    'navbox-contacts' : <ContactsBox />
-                }[props.selection]
-            }
-        </div>
-    );
+                    {
+                        'navbox-questions' : <QuestionsBox ref={this.contentRef} updateTrain={this.props.updateTrain}/>,
+                        'navbox-tags' : <TagsBox ref={this.contentRef} isAdmin={true}/>
+                    }[this.props.selection]
+                }
+            </div>
+        );
+    }
 }
