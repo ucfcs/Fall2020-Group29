@@ -89,18 +89,6 @@
     flex:7;
 }
 
-.response {
-    margin:1% 5% 1% 5%;
-    display:flex;
-    border:1px solid black;
-}
-
-.response-text {
-    width:75%;
-    height:30px;
-    flex:6;
-}
-
 .pattern {
     margin:1% 5% 1% 5%;
     display:flex;
@@ -108,18 +96,28 @@
 }
 
 .pattern-text {
-    width:75%;
     height:30px;
-    flex:6;
+    flex:12;
 }
 
-.response-delete {
-    flex:1;
-    height:30px;
-    line-height:30px;
-    cursor: pointer;
+.pattern-delete {
+    color: red;
+    display:flex;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
     font-weight: bold;
-    font-size: large;
+    font-size:x-large;
+    cursor:pointer;
+    flex:1;
+}
+
+.pattern-delete:hover {
+    background-color:#ccc;
+}
+
+.pattern-delete:active {
+    background-color:#aaa;
 }
 
 .entity-selection-box {
