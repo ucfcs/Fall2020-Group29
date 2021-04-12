@@ -18,8 +18,12 @@ p {
 #navbar {
     overflow: auto;
     height: 100%;
-    flex:2;
-    border: 1px solid black;
+    flex:3;
+    display:flex;
+    flex-direction: column;
+    border-left: 1px solid black;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 #content-box {
@@ -68,12 +72,15 @@ p {
 }
 
 .navbox {
-    overflow: hidden;
+    display:flex;
+    justify-content: center;
     text-align: center;
-    line-height: 50px;
-    height: 50px;
+    align-items: center;
+    flex:1;
+    max-height: 80px;
     cursor: pointer;
     font-size: x-large;
+    border-bottom: solid 1px black;
 }
 
 .selected {

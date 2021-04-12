@@ -154,8 +154,8 @@ export default HomeBox;
 
 function NavBox(props) {
     return (
-        <div className={props.selected === true ? 'navbox selected' : 'navbox'}
-         id={'navbox-'+props.sectionName.toLowerCase()} onClick={(event)=>props.clicked(event)}>
+        <div className={'navbox' + (props.selected === true ? ' selected' : '')}
+         id={'navbox-'+(props.sectionName.toLowerCase())} onClick={(event)=>props.clicked(event)}>
             {props.sectionName}
         </div>
     );
