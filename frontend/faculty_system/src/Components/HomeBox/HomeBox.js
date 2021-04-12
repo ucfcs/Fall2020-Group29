@@ -11,6 +11,7 @@ export class HomeBox extends React.Component {
         this.contentRef = React.createRef();
 
         this.hasChanges = this.hasChanges.bind(this);
+        this.handleLogout = this.handleLogout.bind(this);
         this.handleSelected = this.handleSelected.bind(this);
         this.changeSelected = this.changeSelected.bind(this);
         this.handleRetrain = this.handleRetrain.bind(this);
@@ -27,7 +28,27 @@ export class HomeBox extends React.Component {
         return this.contentRef.current.hasChanges();
     }
 
-    
+    handleLogout(event) {
+        event.preventDefault();
+        console.log(this.hasChanges());
+        if (this.hasChanges()) {
+            confirmAlert({
+                title:"You have unsaved changes",
+                message: "Do you want to leave without saving your changes?",
+                buttons: [
+                    {
+                        label: "Yes",
+                        onClick: ()=> logOut()
+                    },
+                    {
+                        label: "No",
+                        onClick: ()=>{}
+                    }
+                ]});
+        } else {
+            logOut();
+        }
+    }
 
     handleSelected(event) {
         event.preventDefault();
@@ -119,7 +140,7 @@ export class HomeBox extends React.Component {
                     >
                         {this.state.needsTraining}
                     </div>
-                    <div id='log-out' className='button log-out-button' onClick={(event)=>{event.preventDefault();logOut();}}>
+                    <div id='log-out' className='button log-out-button' onClick={this.handleLogout}>
                         Log Out
                     </div>
                 </div>
