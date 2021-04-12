@@ -40,6 +40,10 @@ p {
 
 #search-bar {
     flex:1;
+    border-left:transparent;
+    border-right:transparent;
+    border-top:transparent;
+    border-bottom: solid 1px black;
 }
 
 #selection-header {
@@ -56,10 +60,11 @@ p {
 
 #new-item-selection {
     flex:1;
-    min-height: 100px;
+    min-height: 50px;
     display: flex;
     align-items: center;
     text-align: center;
+    border-bottom: solid 1px black;
 }
 
 .navbox {

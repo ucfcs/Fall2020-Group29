@@ -402,9 +402,17 @@ export class QuestionsBox extends React.Component {
                         <div className='section-title'>
                             Questions
                         </div>
-                            <div id='search-bar-wrapper'>
-                                <input id='search-bar' type='text' placeholder='Search' onChange={this.filterSearch}/>
+                        <div id='search-bar-wrapper'>
+                            <input id='search-bar' type='text' placeholder='Search' onChange={this.filterSearch}/>
+                        </div>
+                        <div id='new-item-selection'>
+                            <p className='new-question-text'>
+                                Add New Question
+                            </p>
+                            <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultQuestion)}>
+                                +
                             </div>
+                        </div>
                         <div className='selection-wrapper'>
                             <SelectionBox 
                                 name='questions' 
@@ -417,14 +425,6 @@ export class QuestionsBox extends React.Component {
                                 update={this.selectItem} 
                                 curItem={this.state.curQuestion}
                             />
-                            <div id='new-item-selection'>
-                                <p className='new-question-text'>
-                                    Add New Question
-                                </p>
-                                <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultQuestion)}>
-                                    +
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div id='content'>

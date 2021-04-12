@@ -296,6 +296,14 @@ export class TagsBox extends React.Component {
                             <div id='search-bar-wrapper'>
                                 <input id='search-bar' type='text' placeholder='Search' onChange={this.filterSearch}/>
                             </div>
+                            <div id='new-item-selection'>
+                                    <p className='new-tag-text'>
+                                        Add New Tag
+                                    </p>
+                                    <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultTag)}>
+                                        +
+                                    </div>
+                            </div>
                             <div className='selection-wrapper'>
                                 <SelectionBox 
                                     name='tags' 
@@ -307,14 +315,6 @@ export class TagsBox extends React.Component {
                                     update={this.selectItem}
                                     curItem={this.state.curTag}
                                 />
-                                <div id='new-item-selection'>
-                                    <p className='new-tag-text'>
-                                        Add New Tag
-                                    </p>
-                                    <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultTag)}>
-                                        +
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
