@@ -427,8 +427,8 @@ export class QuestionsBox extends React.Component {
                             />
                         </div>
                     </div>
-                    <div id='content'>
-                        <div id='selection-header'>
+                    <div id='question-content-body'>
+                        <div id='question-selection-header'>
                             <label id='question-label' htmlFor='question-name'>
                                 Question Name
                             </label>
@@ -551,7 +551,7 @@ export class QuestionsBox extends React.Component {
                                     
                                 </div>
                                 <div id='contacts-and-forms'>
-                                    <div id='contacts-box'>
+                                    <div id='question-contacts-box'>
                                         <h2>Contacts</h2>
                                         <div className='contacts field-box'>
                                             <Select 
@@ -563,7 +563,7 @@ export class QuestionsBox extends React.Component {
                                             />
                                         </div>
                                     </div>
-                                    <div id='documents-box'>
+                                    <div id='question-documents-box'>
                                         <h2>Documents</h2>
                                         <div className='documents field-box'>
                                             <Select  
@@ -575,7 +575,7 @@ export class QuestionsBox extends React.Component {
                                             />
                                         </div>
                                     </div>
-                                    <div id='follow-up-box'>
+                                    <div id='question-follow-up-box'>
                                         <h2>Follow Up Question</h2>
                                         <div className='follow-ups field-box'>
                                             <Select  

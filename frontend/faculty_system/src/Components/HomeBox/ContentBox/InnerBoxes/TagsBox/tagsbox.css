@@ -15,8 +15,16 @@
     flex-direction: column; 
 }
 
-#content {
-    display:block;
+#tag-selection-header {
+    height:10%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#tag-content-body {
+    display:flex;
+    flex-direction: column;
     flex:3;
     overflow:auto;
 }

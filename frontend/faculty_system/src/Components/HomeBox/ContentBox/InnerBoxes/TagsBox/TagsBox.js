@@ -318,8 +318,8 @@ export class TagsBox extends React.Component {
                             </div>
                         </div>
                     </div>
-                    <div id='content'>
-                        <div id='selection-header'>
+                    <div id='tag-content-body'>
+                        <div id='tag-selection-header'>
                             <label id='tag-label' htmlFor='tag-name'>
                                 Tag Name
                             </label>
