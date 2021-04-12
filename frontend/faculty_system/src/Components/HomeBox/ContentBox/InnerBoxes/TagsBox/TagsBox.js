@@ -107,6 +107,8 @@ export class TagsBox extends React.Component {
             return (this.state.curType === 'all' || t.type === this.state.curType) && 
             t.name.toLowerCase().includes(searchVal.toLowerCase());
         });
+
+        dis.sort((a, b)=> (a.name > b.name) ? 1 : -1)
         this.setState({displayedTags:dis});
     }
 
