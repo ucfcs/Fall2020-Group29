@@ -62,7 +62,7 @@ export function getTags(callback) {
   }
 }
 
-export function updateTag(tags, callback) {
+export function hasDependents(tags, callback) {
   getQuestions((questions)=>{
     let canUpdate = true;
     let dependentQuestions = []
@@ -74,45 +74,40 @@ export function updateTag(tags, callback) {
         }
       });
     }
-    console.log(canUpdate);
-    if (canUpdate) {
-      let options = {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': window.sessionStorage.getItem('token')
-        },
-        body: JSON.stringify({'new_tag': tags.newTag, 'old_tag': tags.oldTag})
-      };
-      fetch('http://127.0.0.1:5000/api/faculty/update_tag', options)
-        .then((res)=> {
-          if (res.status === 200) {
-            res.json().then((res)=> {
-              callback({
-                success: true,
-                message: 'Tag successfully updated.',
-                tag: res.tag
-              });
-            });
-          } else {
-            res.json().then((res)=> {
-              callback({
-                success: false,
-                dependent: false,
-                message: res.message
-              });
-            });
-          }
-      });
-    } else {
-      console.log('sending callback');
-      callback({
-        success: false,
-        message: 'Cannot update type for tag with dependent questions.',
-        dependent: true,
-        dependentQuestions: dependentQuestions
-      });
-    }
+    callback({
+      canUpdate:canUpdate,
+      dependentQuestions:dependentQuestions
+    });
+  });
+}
+
+export function updateTag(tags, callback) {
+  let options = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': window.sessionStorage.getItem('token')
+    },
+    body: JSON.stringify({'new_tag': tags.newTag, 'old_tag': tags.oldTag})
+  };
+  fetch('http://127.0.0.1:5000/api/faculty/update_tag', options)
+    .then((res)=> {
+      if (res.status === 200) {
+        res.json().then((res)=> {
+          callback({
+            success: true,
+            message: 'Tag successfully updated.',
+            tag: res.tag
+          });
+        });
+      } else {
+        res.json().then((res)=> {
+          callback({
+            success: false,
+            message: res.message
+          });
+        });
+      }
   });
 }
 

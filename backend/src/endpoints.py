@@ -182,9 +182,9 @@ def add_t():
         tag["type"] = "info"
     new_tag = add_tag(mongo, tag["name"], tag["type"])
     if (new_tag != None):
+        new_tag["type"] = tag_type
         return jsonify(tag=new_tag)
     else:
-        new_tag["type"] = tag_type
         return jsonify(message="Tag already exists in database."), 500
 
 @app.route("/api/faculty/update_tag", methods=["PUT"])

@@ -142,7 +142,7 @@ export class QuestionsBox extends React.Component {
 
     selectItem(event, item) {
         event.preventDefault();
-        if (this.state.curQuestion._id !== item._id) {
+        if (this.state.curQuestion._id !== item._id || this.state.curQuestion._id === '') {
             if (this.hasChanges()) {
                 confirmAlert({
                     title:"You have unsaved changes",

@@ -3,7 +3,7 @@ import React from 'react';
 import Select from 'react-select';
 import {confirmAlert} from 'react-confirm-alert';
 import SelectionBox from '../SelectionBox';
-import { defaultTag, getTags, tagTypes, hasAllFields, addTag, updateTag } from './tags';
+import { defaultTag, getTags, tagTypes, hasAllFields, addTag, updateTag, dependentQuestions, hasDependents } from './tags';
 import './tagsbox.css';
 
 export class TagsBox extends React.Component {
@@ -64,7 +64,7 @@ export class TagsBox extends React.Component {
 
     selectItem(event, item) {
         event.preventDefault();
-        if (this.state.curTag._id !== item._id) {
+        if (this.state.curTag._id !== item._id || this.state.curTag._id === '') {
             if (this.hasChanges()) {
                 confirmAlert({
                     title:"You have unsaved changes",
@@ -148,7 +148,7 @@ export class TagsBox extends React.Component {
 
     hasChanges() {
         if (this.state.curTag._id === '') {
-            return !isEqual(this.state.curTag, defaultTag);
+            return this.state.curTag.name !== '';
         } else {
             let tags = this.concatTags();
             let cur = tags.filter(t=>{
@@ -184,11 +184,8 @@ export class TagsBox extends React.Component {
         });
     }
 
-    handleUpdateTag() {
-        console.log('Updating the Tag.');
-        updateTag({newTag:this.state.curTag, oldTag:this.concatTags().filter(tag=> {
-            return tag._id === this.state.curTag._id;
-        })[0]}, (response)=> {
+    handleUpdateTag(tags) {
+        updateTag(tags, (response)=> {
             if (response.success) {
                 let newTag = response.tag;
                 console.log(newTag);
@@ -222,10 +219,6 @@ export class TagsBox extends React.Component {
                     alert(response.message);
                 });
 
-            } else if (response.dependent) {
-                alert('Cannot update tag, there are currently questions which rely on this tag with its current type. ' +
-                'If you want a similar tag with a different type, please create a new tag.\n The following questions are dependent on this tag:\n\n' +
-                response.dependentQuestions.join('\n'));
             } else {
                 console.error(response.message);
                 alert('Could not save tag - \n' + response.message);
@@ -235,22 +228,14 @@ export class TagsBox extends React.Component {
 
     handleSave(event) {
         event.preventDefault();
-        if (this.canSave()) {
+        if (this.canSave() && this.state.curTag._id === '') {
             confirmAlert({
                 title:'Are you sure you want to save these changes?',
                 message: '',
                 buttons: [
                     {
                         label: 'Yes, please save',
-                        onClick: ()=> {
-                            if (this.state.curTag._id === '') {
-                                console.log('Add Tag');
-                                this.handleAddTag();
-                            } else {
-                                console.log('Update Tag');
-                                this.handleUpdateTag();
-                            }
-                        }
+                        onClick: ()=> this.handleAddTag()
                     },
                     {
                         label: 'No, continue working',
@@ -258,6 +243,46 @@ export class TagsBox extends React.Component {
                     }
                 ]
             });
+        } else if (this.canSave()) {
+            let tagUpdate = {
+                newTag:this.state.curTag, 
+                oldTag:this.concatTags().filter(tag=> {
+                return tag._id === this.state.curTag._id;
+                })[0]
+            }
+            hasDependents(tagUpdate, (dependents)=> {
+                if (dependents.canUpdate) {
+                    confirmAlert({
+                        title:'Are you sure you want to save these changes?',
+                        message: '',
+                        buttons: [
+                            {
+                                label: 'Yes, please save',
+                                onClick: ()=> this.handleUpdateTag(tagUpdate)
+                            },
+                            {
+                                label: 'No, continue working',
+                                onClick: ()=>{}
+                            }
+                        ]
+                    });
+                } else {
+                    confirmAlert({
+                        title:'Cannot change tag type, you have questions that depend on this tag having its current type.',
+                        message: 'Would you like to create a new tag instead?',
+                        buttons: [
+                            {
+                                label: 'Yes, create new tag',
+                                onClick: ()=> this.handleAddTag()
+                            },
+                            {
+                                label: 'Cancel',
+                                onClick: ()=>{}
+                            }
+                        ]
+                    });
+                }
+            }); 
         }
     }
 
