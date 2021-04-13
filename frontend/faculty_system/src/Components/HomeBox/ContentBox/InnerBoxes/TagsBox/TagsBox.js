@@ -222,6 +222,7 @@ export class TagsBox extends React.Component {
                 type.
                 */
                 let qfs = window.sessionStorage.getItem('questions');
+                let previousQFS = window.sessionStorage.getItem('previous_question');
                 if (qfs !== null) {
                     let questions = JSON.parse(qfs);
                     questions.forEach(question => {
@@ -230,6 +231,14 @@ export class TagsBox extends React.Component {
                         }
                     });
                     window.sessionStorage.setItem('questions', JSON.stringify(questions));
+                }
+                
+                if (previousQFS !== null) {
+                    let question = JSON.parse(previousQFS);
+                    if (question.tags[newTag.type] === check.name) {
+                        question.tags[newTag.type] = newTag.name;
+                        window.sessionStorage.setItem('previous_question', JSON.stringify(question));
+                    }
                 }
                 
                 tagTypeList[tagTypeList.indexOf(check)] = newTag;
