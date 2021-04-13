@@ -27,7 +27,7 @@ def return_all(mongo, Collection = 'questions'):
   return list #return result 
 
 def add_question(mongo, question):
-  exists, q_name = check_exists(mongo, '', question['tags'])
+  exists, q_name = check_question_exists(mongo, '', question['tags'])
 
   if exists:
     return None, q_name
@@ -78,6 +78,14 @@ def check_question_exists(mongo, id, tags):
     if str(check) != id:
       return True, result['name']
     return False, ''
+
+def delete_question(mongo, id):
+  result = mongo.db.questions.delete_one({'_id':ObjectId(id)})
+  if result.deleted_count == 1:
+    return True, 'Question successfully deleted'
+  else:
+    return False, 'Question could not be found'
+
 
 def add_tag(mongo, name, type):
   new_tag = {'name': name, 'type': type} # we make sure all tags are lower case

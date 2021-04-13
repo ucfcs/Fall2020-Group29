@@ -1,9 +1,3 @@
-// export class Question {
-//     constructor(id, name, patterns, entities, responses) {
-
-//     }
-// }
-
 export const defaultQuestion = {
   '_id': '',
   'name': '',
@@ -190,7 +184,6 @@ export function saveQuestionAndTrain(question, update, callback) {
         res.json().then((res)=> {
           let q = res['question'];
           formatQuestion(q);
-          saved = true;
           callback(
             {
               success: true,
@@ -198,17 +191,17 @@ export function saveQuestionAndTrain(question, update, callback) {
               question: q
             });
 
-            if (saved===true) {
-              update('Training Now');
-              options = {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': window.sessionStorage.getItem('token')
-                }
-              };
+          if (saved===true) {
+            update('Training Now');
+            options = {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+              }
+            };
         
-              fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+            fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
               .then((res)=> {
                 if (res.status === 401) {
                   callback({
@@ -237,6 +230,121 @@ export function saveQuestionAndTrain(question, update, callback) {
         });
       }
     });  
+}
+
+export function deleteQuestion(question, callback) {
+  if (question._id === '') {
+    callback({
+      success: false,
+      message: 'Cannot delete a question not in the database.'
+    });
+    return;
+  }
+
+  let options = {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+    },
+    body: JSON.stringify({'question': question})
+  }
+
+  fetch('http://127.0.0.1:5000/api/faculty/delete_question', options)
+    .then((res)=> {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status === 200) {
+        res.json().then((res)=> {
+          callback({
+            success: true,
+            message: res.message
+          })
+        });
+      } else {
+        res.json().then((res)=> {
+          callback(
+            {
+              success: false,
+              message: res.message
+            });
+        });
+      }
+    });
+}
+
+export function deleteQuestionAndRetrain(question, update, callback) {
+  if (question._id === '') {
+    callback({
+      success: false,
+      message: 'Cannot delete a question not in the database.'
+    });
+    return;
+  }
+
+  let options = {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+    },
+    body: JSON.stringify({'question': question})
+  }
+
+  fetch('http://127.0.0.1:5000/api/faculty/delete_question', options)
+    .then((res)=> {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status === 200) {
+        res.json().then((res)=> {
+          callback({
+            success: true,
+            message: res.message
+          });
+
+          update('Training Now');
+          options = {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+            }
+          };
+        
+          fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+            .then((res)=> {
+              if (res.status === 401) {
+                callback({
+                  success: false,
+                  message: 'User not Authorized'
+                });
+              } else if (res.status===200) {
+                res.json().then((res)=> {
+                  update('Fully Trained');
+                    alert(res['message']);
+                });
+              } else {
+                update('Needs Training');
+                alert('Error: System could not be retrained.');
+              }
+            });
+        });
+      } else {
+        res.json().then((res)=> {
+          callback(
+            {
+              success: false,
+              message: res.message
+            });
+        });
+      }
+    });
 }
 
 

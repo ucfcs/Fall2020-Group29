@@ -168,7 +168,22 @@ p {
 
 .delete-button {
     background-color: red;
-    color:white;  
+    color:white;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    box-shadow: 0 0 0 2px black;
+    -moz-box-shadow: 0 0 0 2px black;
+    -webkit-box-shadow: 0 0 0 2px black;
+    text-decoration: underline;
+}
+
+.delete-button:active {
+    box-shadow: 0 0 0 1px black;
+    -moz-box-shadow: 0 0 0 1px black;
+    -webkit-box-shadow: 0 0 0 1px black;
+    border: 1px solid black;
 }
 
 .log-out-button {
