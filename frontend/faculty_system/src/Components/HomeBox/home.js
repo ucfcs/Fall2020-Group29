@@ -18,7 +18,12 @@ export function retrain(callback) {
   
       fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
       .then((res)=> {
-        if (res.status===200) {
+        if (res.status === 401) {
+          callback({
+            success: false,
+            message: 'User not Authorized'
+          });
+        } else if (res.status===200) {
           res.json().then((res)=> {
               callback({
                   message: res['message'],

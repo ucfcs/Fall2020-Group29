@@ -59,7 +59,7 @@ export function getQuestions(callback) {
     fetch('http://127.0.0.1:5000/api/faculty/get_questions', options)
       .then((res)=> {
           if (res.status === 401) {
-            res.json().then((res)=> alert(res['message']));
+            alert('User not Authorized');
             callback([]);
           } else if (res.status === 200) {
             res.json().then((res)=> {
@@ -116,7 +116,12 @@ export function saveQuestion(question, callback) {
 
   fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
     .then((res)=> {
-      if (res.status===200) {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status===200) {
         res.json().then((res)=> {
           let q = res['question'];
           formatQuestion(q);
@@ -176,7 +181,12 @@ export function saveQuestionAndTrain(question, update, callback) {
 
   fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
     .then((res)=> {
-      if (res.status===200) {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status===200) {
         res.json().then((res)=> {
           let q = res['question'];
           formatQuestion(q);
@@ -200,7 +210,12 @@ export function saveQuestionAndTrain(question, update, callback) {
         
               fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
               .then((res)=> {
-                if (res.status===200) {
+                if (res.status === 401) {
+                  callback({
+                    success: false,
+                    message: 'User not Authorized'
+                  });
+                } else if (res.status===200) {
                   res.json().then((res)=> {
                     update('Fully Trained');
                     alert(res['message']);

@@ -43,7 +43,7 @@ export function getTags(callback) {
     fetch('http://127.0.0.1:5000/api/faculty/get_tags', options)
       .then((res)=> {
           if (res.status === 401) {
-            res.json().then((res)=> alert(res['message']));
+            alert('User not authorized');
             callback({});
           } else if (res.status === 200) {
             res.json().then((res)=> {
@@ -92,7 +92,12 @@ export function updateTag(tags, callback) {
   };
   fetch('http://127.0.0.1:5000/api/faculty/update_tag', options)
     .then((res)=> {
-      if (res.status === 200) {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status === 200) {
         res.json().then((res)=> {
           callback({
             success: true,
@@ -123,7 +128,12 @@ export function addTag(tag, callback) {
 
   fetch('http://127.0.0.1:5000/api/faculty/add_tag', options)
     .then((res)=> {
-      if (res.status === 200) {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status === 200) {
         res.json().then((res)=> {
           callback({
             success: true,
