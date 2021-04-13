@@ -54,18 +54,22 @@ export class TagsBox extends React.Component {
     componentDidMount() {
         getTags((tags)=> {
             this.setState({tags:tags}, ()=>{
-                let tFromStorage = window.sessionStorage.getItem('previous_tag');
-                if (tFromStorage !== null) {
-                    this.setState({displayedTags:this.concatTags(), curTag:JSON.parse(tFromStorage)});
-                } else {
-                    this.setState({displayedTags:this.concatTags()});
+                let tagFromStorage = window.sessionStorage.getItem('previous_tag');
+                let typeFromStorage = window.sessionStorage.getItem('previous_type');
+                if (tagFromStorage !== null) {
+                    this.setState({curTag:JSON.parse(tagFromStorage)});
                 }
+                if (typeFromStorage !== null) {
+                    this.setState({curType:JSON.parse(typeFromStorage)});
+                }
+                this.setState({displayedTags:this.concatTags()}, ()=>this.updateDisplayedTags());
             });
         });
     }
 
     saveCurrent(callback) {
         window.sessionStorage.setItem('previous_tag', JSON.stringify(this.state.curTag));
+        window.sessionStorage.setItem('previous_type', JSON.stringify(this.state.curType));
         callback();
     }
 
@@ -274,6 +278,7 @@ export class TagsBox extends React.Component {
                     }
                 ]
             });
+
         } else if (this.canSave()) {
             let tagUpdate = {
                 newTag:this.state.curTag, 
@@ -334,9 +339,9 @@ export class TagsBox extends React.Component {
                                         tag._id !== this.state.curTag._id
                                     );
                                     tags[this.state.curTag.type] = remaining;
-                                    this.setState({tags:tags}, ()=> {
+                                    this.setState({tags:tags, curTag:cloneDeep(defaultTag)}, ()=> {
                                         this.updateDisplayedTags();
-                                        window.sessionStorage.setItem('tags', this.state.tags);
+                                        window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
                                         alert(response.message);
                                     });
                                 } else {
@@ -417,26 +422,30 @@ export class TagsBox extends React.Component {
                     </div>
                     <div id='tag-content-body'>
                         <div id='tag-selection-header'>
-                            <label id='tag-label' htmlFor='tag-name'>
-                                Tag Name
-                            </label>
-                            <input 
-                            type='text' 
-                            className={'tag-name' + (this.hasValidChanges() ? '' : ' invalid')} 
-                            id='tag-name' 
-                            value={this.state.curTag.name} 
-                            onChange={(e)=>{
-                                e.preventDefault();
-                                let tag = this.state.curTag;
-                                tag.name = e.target.value;
-                                this.setState({curTag:tag});
-                             }}
-                             />
-                            <div 
-                                className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
-                                onClick={this.handleSave}
-                            >
-                                 Save Changes
+                            <div id='tag-title'>
+                                <label id='tag-label' htmlFor='tag-name'>
+                                    Tag Name
+                                </label>
+                                <input 
+                                type='text' 
+                                className={'tag-name' + (this.hasValidChanges() ? '' : ' invalid')} 
+                                id='tag-name' 
+                                value={this.state.curTag.name} 
+                                onChange={(e)=>{
+                                    e.preventDefault();
+                                    let tag = this.state.curTag;
+                                    tag.name = e.target.value;
+                                    this.setState({curTag:tag});
+                                }}
+                                />
+                            </div>
+                            <div id='tag-save'>
+                                <div 
+                                    className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
+                                    onClick={this.handleSave}
+                                >
+                                    Save Changes
+                                </div>
                             </div>
                             <div id='tag-delete'>
                                 {this.state.curTag._id !== '' ? 
