@@ -118,6 +118,12 @@ def update_tag(mongo, old_dict, update):
 
   return updated
 
+def check_valid_user(mongo, nid):
+  result = mongo.db.users.find_one({
+    "NID":nid
+  })
+  return result is not None
+
 # Order for Tags:
 # 1. Intent (intents)
 # 2. Department (dept)

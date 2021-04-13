@@ -5,7 +5,7 @@ from flask_pymongo import PyMongo
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from .database_manager import return_all, update_question, add_question, add_tag, update_tag
+from .database_manager import return_all, update_question, add_question, add_tag, update_tag, check_valid_user
 from .train import train
 import json
 
@@ -43,8 +43,7 @@ def login():
         server = Server(domain, port=port)
         conn = Connection(server, username + "@" + domain, password)
         
-        if conn.bind():
-
+        if conn.bind() and check_valid_user(mongo, username):
             access_token = create_access_token(identity=username)
             conn.unbind()
             return jsonify(message="Login Successful", token=access_token)
