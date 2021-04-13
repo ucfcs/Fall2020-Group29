@@ -23,6 +23,7 @@ export class QuestionsBox extends React.Component {
         super(props);
         console.log(props);
         
+        this.saveCurrent = this.saveCurrent.bind(this);
         this.hasChanges = this.hasChanges.bind(this);
         this.hasTrainableChanges = this.hasTrainableChanges.bind(this);
         this.selectItem = this.selectItem.bind(this);
@@ -73,6 +74,11 @@ export class QuestionsBox extends React.Component {
             this.setState({
                 questions:questions,
                 displayedQuestions:questions
+            }, ()=>{
+                let qFromStorage = window.sessionStorage.getItem('previous_question');
+                if (qFromStorage != null){
+                    this.setState({curQuestion:JSON.parse(qFromStorage)});
+                }
             });
         });
 
@@ -106,6 +112,11 @@ export class QuestionsBox extends React.Component {
         getDocuments((documents)=> {
             this.setState({documents:documents});
         });
+    }
+
+    saveCurrent(callback) {
+        window.sessionStorage.setItem('previous_question', JSON.stringify(this.state.curQuestion));
+        callback();
     }
 
     hasChanges() {

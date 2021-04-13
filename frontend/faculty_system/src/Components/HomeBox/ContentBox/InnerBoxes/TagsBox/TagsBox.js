@@ -19,6 +19,7 @@ export class TagsBox extends React.Component {
     constructor(props) {
         super(props);
 
+        this.saveCurrent = this.saveCurrent.bind(this);
         this.concatTags = this.concatTags.bind(this);
         this.selectItem = this.selectItem.bind(this);
         this.updateDisplayedTags = this.updateDisplayedTags.bind(this);
@@ -50,9 +51,19 @@ export class TagsBox extends React.Component {
     componentDidMount() {
         getTags((tags)=> {
             this.setState({tags:tags}, ()=>{
-                this.setState({displayedTags:this.concatTags()});
+                let tFromStorage = window.sessionStorage.getItem('previous_tag');
+                if (tFromStorage !== null) {
+                    this.setState({displayedTags:this.concatTags(), curTag:JSON.parse(tFromStorage)});
+                } else {
+                    this.setState({displayedTags:this.concatTags()});
+                }
             });
         });
+    }
+
+    saveCurrent(callback) {
+        window.sessionStorage.setItem('previous_tag', JSON.stringify(this.state.curTag));
+        callback();
     }
 
     concatTags() {

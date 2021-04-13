@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContentBox } from './ContentBox/boxes';
+import { ContentBox } from './ContentBox/ContentBox';
 import {sections, retrain, logOut} from './home'
 import {confirmAlert} from 'react-confirm-alert';
 import './homebox.css';
@@ -73,11 +73,8 @@ export class HomeBox extends React.Component {
     }
 
     changeSelected(id, target) {
-        let item = this.state.selectedNode;
-            if (item === '') {
-                item = document.getElementById('navbox-questions')
-            }
-            this.setState({selection:id, selected:target});
+        this.contentRef.current.saveCurrent(()=>this.setState({selection:id, selected:target}, ()=>console.log('Saved Last')));
+        
     }
 
     handleRetrain(event) {

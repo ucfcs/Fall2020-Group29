@@ -10,8 +10,13 @@ export class ContentBox extends React.Component {
 
         this.hasChanges = this.hasChanges.bind(this);
     }
+    
     hasChanges() {
         return this.contentRef.current.hasChanges();
+    }
+
+    saveCurrent(callback) {
+        this.contentRef.current.saveCurrent(callback);
     }
 
     render() {
