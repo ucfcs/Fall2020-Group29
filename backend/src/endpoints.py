@@ -12,11 +12,10 @@ import json
 ######################################################## Server Initialization ########################################
 
 app = Flask(__name__)
-app.config["JSON_SORT_KEYS"] = False
-app.config["JWT_SECRET_KEY"] = "Test_Secret_Key" #Change for actual production
-app.config["MONGO_DBNAME"] =  "group29" #"ourDB" <-- local connection
-app.config["MONGO_URI"] =  "mongodb+srv://m_user:spell3@clusterg29.pfoak.mongodb.net/group29?retryWrites=true&w=majority" #"mongodb://localhost:27017/ourDB" <-- local connection
-
+with open ("config.json") as f:
+    config = json.load(f)
+for key in config:
+    app.config[key] = config[key]
 
 CORS(app)
 jwt = JWTManager(app)
