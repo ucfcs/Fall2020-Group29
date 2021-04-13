@@ -29,7 +29,6 @@ export class HomeBox extends React.Component {
 
     handleLogout(event) {
         event.preventDefault();
-        console.log(this.hasChanges());
         if (this.hasChanges()) {
             confirmAlert({
                 title:"You have unsaved changes",

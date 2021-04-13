@@ -21,7 +21,6 @@ export class QuestionsBox extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log(props);
         
         this.saveCurrent = this.saveCurrent.bind(this);
         this.hasChanges = this.hasChanges.bind(this);
@@ -309,7 +308,6 @@ export class QuestionsBox extends React.Component {
         event.preventDefault();
         if (this.canSave()) {
             if (this.hasTrainableChanges()) {
-                console.log(this.props.updateTrain);
                 confirmAlert({
                     title:'You\'ve made changes that require the system to be retrained.',
                     message: 'Would you like to save your changes and retrain now?',

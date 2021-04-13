@@ -52,11 +52,10 @@ export function getQuestions(callback) {
     let options = {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': window.sessionStorage.getItem('token')
+            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+            'Content-Type': 'application/json'
         },
     };
-
     fetch('http://127.0.0.1:5000/api/faculty/get_questions', options)
       .then((res)=> {
           if (res.status === 401) {
@@ -64,7 +63,6 @@ export function getQuestions(callback) {
             callback([]);
           } else if (res.status === 200) {
             res.json().then((res)=> {
-                console.log(res);
                 let questions = res['questions'];
                 questions.forEach(q => formatQuestion(q));
                 window.sessionStorage.setItem('questions', JSON.stringify(questions));
@@ -111,7 +109,7 @@ export function saveQuestion(question, callback) {
     method: method,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': window.sessionStorage.getItem('token')
+        'Authorization':'Bearer ' + window.sessionStorage.getItem('token'),
     },
     body: JSON.stringify({'question': question, 'retrain': false})
   };
@@ -148,7 +146,6 @@ export function saveQuestionAndTrain(question, update, callback) {
   let succMessage = '';
   let hasFields = hasAllFields(question);
   let saved = false;
-  console.log(update);
   if (!hasFields.hasFields) {
     callback(
       {
@@ -172,7 +169,7 @@ export function saveQuestionAndTrain(question, update, callback) {
     method: method,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': window.sessionStorage.getItem('token')
+        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
     },
     body: JSON.stringify({'question': question})
   };
@@ -246,8 +243,6 @@ function hasAllFields(question) {
   let hasAllFields = true;
   let missingFields = [];
   requiredFields.forEach(field => {
-    console.log(field);
-    console.log(question[field]);
     if (field === 'tags') {
       tagTypes.forEach(tag => {
         if (!hasField(question.tags, tag)) {

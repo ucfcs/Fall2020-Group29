@@ -35,7 +35,7 @@ export function getTags(callback) {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': window.sessionStorage.getItem('token')
+            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
         },
 
     };
@@ -86,7 +86,7 @@ export function updateTag(tags, callback) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': window.sessionStorage.getItem('token')
+      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
     },
     body: JSON.stringify({'new_tag': tags.newTag, 'old_tag': tags.oldTag})
   };
@@ -116,7 +116,7 @@ export function addTag(tag, callback) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': window.sessionStorage.getItem('token')
+      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
     },
     body: JSON.stringify({'tag': tag})
   };

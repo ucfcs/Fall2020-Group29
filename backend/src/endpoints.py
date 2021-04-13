@@ -131,6 +131,7 @@ def get_documents():
 ######################################################## Add/Update Data ##############################################
 
 @app.route("/api/faculty/add_question", methods=["POST"])
+@jwt_required()
 def add_q():
     req = request.get_json()
     question = req["question"]
@@ -144,6 +145,7 @@ def add_q():
         return jsonify(message="Question successfully added.", question=added)
 
 @app.route("/api/faculty/update_question", methods=["PUT"])
+@jwt_required()
 def update_q():
     req = request.get_json()
     question = req["question"]
@@ -161,11 +163,13 @@ def update_q():
         return jsonify(message="Question successfully updated.", question=updated)
 
 @app.route("/api/faculty/retrain_model", methods=["GET"])
+@jwt_required()
 def retrain_model():
     train(db=mongo)
     return jsonify(message="Model successfully retrained")
 
 @app.route("/api/faculty/add_tag", methods=["POST"])
+@jwt_required()
 def add_t():
     req = request.get_json()
     tag = req["tag"]
@@ -186,6 +190,7 @@ def add_t():
         return jsonify(message="Tag already exists in database."), 500
 
 @app.route("/api/faculty/update_tag", methods=["PUT"])
+@jwt_required()
 def update_t():
     req = request.get_json()
     old_tag = req["old_tag"]

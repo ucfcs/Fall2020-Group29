@@ -77,7 +77,6 @@ export class TagsBox extends React.Component {
                 };
             }));
         }
-        console.log(tagList);
         return tagList;
     }
 
@@ -209,7 +208,6 @@ export class TagsBox extends React.Component {
         updateTag(tags, (response)=> {
             if (response.success) {
                 let newTag = response.tag;
-                console.log(newTag);
                 let tags = this.state.tags;
                 let tagTypeList = tags[newTag.type];
                 let check = tagTypeList.filter(tag=> {
@@ -232,7 +230,7 @@ export class TagsBox extends React.Component {
                     });
                     window.sessionStorage.setItem('questions', JSON.stringify(questions));
                 }
-                
+
                 if (previousQFS !== null) {
                     let question = JSON.parse(previousQFS);
                     if (question.tags[newTag.type] === check.name) {
