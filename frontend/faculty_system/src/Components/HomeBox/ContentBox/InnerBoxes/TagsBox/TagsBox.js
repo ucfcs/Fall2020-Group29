@@ -456,7 +456,11 @@ export class TagsBox extends React.Component {
                             </div>
                         </div>
                         <div id='tag-content'>
-                             <Select 
+                            <div id='tag-type-display'>
+                                <label id='type-label' htmlFor='tag-type'>
+                                    Tag Type
+                                </label>
+                                <Select 
                                 id='tag-type'
                                 value={
                                     this.state.curTag.type === '' ? '' :
@@ -467,7 +471,8 @@ export class TagsBox extends React.Component {
                                     label:t
                                 }))}
                                 onChange={this.handleSelectType}
-                             />
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
