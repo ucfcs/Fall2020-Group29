@@ -14,8 +14,8 @@
 #question-selection-header {
     flex:1;
     display:flex;
-    align-items: center;
-    justify-content: center;
+    /* align-items: center; */
+    /* justify-content: center; */
 }
 
 #question-content-body {
@@ -42,12 +42,29 @@
     flex:3;
 }
 
-#question-name {
-    display: block;
+#question-title {
+    display:flex;
+    flex:4;
+    flex-direction: column;
+}
+
+#question-save{
+    flex:1;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2%;
 }
 
 #question-label {
-    display: block;
+    flex:2;
+    font-weight: bold;
+    font-size:x-large;
+}
+
+#question-name {
+    margin-left: 2%;
+    flex:1;
 }
 
 #contacts-and-forms {

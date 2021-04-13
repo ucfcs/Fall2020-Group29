@@ -3,7 +3,15 @@ import React from 'react';
 import Select from 'react-select';
 import {confirmAlert} from 'react-confirm-alert';
 import SelectionBox from '../SelectionBox';
-import { defaultTag, getTags, tagTypes, hasAllFields, addTag, updateTag, dependentQuestions, hasDependents } from './tags';
+import { 
+    defaultTag, 
+    getTags, 
+    tagTypes, 
+    hasAllFields, 
+    addTag, 
+    updateTag, 
+    hasDependents 
+} from './tags';
 import './tagsbox.css';
 
 export class TagsBox extends React.Component {

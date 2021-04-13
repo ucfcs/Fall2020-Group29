@@ -133,6 +133,7 @@ p {
     border-radius: 10px;
     margin-left:3%;
     max-height: 50%;
+    max-width:50%;
     height:4vh;
     padding:5px;
     display:flex;

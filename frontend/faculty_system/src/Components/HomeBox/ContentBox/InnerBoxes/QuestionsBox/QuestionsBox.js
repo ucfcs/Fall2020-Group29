@@ -429,26 +429,30 @@ export class QuestionsBox extends React.Component {
                     </div>
                     <div id='question-content-body'>
                         <div id='question-selection-header'>
-                            <label id='question-label' htmlFor='question-name'>
-                                Question Name
-                            </label>
-                            <input 
-                            type='text' 
-                            className='question-name' 
-                            id='question-name' 
-                            value={this.state.curQuestion.name} 
-                            onChange={(e)=>{
-                                e.preventDefault();
-                                let question = this.state.curQuestion;
-                                question.name = e.target.value;
-                                this.setState({curQuestion:question});
-                             }}
-                             />
-                            <div 
-                                className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
-                                onClick={this.handleSave}
-                            >
-                                 Save Changes
+                            <div id='question-title'>
+                                <label id='question-label' htmlFor='question-name'>
+                                    Question Name
+                                </label>
+                                <input 
+                                type='text' 
+                                className='question-name' 
+                                id='question-name' 
+                                value={this.state.curQuestion.name} 
+                                onChange={(e)=>{
+                                    e.preventDefault();
+                                    let question = this.state.curQuestion;
+                                    question.name = e.target.value;
+                                    this.setState({curQuestion:question});
+                                 }}
+                                 />
+                            </div>
+                            <div id='question-save'>
+                                <div 
+                                    className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
+                                    onClick={this.handleSave}
+                                >
+                                    Save Changes
+                                </div>
                             </div>
                             {/* <div className='button delete-button'>Delete Question</div> */}
                         </div>
