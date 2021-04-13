@@ -124,9 +124,9 @@ def get_documents():
     for f in files:
         documents.append({
             "_id": f["_id"],
-            "name": f["File Name"],
-            "department": f["Department"],
-            "link": f["Link to File"]
+            "name": f["name"],
+            "department": f["dept"],
+            "link": f["link to file"]
         })
     return jsonify(documents=documents)
 
