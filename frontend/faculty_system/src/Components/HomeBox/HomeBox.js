@@ -13,7 +13,6 @@ export class HomeBox extends React.Component {
         this.hasChanges = this.hasChanges.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
         this.handleSelected = this.handleSelected.bind(this);
-        this.changeSelected = this.changeSelected.bind(this);
         this.handleRetrain = this.handleRetrain.bind(this);
         this.handleUpdateTrain = this.handleUpdateTrain.bind(this);
 
@@ -52,29 +51,8 @@ export class HomeBox extends React.Component {
 
     handleSelected(event) {
         event.preventDefault();
-        console.log(this.hasChanges());
-        if (this.hasChanges()) {
-            confirmAlert({
-                title:"You have unsaved changes",
-                message: "Do you want to leave without saving your changes?",
-                buttons: [
-                    {
-                        label: "Yes",
-                        onClick: ()=> this.changeSelected(event.target.id, event.target)
-                    },
-                    {
-                        label: "No",
-                        onClick: ()=>{}
-                    }
-                ]});
-        } else {
-            this.changeSelected(event.target.id, event.target)
-        }       
-    }
-
-    changeSelected(id, target) {
-        this.contentRef.current.saveCurrent(()=>this.setState({selection:id, selected:target}, ()=>console.log('Saved Last')));
-        
+        this.contentRef.current.saveCurrent(()=>
+            this.setState({selection:event.target.id, selected:event.target})); 
     }
 
     handleRetrain(event) {
