@@ -126,6 +126,30 @@ def update_tag(mongo, old_dict, update):
 
   return updated
 
+def delete_tag(mongo, id, name, type):
+  element = -1
+  if (type == 'intent'):
+    element = 0
+  elif (type == 'department'):
+    element = 1
+  elif (type == 'category'):
+    element = 2
+  elif (type == 'information'):
+    element = 3
+  else:
+    return False, 'Tag has invalid type'
+
+  # if no question is using this tag, we may delete it:
+  found = mongo.db.questions.find({'tags.'+str(element):name}) 
+  if (found.count() == 0):
+    to_delete = mongo.db.tags.delete_one({'_id':ObjectId(id)})
+    if (to_delete.deleted_count == 0): #if there is no match
+      return False, 'Tag could not be found'
+    else:
+      return True, 'Tag successfully deleted'
+  else:
+    return False, 'Tag has dependent questions'
+
 def check_valid_user(mongo, nid):
   result = mongo.db.users.find_one({
     "NID":nid

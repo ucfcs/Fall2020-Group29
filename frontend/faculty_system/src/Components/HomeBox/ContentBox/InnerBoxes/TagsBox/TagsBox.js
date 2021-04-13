@@ -9,8 +9,10 @@ import {
     tagTypes, 
     hasAllFields, 
     addTag, 
-    updateTag, 
-    hasDependents 
+    updateTag,
+    checkTypeDependents,
+    checkDependents,
+    deleteTag
 } from './tags';
 import './tagsbox.css';
 
@@ -32,6 +34,7 @@ export class TagsBox extends React.Component {
         this.handleAddTag = this.handleAddTag.bind(this);
         this.handleUpdateTag = this.handleUpdateTag.bind(this);
         this.handleSave = this.handleSave.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
 
         this.state = {
             selected:null,
@@ -278,8 +281,8 @@ export class TagsBox extends React.Component {
                 return tag._id === this.state.curTag._id;
                 })[0]
             }
-            hasDependents(tagUpdate, (dependents)=> {
-                if (dependents.canUpdate) {
+            checkTypeDependents(tagUpdate, (dependents)=> {
+                if (!dependents.hasDependents) {
                     confirmAlert({
                         title:'Are you sure you want to save these changes?',
                         message: '',
@@ -312,6 +315,47 @@ export class TagsBox extends React.Component {
                 }
             }); 
         }
+    }
+
+    handleDelete(event) {
+        event.preventDefault();
+        checkDependents(this.state.curTag, (dependents)=> {
+            if (!dependents.hasDependents) {
+                confirmAlert({
+                    title:'Are you sure you want to delete this tag?',
+                    message:'',
+                    buttons: [
+                        {
+                            label: 'Yes, delete tag',
+                            onClick: ()=> deleteTag(this.state.curTag, (response)=> {
+                                if (response.success) {
+                                    let tags = this.state.tags;
+                                    let remaining = tags[this.state.curTag.type].filter(tag=>
+                                        tag._id !== this.state.curTag._id
+                                    );
+                                    tags[this.state.curTag.type] = remaining;
+                                    this.setState({tags:tags}, ()=> {
+                                        this.updateDisplayedTags();
+                                        window.sessionStorage.setItem('tags', this.state.tags);
+                                        alert(response.message);
+                                    });
+                                } else {
+                                    console.error(response.message);
+                                    alert(response.message);
+                                }
+                            })
+                        },
+                        {
+                            label: 'Cancel',
+                            onClick: ()=> {}
+                        }
+                    ]
+                });
+            } else {
+                alert('Cannot delete a tag that is currently being used by a question.\n'+
+                'The following questions use this tag:\n' + dependents.dependentQuestions.join('\n'));
+            }
+        });
     }
 
     render() {
@@ -393,6 +437,13 @@ export class TagsBox extends React.Component {
                                 onClick={this.handleSave}
                             >
                                  Save Changes
+                            </div>
+                            <div id='tag-delete'>
+                                {this.state.curTag._id !== '' ? 
+                                    <div id='tag-delete-button' className='button delete-button' onClick={this.handleDelete}>
+                                        Delete Tag
+                                    </div>:''
+                                }
                             </div>
                         </div>
                         <div id='tag-content'>

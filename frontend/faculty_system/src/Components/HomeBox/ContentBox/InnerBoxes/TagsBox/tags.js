@@ -62,20 +62,37 @@ export function getTags(callback) {
   }
 }
 
-export function hasDependents(tags, callback) {
+export function checkTypeDependents(tags, callback) {
   getQuestions((questions)=>{
-    let canUpdate = true;
+    let hasDependents = false;
     let dependentQuestions = []
     if (tags.oldTag.type !== tags.newTag.type) {
       questions.forEach(q=> {
         if (q.tags[tags.oldTag.type] === tags.oldTag.name) {
-          canUpdate = false;
+          hasDependents = true;
           dependentQuestions.push(q.name);
         }
       });
     }
     callback({
-      canUpdate:canUpdate,
+      hasDependents:hasDependents,
+      dependentQuestions:dependentQuestions
+    });
+  });
+}
+
+export function checkDependents(tag, callback) {
+  getQuestions((questions)=>{
+    let hasDependents = false;
+    let dependentQuestions = []
+    questions.forEach(q=> {
+      if (q.tags[tag.type] === tag.name) {
+        hasDependents = true;
+        dependentQuestions.push(q.name);
+      }
+    });
+    callback({
+      hasDependents:hasDependents,
       dependentQuestions:dependentQuestions
     });
   });
@@ -121,7 +138,7 @@ export function addTag(tag, callback) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
     },
     body: JSON.stringify({'tag': tag})
   };
@@ -139,6 +156,41 @@ export function addTag(tag, callback) {
             success: true,
             message: 'Tag successfully added.',
             tag: res.tag
+          });
+        });
+      } else {
+        res.json().then((res)=> {
+          callback({
+            success: false,
+            message: res.message
+          });
+        });
+      }
+    });
+}
+
+export function deleteTag(tag, callback) {
+  let options = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+    },
+    body: JSON.stringify({'tag': tag})
+  };
+
+  fetch('http://127.0.0.1:5000/api/faculty/delete_tag', options)
+    .then((res)=> {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status === 200) {
+        res.json().then((res)=> {
+          callback({
+            success: true,
+            message: 'Tag successfully deleted.'
           });
         });
       } else {

@@ -5,7 +5,7 @@ from flask_pymongo import PyMongo
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from .database_manager import return_all, update_question, add_question, delete_question, add_tag, update_tag, check_valid_user
+from .database_manager import return_all, update_question, add_question, delete_question, add_tag, update_tag, delete_tag, check_valid_user
 from .train import train
 import json
 
@@ -234,6 +234,17 @@ def delete_q():
     question = req["question"]
     qID = question["_id"]
     deleted, message = delete_question(mongo, qID)
+    if (deleted):
+        return jsonify(message=message)
+    else:
+        return jsonify(message=message), 500
+
+@app.route("/api/faculty/delete_tag", methods=["DELETE"])
+@jwt_required()
+def delete_t():
+    req = request.get_json()
+    tag = req["tag"]
+    deleted, message = delete_tag(mongo, tag["_id"], tag["name"], tag["type"])
     if (deleted):
         return jsonify(message=message)
     else:
