@@ -5,23 +5,24 @@ from flask_pymongo import PyMongo
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from .database_manager import return_all, update_question, add_question
+from .database_manager import return_all, update_question, add_question, delete_question, add_tag, update_tag, delete_tag, check_valid_user, needs_update_check, set_needs_update
 from .train import train
 import json
 
-app = Flask(__name__)
-app.config["JSON_SORT_KEYS"] = False
-app.config["JWT_SECRET_KEY"] = "Test_Secret_Key" #Change for actual production
-app.config["MONGO_DBNAME"] =  "group29" #"ourDB" <-- local connection
-app.config["MONGO_URI"] =  "mongodb+srv://m_user:spell3@clusterg29.pfoak.mongodb.net/group29?retryWrites=true&w=majority" #"mongodb://localhost:27017/ourDB" <-- local connection
+######################################################## Server Initialization ########################################
 
+app = Flask(__name__)
+with open ("config.json") as f:
+    config = json.load(f)
+for key in config:
+    app.config[key] = config[key]
 
 CORS(app)
 jwt = JWTManager(app)
 #The "dnspython" module must be installed to use mongodb+srv:
 mongo = PyMongo(app)
 
-
+######################################################### Login #######################################################
 
 #Faculty_System_API
 @app.route("/api/faculty/login", methods=["GET", "POST"])
@@ -41,8 +42,7 @@ def login():
         server = Server(domain, port=port)
         conn = Connection(server, username + "@" + domain, password)
         
-        if conn.bind():
-
+        if conn.bind() and check_valid_user(mongo, username):
             access_token = create_access_token(identity=username)
             conn.unbind()
             return jsonify(message="Login Successful", token=access_token)
@@ -53,6 +53,8 @@ def login():
         return jsonify(message="Users must login from within the UCF network"), 401
     except LDAPBindError:
         return jsonify(message="Invalid credentials"), 401
+
+######################################################## Get Data #####################################################
 
 @app.route("/api/faculty/get_questions", methods=["GET"])
 def get_questions():
@@ -120,13 +122,16 @@ def get_documents():
     for f in files:
         documents.append({
             "_id": f["_id"],
-            "name": f["File Name"],
-            "department": f["Department"],
-            "link": f["Link to File"]
+            "name": f["name"],
+            "department": f["dept"],
+            "link": f["link to file"]
         })
     return jsonify(documents=documents)
 
+######################################################## Add/Update Data ##############################################
+
 @app.route("/api/faculty/add_question", methods=["POST"])
+@jwt_required()
 def add_q():
     req = request.get_json()
     question = req["question"]
@@ -140,6 +145,7 @@ def add_q():
         return jsonify(message="Question successfully added.", question=added)
 
 @app.route("/api/faculty/update_question", methods=["PUT"])
+@jwt_required()
 def update_q():
     req = request.get_json()
     question = req["question"]
@@ -157,9 +163,116 @@ def update_q():
         return jsonify(message="Question successfully updated.", question=updated)
 
 @app.route("/api/faculty/retrain_model", methods=["GET"])
+@jwt_required()
 def retrain_model():
     train(db=mongo)
     return jsonify(message="Model successfully retrained")
+
+@app.route("/api/faculty/add_tag", methods=["POST"])
+@jwt_required()
+def add_t():
+    req = request.get_json()
+    tag = req["tag"]
+    tag_type = tag["type"]
+    if (tag_type == "intent"):
+        tag["type"] = "intents"
+    elif (tag_type == "department"):
+        tag["type"] = "dept"
+    elif (tag_type == "category"):
+        tag["type"] = "cat"
+    elif (tag_type == "information"):
+        tag["type"] = "info"
+    new_tag = add_tag(mongo, tag["name"], tag["type"])
+    if (new_tag != None):
+        new_tag["type"] = tag_type
+        return jsonify(tag=new_tag)
+    else:
+        return jsonify(message="Tag already exists in database."), 500
+
+@app.route("/api/faculty/update_tag", methods=["PUT"])
+@jwt_required()
+def update_t():
+    req = request.get_json()
+    old_tag = req["old_tag"]
+    new_tag = req["new_tag"]
+    new_tag.pop("_id")
+
+    tag_type = new_tag["type"]
+    if (tag_type == "intent"):
+        new_tag["type"] = "intents"
+    elif (tag_type == "department"):
+        new_tag["type"] = "dept"
+    elif (tag_type == "category"):
+        new_tag["type"] = "cat"
+    elif (tag_type == "information"):
+        new_tag["type"] = "info"
+
+    updated = update_tag(mongo, old_tag, new_tag)
+
+    
+    if updated == None:
+        return jsonify(message="Tag not found."), 404
+    else:
+        updated_type = updated["type"]
+        if (updated_type == "intents"):
+            updated["type"] = "intent"
+        elif (updated_type == "dept"):
+            updated["type"] = "department"
+        elif (updated_type == "cat"):
+            updated["type"] = "category"
+        elif (updated_type == "info"):
+            updated["type"] = "information"
+        return jsonify(tag=updated)
+
+
+####################################################### Delete Data ###################################################
+
+@app.route("/api/faculty/delete_question", methods=["DELETE"])
+@jwt_required()
+def delete_q():
+    req = request.get_json()
+    question = req["question"]
+    qID = question["_id"]
+    deleted, message = delete_question(mongo, qID)
+    if (deleted):
+        return jsonify(message=message)
+    else:
+        return jsonify(message=message), 500
+
+@app.route("/api/faculty/delete_tag", methods=["DELETE"])
+@jwt_required()
+def delete_t():
+    req = request.get_json()
+    tag = req["tag"]
+    deleted, message = delete_tag(mongo, tag["_id"], tag["name"], tag["type"])
+    if (deleted):
+        return jsonify(message=message)
+    else:
+        return jsonify(message=message), 500
+
+
+####################################################### Settings Access ###############################################
+
+@app.route("/api/faculty/check_needs_training", methods=["GET"])
+@jwt_required()
+def check_needs_training():
+    trained = needs_update_check(mongo)
+    if (trained != None):
+        return jsonify(success=True,trained=trained)
+    else:
+        return jsonify(success=False, message="Could not access training settings"), 500
+
+@app.route("/api/faculty/update_needs_training", methods=["PUT"])
+@jwt_required()
+def update_needs_training():
+    req = request.get_json()
+    value = req["value"]
+    if (set_needs_update(mongo, value)):
+        return jsonify(success=True)
+    else:
+        return jsonify(success=False, message="Could not update 'needs training' setting."), 500
+
+
 ####################################################### Dummy Data ####################################################
 
 

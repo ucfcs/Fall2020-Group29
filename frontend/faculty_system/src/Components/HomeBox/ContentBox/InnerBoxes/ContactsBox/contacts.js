@@ -5,7 +5,7 @@ export function getContacts(callback) {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
-              'Authorization': window.sessionStorage.getItem('token')
+              'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
           },
   
       };

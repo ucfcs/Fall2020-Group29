@@ -1,6 +1,6 @@
 import React from 'react';
-import { ContentBox } from './ContentBox/boxes';
-import {retrain} from './home'
+import { ContentBox } from './ContentBox/ContentBox';
+import {sections, retrain, check_needs_training, update_needs_training, logOut} from './home'
 import {confirmAlert} from 'react-confirm-alert';
 import './homebox.css';
 
@@ -8,8 +8,11 @@ export class HomeBox extends React.Component {
 
     constructor(props) {
         super(props);
+        this.contentRef = React.createRef();
 
-        this.changeSelected = this.changeSelected.bind(this);
+        this.hasChanges = this.hasChanges.bind(this);
+        this.handleLogout = this.handleLogout.bind(this);
+        this.handleSelected = this.handleSelected.bind(this);
         this.handleRetrain = this.handleRetrain.bind(this);
         this.handleUpdateTrain = this.handleUpdateTrain.bind(this);
 
@@ -20,22 +23,43 @@ export class HomeBox extends React.Component {
         }
     }
 
-    changeSelected(event) {
+    componentDidMount() {
+        check_needs_training((response)=> {
+            if (response.success) {
+                this.setState({needsTraining:response.trained});
+            }
+        });
+    }
 
+    hasChanges() {
+        return this.contentRef.current.hasChanges();
+    }
+
+    handleLogout(event) {
         event.preventDefault();
-        console.log(this.state.selectedNode);
-        
-
-        let item = this.state.selectedNode;
-        if (item === '') {
-            item = document.getElementById('navbox-questions')
+        if (this.hasChanges()) {
+            confirmAlert({
+                title:"You have unsaved changes",
+                message: "Do you want to leave without saving your changes?",
+                buttons: [
+                    {
+                        label: "Yes",
+                        onClick: ()=> logOut()
+                    },
+                    {
+                        label: "No",
+                        onClick: ()=>{}
+                    }
+                ]});
+        } else {
+            logOut();
         }
-        item.className = 'navbox';
-        item.selected = false;
-        this.setState({selection:event.target.id, selected:event.target}, ()=> {
-            event.target.className = 'navbox selected';
-            event.target.selected = true;
-        });        
+    }
+
+    handleSelected(event) {
+        event.preventDefault();
+        this.contentRef.current.saveCurrent(()=>
+            this.setState({selection:event.target.id, selected:event.target})); 
     }
 
     handleRetrain(event) {
@@ -48,16 +72,34 @@ export class HomeBox extends React.Component {
                     {
                         label: 'Yes, retrain',
                         onClick: ()=>{
-                            this.setState({needsTraining:'Training Now'}, ()=>{
-                                retrain((res)=> {
-                                    alert(res.message);
-                                    if (res.trained) {
-                                        this.setState({needsTraining:'Fully Trained'});
-                                    } else {
-                                        this.setState({needsTraining:'Needs Training'});
-                                    }
-                                });
-                            }); 
+                            update_needs_training('Training Now', (response)=> {
+                                if (response.success) {
+                                    this.setState({needsTraining:'Training Now'}, ()=>{
+                                        retrain((res)=> {
+                                            if (res.trained) {
+                                                update_needs_training('Fully Trained', (finResponse)=> {
+                                                    if (finResponse.success) {
+                                                        this.setState({needsTraining:'Fully Trained'});
+                                                    } else {
+                                                        alert(finResponse.message);
+                                                    }
+                                                });
+                                            } else {
+                                                update_needs_training('Needs Training', (finResponse)=> {
+                                                    if (finResponse.success) {
+                                                        this.setState({needsTraining:'Needs Training'});
+                                                    } else {
+                                                        alert(finResponse.message);
+                                                    }
+                                                });
+                                            }
+                                            alert(res.message);
+                                        });
+                                    }); 
+                                } else {
+                                    alert(response.message);
+                                }
+                            });
                         }
                     },
                     {
@@ -79,14 +121,14 @@ export class HomeBox extends React.Component {
                 <div id='sidebox'>
                     <div id='navbar'>
                         <div id='nav-header'>
-                    
                         </div>
-                        <NavBox sectionName='Questions' selected={true}  clicked={this.changeSelected}/>
-                        <NavBox sectionName='Tags' selected={false} clicked={this.changeSelected} />
-                        <NavBox sectionName='Contacts' selected={false} clicked={this.changeSelected} />
-                        <NavBox sectionName='Documents' selected={false} clicked={this.changeSelected} />
-                        <NavBox sectionName='Users' selected={false} clicked={this.changeSelected} />
-                        <NavBox sectionName='Statistics' selected={false} clicked={this.changeSelected} />
+                        {sections.map(section=>
+                            <NavBox 
+                                sectionName={section} 
+                                selected={this.state.selection === ('navbox-'+(section.toLowerCase()))}
+                                clicked={this.handleSelected}
+                            />
+                        )}
                     </div>
                     <div 
                         className={'button train-button ' + ({
@@ -98,8 +140,11 @@ export class HomeBox extends React.Component {
                     >
                         {this.state.needsTraining}
                     </div>
+                    <div id='log-out' className='button log-out-button' onClick={this.handleLogout}>
+                        Log Out
+                    </div>
                 </div>
-                <ContentBox selection={this.state.selection} updateTrain={this.handleUpdateTrain}/>
+                <ContentBox ref={this.contentRef} selection={this.state.selection} updateTrain={this.handleUpdateTrain}/>
             </div>
         );
     }
@@ -109,8 +154,8 @@ export default HomeBox;
 
 function NavBox(props) {
     return (
-        <div className={props.selected === true ? 'navbox selected' : 'navbox'}
-         id={'navbox-'+props.sectionName.toLowerCase()} onClick={(event)=>props.clicked(event)}>
+        <div className={'navbox' + (props.selected === true ? ' selected' : '')}
+         id={'navbox-'+(props.sectionName.toLowerCase())} onClick={(event)=>props.clicked(event)}>
             {props.sectionName}
         </div>
     );

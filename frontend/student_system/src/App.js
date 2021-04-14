@@ -3,6 +3,8 @@ import Knugget from "./Knugget.jpg";
 import React, { useState, useEffect, Component } from "react";
 import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
+import axios from "axios";
+import PropTypes from "prop-types";
 import Result from "./Components/Result";
 
 function App(props) {
@@ -86,12 +88,59 @@ function App(props) {
     {
       id: "Thank you",
       message: "Perfect! Glad I could help!",
-      // trigger: "Feedback",
-      end: true,
+      trigger: "feedback",
     },
     {
       id: "Sorry Thank you",
       message: "I am Sorry, I wish I could be of more help.",
+      end: true,
+    },
+    // Reagans code from simpleform.js
+    {
+      id: "feedback",
+      message: "Was your question answered to your satisfaction?",
+      trigger: "answer",
+    },
+    {
+      id: "answer",
+      options: [
+        { value: "yes", label: "Yes", trigger: "chat-feedback" },
+        { value: "no", label: "No", trigger: "chat-feedback" },
+      ],
+    },
+    {
+      id: "chat-feedback",
+      message: "How much did you enjoy chatting with me?",
+      trigger: "enjoyment",
+    },
+    {
+      id: "enjoyment",
+      options: [
+        { value: "1", label: "1", trigger: "ease-feedback" },
+        { value: "2", label: "2", trigger: "ease-feedback" },
+        { value: "3", label: "3", trigger: "ease-feedback" },
+        { value: "4", label: "4", trigger: "ease-feedback" },
+        { value: "5", label: "5", trigger: "ease-feedback" },
+      ],
+    },
+    {
+      id: "ease-feedback",
+      message: "How easy was it to chat with me?",
+      trigger: "ease",
+    },
+    {
+      id: "ease",
+      options: [
+        { value: "1", label: "1", trigger: "thanks-feedback" },
+        { value: "2", label: "2", trigger: "thanks-feedback" },
+        { value: "3", label: "3", trigger: "thanks-feedback" },
+        { value: "4", label: "4", trigger: "thanks-feedback" },
+        { value: "5", label: "5", trigger: "thanks-feedback" },
+      ],
+    },
+    {
+      id: "thanks-feedback",
+      message: "Thanks! Your data was submitted successfully!",
       end: true,
     },
   ];
