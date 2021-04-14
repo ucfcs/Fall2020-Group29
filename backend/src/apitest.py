@@ -98,66 +98,80 @@ def update_question(tags = ['beep boop', 'noop', 'yoop', 'ploop'], itemToUpdate 
 
   return jsonify(updated)
 
-# append existing question with a file
+# add a field for a file
 @app.route('/put_file', methods=['PUT']) # give an existing question a file, returns updated document
-def put_file( tags = ['beep boop', 'noop', 'yoop', 'ploop'], file = 'https://www.cs.ucf.edu/wp-content/uploads/2020/04/CSIT-Elective-List-AY2020-2021.pdf' ):
-  updated = mongo.db.questions.find_one_and_update(
-    {
-      'tags': { '$all': [x.lower() for x in tags] } 
-    }, 
-    {
-      '$set': { 'file':file } 
-    },
-    upsert=True, # upsert = if thing does not exist, make it exist
-    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
-    )
-  if (updated is None): # if there is no match
-    return jsonify({'result':'no match'})
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
-  updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+def put_file( tags = ['beep boop', 'noop', 'yoop', 'ploop'], file_id = '6073bfb3ad951372d0dcb206' ):
+  found = mongo.db.files.find({'_id':ObjectId(file_id)}) 
+  if (found.count_documents() == 0):
+    return jsonify({'result':'no file exists with this id'})
+  else:
+    updated = mongo.db.questions.find_one_and_update(
+      {
+        'tags': { '$all': [x.lower() for x in tags] } 
+      }, 
+      {
+        '$set': { 'file_id':file_id } 
+      },
+      upsert=True, # upsert = if thing does not exist, make it exist
+      return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+      )
+    if (updated is None): # if there is no match
+      return jsonify({'result':'no match'})
+    fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+    updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
-  return jsonify(updated)
+    return jsonify(updated)
 
-# append existing question with a contact
+# add a field for a contact
 @app.route('/put_contact', methods=['PUT']) # give an existing question a contact, returns updated document
-def put_contact(tags = ['beep boop', 'noop', 'yoop', 'ploop'], contact = 'heinrich@cs.ucf.edu' ):
-  updated = mongo.db.questions.find_one_and_update(
-    {
-      'tags': { '$all': [x.lower() for x in tags] } 
-    }, 
-    {
-      '$set': { 'contact':contact } 
-    },
-    upsert=True, # upsert = if thing does not exist, make it exist
-    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
-    )
-  if (updated is None): #if there is no match
-    return jsonify({'result':'no match'})
+def put_contact(tags = ['beep boop', 'noop', 'yoop', 'ploop'], contact_id = '600bb398d59727f52ed1de3c' ):
+  # check if this contact actually exists
+  found = mongo.db.contacts.find({'_id':ObjectId(contact_id)}) 
+  if (found.count() == 0):
+    return jsonify({'result':'no contact exists with this id'})
+  else:
+    updated = mongo.db.questions.find_one_and_update(
+      {
+        'tags': { '$all': [x.lower() for x in tags] } 
+      }, 
+      {
+        '$set': { 'contact_id':contact_id } 
+      },
+      upsert=True, # upsert = if thing does not exist, make it exist
+      return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+      )
+    if (updated is None): #if there is no match
+      return jsonify({'result':'no match'})
 
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
-  updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+    fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+    updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
-  return jsonify(updated)
+    return jsonify(updated)
 
 # add a field for follow up question 
 @app.route('/put_related_questions', methods=['PUT']) 
-def put_related_questions(tags = ['beep boop', 'noop', 'yoop', 'ploop'], followUp_ID = ['6065f38bac9dc35cb433ea88']):
-  found = mongo.db.questions.find_one_and_update( 
-    {
-      'tags': { '$all': [x.lower() for x in tags] } 
-    }, 
-    {
-      '$set': { 'related questions': followUp_ID }
-    },
-    return_document=ReturnDocument.AFTER
-    )
-  if (found is None): # if there is no match
-    return jsonify({'result':'no match'})
+def put_related_questions(tags = ['beep boop', 'noop', 'yoop', 'ploop'], question_ID = '6065f38bac9dc35cb433ea88'):
+  found = mongo.db.questions.find({'_id':ObjectId(question_ID)}) 
+  if (found.count() == 0):
+    return jsonify({'result':'no question exists with this id'})
+  else:
+    updated = mongo.db.questions.find_one_and_update( 
+      {
+        'tags': { '$all': [x.lower() for x in tags] } 
+      }, 
+      {
+        '$set': { 'related questions': [question_ID] }
+      },
+      upsert=True, # upsert = if thing does not exist, make it exist
+      return_document=ReturnDocument.AFTER
+      )
+    if (updated is None): # if there is no match
+      return jsonify({'result':'no match'})
 
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
-  found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+    fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+    updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
-  return jsonify(found) #return result as json
+    return jsonify(updated) #return result as json
 
 # delete one field
 @app.route('/remove_one_field', methods=['PUT']) # delete a field from a question found based on tags
@@ -184,7 +198,7 @@ def remove_one_field(tags = ['beep boop', 'noop', 'yoop', 'ploop'], field = 'rel
 
 # search via ObjectID
 @app.route('/get_question_via_ID', methods=['GET']) # retrive a question based on id
-def get_question_via_ID( _id = "6065f38bac9dc35cb433ea88" ):
+def get_question_via_ID( _id = '6065f38bac9dc35cb433ea88' ):
   found = mongo.db.questions.find_one({'_id': ObjectId(_id) })
 
   if (found is None): # if there is no match
@@ -194,8 +208,6 @@ def get_question_via_ID( _id = "6065f38bac9dc35cb433ea88" ):
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
   
   return jsonify(found) #return result as json
-
-# TODO: delete one pattern
 
 ### contacts collection ###
 #contacts should have dept and maybe grad/undergrad
@@ -234,7 +246,31 @@ def update_contact(name = 'Mark Heinrich', title = 'CS Advisor', itemToUpdate = 
 
   return jsonify(updated)
 
-# TODO: add a link
+# add a field for a link 
+@app.route('/put_staff_link', methods=['PUT']) 
+def put_staff_link(contact_id = '600bb398d59727f52ed1de3c', link = 'beepBoop.ucf.csit.com'):
+  found = mongo.db.contacts.find({'_id':ObjectId(contact_id)}) 
+  if (found.count() == 0):
+    return jsonify({'result':'no contact exists with this id'})
+  else:
+    updated = mongo.db.contacts.find_one_and_update( 
+      {
+        '_id': ObjectId(contact_id) 
+      }, 
+      {
+        '$set': { 'link': link }
+      },
+      upsert=True, # upsert = if thing does not exist, make it exist
+      return_document=ReturnDocument.AFTER
+      )
+    if (updated is None): # if there is no match
+      return jsonify({'result':'no match'})
+
+    fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+    updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+
+    return jsonify(updated) #return result as json
+
 # delete
 @app.route('/delete_question', methods=['DELETE']) 
 def delete_question(tags = ['beep boop', 'noop', 'yoop', 'ploop'] ):
@@ -292,8 +328,6 @@ def get_tag( name = 'testo', type = 'cat' ):
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(found) #return result as json
-
-# TODO: search a triplet of entities
 
 # update
 @app.route('/update_tag', methods=['PUT']) # give an existing tag a file, returns updated document
@@ -395,25 +429,143 @@ def delete_tag(name = 'ploop', type = 'info'):
   
 
 ## files collection ##
+# create 
+@app.route('/add_file', methods=['POST']) # add a file to the database. pls check if it exists first.
+def add_file( name = 'file1',  dept = 'cs', link = 'thisisafile.png'):
+  new_file = {'name': name, 'dept': dept, 'link to file':link}
+  
+  InsertOneResult_Obj = mongo.db.files.insert_one(new_file) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
+  
+  new_file.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_question with the ObjectID (as a string) so that we can actually return something that resembles a document :/
+ 
+  return jsonify(new_file)
 
-# TODO: create 
+# search files
+@app.route('/get_file', methods=['GET']) # retrive a file based on ObjectId
+def get_file( id = '6009c57dbe2493459b65cf41' ):
+  found = mongo.db.files.find_one({'_id': ObjectId(id)}) #finds the entry with the exact set of Tags
 
-# TODO: search files
+  if (found is None): # if there is no match
+    return jsonify({'result':'no match'})
 
-# TODO: update
+  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
-# TODO: delete
+  return jsonify(found) #return result as json
 
+# update
+@app.route('/update_file', methods=['PUT']) # give an existing tag a file, returns updated document
+def update_file(old_dict = {'_id':'6009c57dbe2493459b65cf41', 'name':'CS Electives', 'dept':'cs'}, update = {'name':'testo file', 'link to file':'html go brrrr'}):
+  updated = mongo.db.files.find_one_and_update(
+    {
+      '_id': ObjectId(old_dict['_id'])
+    }, 
+    {
+      '$set': update
+    },
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
+
+# delete
+@app.route('/delete_file', methods=['DELETE']) 
+def delete_file(id = '60775d27b03afb02a31e76e7'):
+  # if no question is using this file, we may delete it:
+  found = mongo.db.questions.find({'file':id}) # assumes questions link to files via _id stored as a string
+  if (found.count() == 0):
+    to_delete = mongo.db.files.delete_one(
+      {
+        '_id':ObjectId(id)
+      }
+      )
+    if (to_delete.deleted_count == 0): #if there is no match
+      return jsonify({'result':'no match'})
+    
+    return jsonify({'result':'deleted'})
+  else:
+    list = []
+    for i in found: # itterate over curor 
+      fickleID = i.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+      i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+      list.append(i)
+
+    return jsonify(list)
 
 ## users collection ##
 
-# TODO: create 
+# create 
+@app.route('/add_user', methods=['POST']) # add a user to the database. pls check if it exists first.
+def add_user( NID = 'ha42000', name = 'user1',  email = 'boop@boop.com', IsAdmin = False):
+  new_user = {'NID': NID, 'name': name, 'email': email, 'IsAdmin':IsAdmin}
+  
+  InsertOneResult_Obj = mongo.db.users.insert_one(new_user) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
+  
+  new_user.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_question with the ObjectID (as a string) so that we can actually return something that resembles a document :/
+ 
+  return jsonify(new_user)
 
-# TODO: search
+# search
+@app.route('/get_user', methods=['GET']) # retrive a user based on ObjectId
+def get_user( NID = 'ma770070' ):
+  found = mongo.db.users.find_one({'NID': NID}) #finds the entry with the exact set of Tags
 
-# TODO: update
+  if (found is None): # if there is no match
+    return jsonify({'result':'no match'})
 
-# TODO: delete
+  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(found) #return result as json
+
+# update
+@app.route('/update_user', methods=['PUT']) # give an existing tag a file, returns updated document
+def update_user(NID = 'ma770070', itemToUpdate = 'name', newContents = 'Maya2'):
+  updated = mongo.db.users.find_one_and_update(
+    {
+      'NID': NID
+    }, 
+    {
+      '$set': { itemToUpdate:newContents }
+    },
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
+
+# delete
+@app.route('/delete_user', methods=['DELETE']) 
+def delete_user(NID = 'ha42000'):
+  to_delete = mongo.db.users.delete_one(
+    {
+      'NID':NID
+    }
+    )
+  if (to_delete.deleted_count == 0): #if there is no match
+    return jsonify({'result':'no match'})
+  
+  return jsonify({'result':'deleted'})
+
+# check if a user is an admin
+@app.route('/IsAdmin_check', methods=['GET']) 
+def IsAdmin_check(NID = 'ha2000'):
+  found = mongo.db.users.find_one({'NID':NID}) 
+
+  if (found is None): # if there is no match
+    return jsonify({'result':'no match'})
+
+  # just driectly return the value of IsAdmin
+  return jsonify({'result':found['IsAdmin']})
 
 
 ## settings collection ##
@@ -421,16 +573,16 @@ def delete_tag(name = 'ploop', type = 'info'):
 # checks if there needs training
 @app.route('/needs_update_check', methods=['GET']) 
 def needs_update_check():
-  found = mongo.db.settings.find_one({'needs training':True}) 
+  found = mongo.db.settings.find_one({'needs training':'Needs Training'}) 
 
   if (found is None): # if there is no match
-    return jsonify({'needs training':False})
+    return jsonify({'needs training':'Fully Trained'})
 
-  return jsonify({'needs training':True}) #return result as json
+  return jsonify({'needs training':'Needs Training'}) #return result as json
 
 # changes the status of needs training
 @app.route('/set_needs_update', methods=['PUT'])
-def set_needs_update(set = True):
+def set_needs_update(set = 'Needs Training'):
   updated = mongo.db.settings.find_one_and_update(
     {}, 
     {
@@ -448,6 +600,10 @@ def set_needs_update(set = True):
   return jsonify(updated)
 
 
+#TODO IGNORE FOR NOW: list of ids of questions that have been recently added need to be retrained. 
+# # When the 'delete question' is called, check to see if this array is size 0 and then if it is, change the 'needs training' variable to 'fully trained'. 
+# # When the system is trained, clear this list. 
+# # If user adds a question, add to this list.
 
 if __name__ == '__main__':
     app.run(debug=True) #run in debug mode so that when the .py updates, the whole thing relaunches too
