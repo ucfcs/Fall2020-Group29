@@ -47,3 +47,13 @@ class Review extends Component {
     );
   }
 }
+
+Review.propTypes = {
+  steps: PropTypes.object,
+};
+
+Review.defaultProps = {
+  steps: undefined,
+};
+
+export default Review;
