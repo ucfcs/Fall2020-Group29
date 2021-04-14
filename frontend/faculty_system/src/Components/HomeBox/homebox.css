@@ -1,18 +1,29 @@
 p {
     margin:0px;
 }
+
 #home-box {
     display:flex;
     height:100%;
 }
+
 #sidebox {
+    display:flex;
     flex:1;
-    height: 100%;
+    flex-direction: column; 
+    height: 94vh;
+    font-size: x-large;
 }
+
 #navbar {
     overflow: auto;
     height: 100%;
-    border: 1px solid black;
+    flex:3;
+    display:flex;
+    flex-direction: column;
+    border-left: 1px solid black;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
 }
 
 #content-box {
@@ -26,33 +37,43 @@ p {
     height:94vh;
 }
 
-#selection-wrapper {
-    display:block;
+#search-bar-wrapper {
     flex:1;
-    border-right: 1px solid black;
-    overflow: auto;
-}
-
-#content {
-    display:block;
-    flex:3;
-    overflow:auto;
+    display:flex;
 }
 
 #search-bar {
-    width:100%;
-    height: 9vh;
-    line-height: 60px;
-    border-bottom: 1px solid black;
+    flex:1;
+    border-left:transparent;
+    border-right:transparent;
+    border-top:transparent;
+    border-bottom: solid 1px black;
+}
+
+#selection-box {
+    display:flex;
+    flex-direction: column;
+}
+
+#new-item-selection {
+    flex:1;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    border-bottom: solid 1px black;
 }
 
 .navbox {
-    overflow: hidden;
+    display:flex;
+    justify-content: center;
     text-align: center;
-    line-height: 50px;
-    height: 50px;
+    align-items: center;
+    flex:1;
+    max-height: 80px;
     cursor: pointer;
     font-size: x-large;
+    border-bottom: solid 1px black;
 }
 
 .selected {
@@ -60,23 +81,26 @@ p {
     text-decoration: underline;
 }
 
-.selection-option {
-    height: 10%;
+.selection-wrapper {
+    flex:18;
+    overflow: auto;
+}
+
+.selection {
     cursor: default;
     display:flex;
+    flex:1;
+    min-height: 75px;
     align-items: center;
     border-bottom: 1px solid black;
     font-size:large;
+}
+
+.selection-option {    
     background-color: #b3b3b3;
 }
 
 .selected-option {
-    height: 10%;
-    cursor: default;
-    display:flex;
-    align-items: center;
-    border-bottom: 1px solid black;
-    font-size:large;
     font-weight: bold;
     text-decoration: underline;
     background-color: #666666;
@@ -109,6 +133,7 @@ p {
     border-radius: 10px;
     margin-left:3%;
     max-height: 50%;
+    max-width:50%;
     height:4vh;
     padding:5px;
     display:flex;
@@ -143,11 +168,49 @@ p {
 
 .delete-button {
     background-color: red;
-    color:white;  
+    color:white;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    box-shadow: 0 0 0 2px black;
+    -moz-box-shadow: 0 0 0 2px black;
+    -webkit-box-shadow: 0 0 0 2px black;
+    text-decoration: underline;
+}
+
+.delete-button:active {
+    box-shadow: 0 0 0 1px black;
+    -moz-box-shadow: 0 0 0 1px black;
+    -webkit-box-shadow: 0 0 0 1px black;
+    border: 1px solid black;
+}
+
+.log-out-button {
+    flex:1;
+    cursor:pointer;
+    margin-right:3%;
+    margin-top:10%;
+}
+
+.log-out-button:hover {
+    box-shadow: 0 0 0 2px black;
+    -moz-box-shadow: 0 0 0 2px black;
+    -webkit-box-shadow: 0 0 0 2px black;
+    text-decoration: underline;
+}
+
+.log-out-button:active {
+    font-weight:bold;
+    box-shadow: 0 0 0 1px black;
+    -moz-box-shadow: 0 0 0 1px black;
+    -webkit-box-shadow: 0 0 0 1px black;
+    border: 1px solid black;
 }
 
 .train-button {
-    margin-top:5%;
+    flex:1;
+    margin-top:10%;
     margin-right:3%;
 }
 
@@ -180,4 +243,24 @@ p {
     -moz-box-shadow: 0 0 0 1px black;
     -webkit-box-shadow: 0 0 0 1px black;
     border: 1px solid black;
+}
+
+.plus-select {
+    flex:1;
+    font-weight: bold;
+    font-size: xx-large;
+    margin-right: 5%;
+    cursor: pointer;
+}
+
+.plus {
+    float: left;
+    font-weight: bold;
+    font-size: xx-large;
+    margin-left: 5%;
+    cursor: pointer;
+    border:1px solid black;
+    height: 25px;
+    padding:0 2px 2px 2px;
+    line-height: 18px;
 }

@@ -1,9 +1,3 @@
-// export class Question {
-//     constructor(id, name, patterns, entities, responses) {
-
-//     }
-// }
-
 export const defaultQuestion = {
   '_id': '',
   'name': '',
@@ -52,19 +46,17 @@ export function getQuestions(callback) {
     let options = {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': window.sessionStorage.getItem('token')
+            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+            'Content-Type': 'application/json'
         },
     };
-
     fetch('http://127.0.0.1:5000/api/faculty/get_questions', options)
       .then((res)=> {
           if (res.status === 401) {
-            res.json().then((res)=> alert(res['message']));
+            alert('User not Authorized');
             callback([]);
           } else if (res.status === 200) {
             res.json().then((res)=> {
-                console.log(res);
                 let questions = res['questions'];
                 questions.forEach(q => formatQuestion(q));
                 window.sessionStorage.setItem('questions', JSON.stringify(questions));
@@ -102,8 +94,8 @@ export function saveQuestion(question, callback) {
     method = 'POST';
     succMessage = 'Question Successfully Added to System.';
   } else {
-    method = 'PUT';
     call = 'update_question';
+    method = 'PUT';
     succMessage = 'Question Successfully Updated.'
   }
 
@@ -111,14 +103,19 @@ export function saveQuestion(question, callback) {
     method: method,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': window.sessionStorage.getItem('token')
+        'Authorization':'Bearer ' + window.sessionStorage.getItem('token'),
     },
     body: JSON.stringify({'question': question, 'retrain': false})
   };
 
   fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
     .then((res)=> {
-      if (res.status===200) {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status===200) {
         res.json().then((res)=> {
           let q = res['question'];
           formatQuestion(q);
@@ -142,13 +139,12 @@ export function saveQuestion(question, callback) {
   
 }
 
-export function saveQuestionAndTrain(question, update, callback) {
+export function saveQuestionAndTrain(question, updateText, updateSetting,  callback) {
   let call = '';
   let method = '';
   let succMessage = '';
   let hasFields = hasAllFields(question);
   let saved = false;
-  console.log(update);
   if (!hasFields.hasFields) {
     callback(
       {
@@ -172,18 +168,22 @@ export function saveQuestionAndTrain(question, update, callback) {
     method: method,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': window.sessionStorage.getItem('token')
+        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
     },
     body: JSON.stringify({'question': question})
   };
 
   fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
     .then((res)=> {
-      if (res.status===200) {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status===200) {
         res.json().then((res)=> {
           let q = res['question'];
           formatQuestion(q);
-          saved = true;
           callback(
             {
               success: true,
@@ -191,28 +191,43 @@ export function saveQuestionAndTrain(question, update, callback) {
               question: q
             });
 
-            if (saved===true) {
-              update('Training Now');
-              options = {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': window.sessionStorage.getItem('token')
-                }
-              };
+          if (saved===true) {
+            updateSetting('Training Now', (response)=> {
+              if (response.success) {
+                updateText('Training Now');
+                options = {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+                  }
+                };
         
-              fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
-              .then((res)=> {
-                if (res.status===200) {
-                  res.json().then((res)=> {
-                    update('Fully Trained');
-                    alert(res['message']);
+                fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+                  .then((res)=> {
+                    if (res.status === 401) {
+                      callback({
+                        success: false,
+                        message: 'User not Authorized'
+                      });
+                    } else if (res.status===200) {
+                      res.json().then((res)=> {
+                        updateSetting('Fully Trained', (finResponse)=> {
+                          updateText('Fully Trained');
+                          alert(res['message']);
+                        });
+                      });
+                    } else {
+                      updateSetting('Needs Training', (finResponse)=> {
+                        updateText('Needs Training');
+                        alert('Error: System could not be retrained.');
+                      });
+                    }
                   });
                 } else {
-                  update('Needs Training');
-                  alert('Error: System could not be retrained.');
+                  alert(response.message);
                 }
-              });
+            });
           }
         });
       } else {
@@ -225,6 +240,131 @@ export function saveQuestionAndTrain(question, update, callback) {
         });
       }
     });  
+}
+
+export function deleteQuestion(question, callback) {
+  if (question._id === '') {
+    callback({
+      success: false,
+      message: 'Cannot delete a question not in the database.'
+    });
+    return;
+  }
+
+  let options = {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+    },
+    body: JSON.stringify({'question': question})
+  }
+
+  fetch('http://127.0.0.1:5000/api/faculty/delete_question', options)
+    .then((res)=> {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status === 200) {
+        res.json().then((res)=> {
+          callback({
+            success: true,
+            message: res.message
+          })
+        });
+      } else {
+        res.json().then((res)=> {
+          callback(
+            {
+              success: false,
+              message: res.message
+            });
+        });
+      }
+    });
+}
+
+export function deleteQuestionAndRetrain(question, updateText, updateSetting, callback) {
+  if (question._id === '') {
+    callback({
+      success: false,
+      message: 'Cannot delete a question not in the database.'
+    });
+    return;
+  }
+
+  let options = {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+    },
+    body: JSON.stringify({'question': question})
+  }
+
+  fetch('http://127.0.0.1:5000/api/faculty/delete_question', options)
+    .then((res)=> {
+      if (res.status === 401) {
+        callback({
+          success: false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status === 200) {
+        res.json().then((res)=> {
+          callback({
+            success: true,
+            message: res.message
+          });
+
+          updateSetting('Training Now', (response)=> {
+            if (response.success) {
+              updateText('Training Now');
+              options = {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+                }
+              };
+      
+              fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+                .then((res)=> {
+                  if (res.status === 401) {
+                    callback({
+                      success: false,
+                      message: 'User not Authorized'
+                    });
+                  } else if (res.status===200) {
+                    res.json().then((res)=> {
+                      updateSetting('Fully Trained', (finResponse)=> {
+                        updateText('Fully Trained');
+                        alert(res['message']);
+                      });
+                    });
+                  } else {
+                    updateSetting('Needs Training', (finResponse)=> {
+                      updateText('Needs Training');
+                      alert('Error: System could not be retrained.');
+                    });
+                  }
+                });
+              } else {
+                alert(response.message);
+              }
+          });
+        });
+      } else {
+        res.json().then((res)=> {
+          callback(
+            {
+              success: false,
+              message: res.message
+            });
+        });
+      }
+    });
 }
 
 
@@ -246,8 +386,6 @@ function hasAllFields(question) {
   let hasAllFields = true;
   let missingFields = [];
   requiredFields.forEach(field => {
-    console.log(field);
-    console.log(question[field]);
     if (field === 'tags') {
       tagTypes.forEach(tag => {
         if (!hasField(question.tags, tag)) {

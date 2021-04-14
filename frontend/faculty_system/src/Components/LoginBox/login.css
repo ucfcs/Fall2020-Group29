@@ -66,3 +66,11 @@ label {
     white-space: nowrap;
     user-select: none;
 }
+
+.btn:active {
+    text-decoration: underline;
+    font-weight: bold;
+    box-shadow: 0 0 0 2px black;
+    -moz-box-shadow: 0 0 0 2px black;
+    -webkit-box-shadow: 0 0 0 2px black;
+}
