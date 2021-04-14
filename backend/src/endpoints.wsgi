@@ -1,3 +1,3 @@
 import sys 
-sys.path.insert(0, '/var/www/html/endpoints')
+sys.path.insert(0, '/var/www/endpoints')
 from endpoints import app as application
