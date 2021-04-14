@@ -139,7 +139,7 @@ export function saveQuestion(question, callback) {
   
 }
 
-export function saveQuestionAndTrain(question, update, callback) {
+export function saveQuestionAndTrain(question, updateText, updateSetting,  callback) {
   let call = '';
   let method = '';
   let succMessage = '';
@@ -192,32 +192,42 @@ export function saveQuestionAndTrain(question, update, callback) {
             });
 
           if (saved===true) {
-            update('Training Now');
-            options = {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
-              }
-            };
+            updateSetting('Training Now', (response)=> {
+              if (response.success) {
+                updateText('Training Now');
+                options = {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+                  }
+                };
         
-            fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
-              .then((res)=> {
-                if (res.status === 401) {
-                  callback({
-                    success: false,
-                    message: 'User not Authorized'
-                  });
-                } else if (res.status===200) {
-                  res.json().then((res)=> {
-                    update('Fully Trained');
-                    alert(res['message']);
+                fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+                  .then((res)=> {
+                    if (res.status === 401) {
+                      callback({
+                        success: false,
+                        message: 'User not Authorized'
+                      });
+                    } else if (res.status===200) {
+                      res.json().then((res)=> {
+                        updateSetting('Fully Trained', (finResponse)=> {
+                          updateText('Fully Trained');
+                          alert(res['message']);
+                        });
+                      });
+                    } else {
+                      updateSetting('Needs Training', (finResponse)=> {
+                        updateText('Needs Training');
+                        alert('Error: System could not be retrained.');
+                      });
+                    }
                   });
                 } else {
-                  update('Needs Training');
-                  alert('Error: System could not be retrained.');
+                  alert(response.message);
                 }
-              });
+            });
           }
         });
       } else {
@@ -276,7 +286,7 @@ export function deleteQuestion(question, callback) {
     });
 }
 
-export function deleteQuestionAndRetrain(question, update, callback) {
+export function deleteQuestionAndRetrain(question, updateText, updateSetting, callback) {
   if (question._id === '') {
     callback({
       success: false,
@@ -308,32 +318,42 @@ export function deleteQuestionAndRetrain(question, update, callback) {
             message: res.message
           });
 
-          update('Training Now');
-          options = {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
-            }
-          };
-        
-          fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
-            .then((res)=> {
-              if (res.status === 401) {
-                callback({
-                  success: false,
-                  message: 'User not Authorized'
-                });
-              } else if (res.status===200) {
-                res.json().then((res)=> {
-                  update('Fully Trained');
-                    alert(res['message']);
+          updateSetting('Training Now', (response)=> {
+            if (response.success) {
+              updateText('Training Now');
+              options = {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+                }
+              };
+      
+              fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+                .then((res)=> {
+                  if (res.status === 401) {
+                    callback({
+                      success: false,
+                      message: 'User not Authorized'
+                    });
+                  } else if (res.status===200) {
+                    res.json().then((res)=> {
+                      updateSetting('Fully Trained', (finResponse)=> {
+                        updateText('Fully Trained');
+                        alert(res['message']);
+                      });
+                    });
+                  } else {
+                    updateSetting('Needs Training', (finResponse)=> {
+                      updateText('Needs Training');
+                      alert('Error: System could not be retrained.');
+                    });
+                  }
                 });
               } else {
-                update('Needs Training');
-                alert('Error: System could not be retrained.');
+                alert(response.message);
               }
-            });
+          });
         });
       } else {
         res.json().then((res)=> {

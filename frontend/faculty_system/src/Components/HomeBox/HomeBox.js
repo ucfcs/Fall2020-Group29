@@ -1,6 +1,6 @@
 import React from 'react';
 import { ContentBox } from './ContentBox/ContentBox';
-import {sections, retrain, logOut} from './home'
+import {sections, retrain, check_needs_training, update_needs_training, logOut} from './home'
 import {confirmAlert} from 'react-confirm-alert';
 import './homebox.css';
 
@@ -21,6 +21,14 @@ export class HomeBox extends React.Component {
             selectedNode: '',
             needsTraining: 'Fully Trained'
         }
+    }
+
+    componentDidMount() {
+        check_needs_training((response)=> {
+            if (response.success) {
+                this.setState({needsTraining:response.trained});
+            }
+        });
     }
 
     hasChanges() {
@@ -64,16 +72,34 @@ export class HomeBox extends React.Component {
                     {
                         label: 'Yes, retrain',
                         onClick: ()=>{
-                            this.setState({needsTraining:'Training Now'}, ()=>{
-                                retrain((res)=> {
-                                    alert(res.message);
-                                    if (res.trained) {
-                                        this.setState({needsTraining:'Fully Trained'});
-                                    } else {
-                                        this.setState({needsTraining:'Needs Training'});
-                                    }
-                                });
-                            }); 
+                            update_needs_training('Training Now', (response)=> {
+                                if (response.success) {
+                                    this.setState({needsTraining:'Training Now'}, ()=>{
+                                        retrain((res)=> {
+                                            if (res.trained) {
+                                                update_needs_training('Fully Trained', (finResponse)=> {
+                                                    if (finResponse.success) {
+                                                        this.setState({needsTraining:'Fully Trained'});
+                                                    } else {
+                                                        alert(finResponse.message);
+                                                    }
+                                                });
+                                            } else {
+                                                update_needs_training('Needs Training', (finResponse)=> {
+                                                    if (finResponse.success) {
+                                                        this.setState({needsTraining:'Needs Training'});
+                                                    } else {
+                                                        alert(finResponse.message);
+                                                    }
+                                                });
+                                            }
+                                            alert(res.message);
+                                        });
+                                    }); 
+                                } else {
+                                    alert(response.message);
+                                }
+                            });
                         }
                     },
                     {

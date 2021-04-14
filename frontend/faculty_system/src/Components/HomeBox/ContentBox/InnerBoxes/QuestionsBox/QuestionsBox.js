@@ -11,6 +11,7 @@ import {
     deleteQuestion,
     deleteQuestionAndRetrain
 } from './questions';
+import {update_needs_training} from '../../../home';
 import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
 import {getDocuments} from '../DocumentsBox/documents';
@@ -319,7 +320,8 @@ export class QuestionsBox extends React.Component {
                             label: 'Save and Retrain',
                             onClick: ()=> saveQuestionAndTrain(
                                 this.state.curQuestion, 
-                                this.props.updateTrain, 
+                                this.props.updateTrain,
+                                update_needs_training,
                                 response=> {
                                 if (response.success) {
                                     let questions = this.state.questions;
@@ -358,7 +360,13 @@ export class QuestionsBox extends React.Component {
                                     }
                                     this.setState({questions:questions, needsTraining:true}, ()=> {
                                         window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
-                                        this.props.updateTrain('Needs Training');
+                                        update_needs_training('Needs Training', (response)=> {
+                                            if (response.success) {
+                                                this.props.updateTrain('Needs Training');
+                                            } else {
+                                                alert(response.message);
+                                            }
+                                        });
                                     });
                                 } else {
                                     console.error(response.message);
@@ -422,12 +430,16 @@ export class QuestionsBox extends React.Component {
                     onClick: ()=> deleteQuestionAndRetrain(
                         this.state.curQuestion,
                         this.props.updateTrain,
+                        update_needs_training,
                         response=> {
                             if (response.success) {
                                 let questions = this.state.questions;
+                                let displayed = this.state.displayedQuestions;
                                 let remaining = questions.filter(q=> 
                                     q._id !== this.state.curQuestion._id);
-                                this.setState({questions:remaining, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
+                                let dis = displayed.filter(q=>
+                                    q._id !== this.state.curQuestion._id);
+                                this.setState({questions:remaining, displayedQuestions:dis, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
                                     window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                     alert('Question succesfully deleted.')
                                 });
@@ -444,9 +456,12 @@ export class QuestionsBox extends React.Component {
                         response=> {
                             if (response.success) {
                                 let questions = this.state.questions;
+                                let displayed = this.state.displayedQuestions;
                                 let remaining = questions.filter(q=> 
                                     q._id !== this.state.curQuestion._id);
-                                this.setState({questions:remaining, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
+                                let dis = displayed.filter(q=>
+                                    q._id !== this.state.curQuestion._id);
+                                this.setState({questions:remaining, displayedQuestions:dis, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
                                     window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                     alert('Question succesfully deleted.')
                                 });

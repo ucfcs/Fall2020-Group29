@@ -190,3 +190,25 @@ def return_all_with_tag(mongo, tag, type, replace):
     return jsonify({'result':'no results'})
 
   return found.acknowledged # update_many doesn't return a document
+
+def needs_update_check(mongo):
+  found = mongo.db.settings.find_one({'name':'needs training'}) 
+
+  if (found is None): # if there is no match
+    return None
+
+  return found['needs training'] #return result  setting
+
+def set_needs_update(mongo, value='Needs Training'):
+  updated = mongo.db.settings.find_one_and_update(
+    {'name':'needs training'}, 
+    {
+      '$set': { 'needs training':value }
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return False
+
+  return True
