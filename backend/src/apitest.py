@@ -582,11 +582,14 @@ def needs_update_check():
 
 # changes the status of needs training
 @app.route('/set_needs_update', methods=['PUT'])
-def set_needs_update(set = 'Needs Training'):
+def set_needs_update(set = 'Fully Trained'):
+  if ((set.title() != 'Fully Trained') and (set.title() != 'Needs Training')): # .title() ensures "needs training" has only the first letter of each word capitalized, with the other letters lower case
+    return jsonify({'result':'not a valid setting'})
+
   updated = mongo.db.settings.find_one_and_update(
     {}, 
     {
-      '$set': { 'needs training':set }
+      '$set': { 'needs training':set.title() } 
     },
     upsert=False, # upsert = if thing does not exist, make it exist
     return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
