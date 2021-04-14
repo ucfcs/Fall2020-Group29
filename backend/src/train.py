@@ -11,7 +11,6 @@ from .model import NeuralNet
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import normalize
 from torch.utils.data import DataLoader
-import sys
 from .utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
 
 

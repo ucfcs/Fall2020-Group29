@@ -17,13 +17,12 @@
 }
 
 #entity-box {
-    flex:1;
-    height:20%;
+    height:20vh;
 }
 
 #entered-fields {
     display:flex;
-    height: 80%;
+    height: 80vh;
 }
 
 #question-name {
@@ -46,15 +45,19 @@
 }
 
 #response-box {
-    height:45%;
-    overflow:auto;
+    height:40%;
 }
 
 #patterns-box {
-    height:45%;
+    height:55%;
     overflow: auto;
 }
 
+#response {
+    width:85%;
+    height:70%;
+    resize:none;
+}
 
 #entities {
     display: flex;
@@ -96,11 +99,6 @@
     height: 25px;
     padding:0 2px 2px 2px;
     line-height: 18px;
-}
-
-.responses {
-    margin-top:5%;
-    margin-bottom: 5%;
 }
 
 .response {
@@ -158,4 +156,21 @@
 
 .field {
     margin:1%;
+}
+
+.invalid-combo {
+    box-shadow: 0 0 0 2px red;
+}
+
+.hide {
+    display:none;
+}
+
+.show {
+    display:block;
+    
+}
+
+.invalid-tags {
+    color:red;
 }

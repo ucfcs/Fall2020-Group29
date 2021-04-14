@@ -4,11 +4,11 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo import ReturnDocument
 import traceback
-from .apitest import get_question
+from apitest import get_question
 
 
 # from ...ai import chatbot
-from .chatbot import predict
+from chatbot import predict
 
 app = Flask(__name__)
 CORS(app)
@@ -42,20 +42,21 @@ def create_response():
         category = result["cat"][0]["tag"]
         info = result["info"][0]["tag"]
         intent = result["ints"][0]["tag"]
+        probability = result["total_prob"]
 
         Entities = [intent, dept, category, info]
         # res = get_question(Entities)
 
         found = mongo.db.questions.find_one({"tags": {"$all": Entities}})
         if found is None:  # if there is no match
-            return jsonify({"result": "no match"})
+            return jsonify({"answer": "no match", "probability": float(probability)})
         fickleID = found.pop(
             "_id"
         )  # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
         found.update(
             {"_id": str(fickleID)}
         )  # put _id back in but as a regular string now
-        response = found["responses"][0]
+        response = found["response"]
         # response = res["responses"][0]
 
         return jsonify(
@@ -64,6 +65,7 @@ def create_response():
                 "category": category,
                 "information": info,
                 "answer": response,
+                "probability": float(probability)
                 # "intent": intent,
             }
         )

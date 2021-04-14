@@ -1,18 +1,25 @@
 import "./App.css";
 import Knugget from "./Knugget.jpg";
 import React, { useState, useEffect, Component } from "react";
-import ChatBot, { Loading } from "react-simple-chatbot";
+import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
+<<<<<<< HEAD
 import axios from "axios";
 import PropTypes from "prop-types";
+=======
+import Result from "./Components/Result";
+>>>>>>> main
 
 function App(props) {
-  // Dummy Function to return some data to the chatbot
-  function dummy(value) {
-    return "Let me see what I can do to help with " + value;
-  }
-  let nextResponse = "Understandable, have a nice day!";
+  // const [count, setCount] = useState(0);
 
+  // Dummy Function to return some data to the chatbot
+  const dummy = (value) => {
+    return "Let me see what I can do to help with " + value;
+  };
+
+  let nextResponse = "Understandable, have a nice day!";
+  // setCount(34);
   const config = {
     width: "300px",
     height: "400px",
@@ -33,12 +40,12 @@ function App(props) {
     {
       id: "2",
       options: [
-        { value: 1, label: "Yes", trigger: "3" },
+        { value: 1, label: "Yes", trigger: "More Help" },
         { value: 2, label: "No", trigger: "4" },
       ],
     },
     {
-      id: "3",
+      id: "More Help",
       message: "How can I help?",
       trigger: "userInput",
     },
@@ -64,7 +71,33 @@ function App(props) {
       id: "7",
       component: <Result />,
       waitAction: true,
-      trigger: "3",
+      trigger: "More Help",
+    },
+
+    {
+      id: "Even More Help",
+      message: "Is there something else I can assist you with?",
+      trigger: "help options",
+    },
+
+    {
+      id: "help options",
+      // message: "Heloooo",
+      options: [
+        { value: 1, label: "Yes", trigger: "More Help" },
+        { value: 2, label: "No", trigger: "Thank you" },
+      ],
+    },
+    {
+      id: "Thank you",
+      message: "Perfect! Glad I could help!",
+      // trigger: "Feedback",
+      end: true,
+    },
+    {
+      id: "Sorry Thank you",
+      message: "I am Sorry, I wish I could be of more help.",
+      end: true,
     },
   ];
 
