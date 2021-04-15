@@ -1,9 +1,9 @@
 export const sections = [
   'Questions',
-  'Tags'
+  'Tags',
+  'Users'
   // 'Contacts',
   // 'Documents',
-  // 'Users',
   // 'Statistics'
 ]
 
