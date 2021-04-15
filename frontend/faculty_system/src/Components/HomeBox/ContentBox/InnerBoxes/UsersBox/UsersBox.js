@@ -1,4 +1,6 @@
+import { cloneDeep } from 'lodash';
 import React from 'react';
+import {defaultUser, getUsers} from './users';
 
 
 export class UsersBox extends React.Component {
@@ -8,6 +10,17 @@ export class UsersBox extends React.Component {
 
         this.hasChanges = this.hasChanges.bind(this);
         this.saveCurrent = this.saveCurrent.bind(this);
+
+        this.state = {
+            users: [],
+            curUser: cloneDeep(defaultUser)
+        }
+    }
+
+    componentDidMount() {
+        getUsers((users)=> {
+            this.setState({users:users}, ()=>console.log(this.state.users));
+        });
     }
 
     hasChanges() {
@@ -22,7 +35,12 @@ export class UsersBox extends React.Component {
         return (
             <>
                 <div id='content-wrapper'>
-                    
+                    <div id='user-selection'>
+
+                    </div>
+                    <div id='user-content-body'>
+
+                    </div>
                 </div>
             </>
         );

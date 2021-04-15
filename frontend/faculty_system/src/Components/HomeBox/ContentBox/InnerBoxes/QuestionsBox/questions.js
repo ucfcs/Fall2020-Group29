@@ -48,7 +48,7 @@ export function getQuestions(callback) {
         headers: {
             'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
             'Content-Type': 'application/json'
-        },
+        }
     };
     fetch('http://127.0.0.1:5000/api/faculty/get_questions', options)
       .then((res)=> {
