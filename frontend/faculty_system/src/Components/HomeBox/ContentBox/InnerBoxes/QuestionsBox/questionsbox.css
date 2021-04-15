@@ -1,9 +1,3 @@
-#content-box {
-    flex:5;
-    height:100%;
-    border: 1px solid black;
-}
-
 #question-selection{
     display:flex;
     flex-direction: column; 

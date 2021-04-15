@@ -26,7 +26,6 @@ export function getUsers(callback) {
               } else if (res.status === 200) {
                 res.json().then((res)=> {
                     let users = res['users'];
-                    console.log(users);
                     window.sessionStorage.setItem('users', JSON.stringify(users));
                     callback(users);
                 });

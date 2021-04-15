@@ -1,0 +1,17 @@
+#user-selection {
+    display:flex;
+    flex-direction: column; 
+    flex:1;
+    border-right: 1px solid black;
+}
+
+#user-content-body {
+    display:flex;
+    flex-direction: column;
+    flex:3;
+    overflow:auto;
+}
+
+.new-user-text {
+    flex:7;
+}

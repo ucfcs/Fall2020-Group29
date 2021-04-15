@@ -133,7 +133,6 @@ def get_documents():
 def get_users():
 
     users = return_all(mongo, "users")
-    print(users)
     return jsonify(users=users)
 
 ######################################################## Add/Update Data ##############################################
