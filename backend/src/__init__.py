@@ -6,7 +6,7 @@ from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
 from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag, 
-    delete_tag, add_user, update_user, check_valid_user, needs_update_check, set_needs_update)
+    delete_tag, add_user, update_user, delete_user, check_valid_user, needs_update_check, set_needs_update)
 from .train import train
 import json
 
@@ -285,6 +285,18 @@ def delete_t():
         return jsonify(message=message)
     else:
         return jsonify(message=message), 500
+
+@app.route("/api/faculty/delete_user", methods=["DELETE"])
+#@jwt_required()
+def delete_u():
+    req = request.get_json()
+    user = req["user"]
+    deleted, message = delete_user(mongo, user["_id"])
+    if (deleted):
+        return jsonify(message=message)
+    else:
+        return jsonify(message=message), 500
+
 
 
 ####################################################### Settings Access ###############################################

@@ -186,6 +186,17 @@ def update_user(mongo, id, NID, name, email, IsAdmin):
 
   return updated
 
+def delete_user(mongo, id):
+  to_delete = mongo.db.users.delete_one(
+    {
+      '_id':ObjectId(id)
+    }
+    )
+  if (to_delete.deleted_count == 0): #if there is no match
+    return False, 'User not found.'
+  
+  return True, 'User successfully deleted.'
+
 
 # Order for Tags:
 # 1. Intent (intents)

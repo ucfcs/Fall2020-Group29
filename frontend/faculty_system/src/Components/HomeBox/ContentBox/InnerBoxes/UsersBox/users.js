@@ -74,3 +74,36 @@ export function saveUser(user, callback) {
             }
         })
 }
+
+export function deleteUser(user, callback) {
+    let options = {
+        method: 'DELETE',
+        headers: {
+            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({user:user})
+    };
+
+    fetch('http://127.0.0.1:5000/api/faculty/delete_user', options)
+        .then((res)=> {
+            if (res.status === 401) {
+                callback({
+                    success:false,
+                    message:'User not Authorized'
+                });
+            } else if (res.status === 200) {
+                res.json().then((res)=> {
+                    callback({
+                        success: true,
+                        message: res.message
+                    })
+                });
+            } else {
+                callback({
+                    success: false,
+                    message: 'Unable to delete user.'
+                })
+            }
+        })
+}

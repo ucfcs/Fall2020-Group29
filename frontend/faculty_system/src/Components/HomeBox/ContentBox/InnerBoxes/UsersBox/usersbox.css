@@ -19,6 +19,12 @@
     align-content: left;
 }
 
+#user-buttons {
+    flex:1;
+    display: flex;
+    flex-direction: column;
+}
+
 #user-title {
     display:flex;
     flex:6;
@@ -34,6 +40,11 @@
     justify-content: center;
     margin-left: 2%;
 }
+
+#user-delete-button {
+    margin-right:5%;
+}
+
 
 #user-delete {
     flex:1;

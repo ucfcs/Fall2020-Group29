@@ -1,7 +1,7 @@
 import { cloneDeep, isEqual } from 'lodash';
 import React from 'react';
 import {confirmAlert} from 'react-confirm-alert';
-import {defaultUser, getUsers, saveUser} from './users';
+import {defaultUser, getUsers, saveUser, deleteUser} from './users';
 import SelectionBox from '../SelectionBox';
 import './usersbox.css'
 
@@ -19,6 +19,7 @@ export class UsersBox extends React.Component {
         this.canSave = this.canSave.bind(this);
         this.handleChangeAdmin = this.handleChangeAdmin.bind(this);
         this.handleSave = this.handleSave.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
 
         this.state = {
             users: [],
@@ -129,6 +130,8 @@ export class UsersBox extends React.Component {
                                     window.sessionStorage.setItem('users', JSON.stringify(this.state.users));
                                     alert(response.message);
                                 });
+                            } else {
+                                alert(response.message);
                             }
                         })
                     }
@@ -139,6 +142,39 @@ export class UsersBox extends React.Component {
                 }
             ]
         });
+    }
+
+    handleDelete(event) {
+        confirmAlert({
+            title:'Are you sure you want to delete this user?',
+            message:'',
+            buttons:[
+                {
+                    label: 'Yes, delete user',
+                    onClick: ()=> {
+                        deleteUser(this.state.curUser, (response)=> {
+                            if (response.success) {
+                                let users = this.state.users;
+                                users = users.filter(user=> {
+                                    return user._id !== this.state.curUser._id;
+                                });
+                                this.setState({users:users, curUser:cloneDeep(defaultUser)}, ()=> {
+                                    this.filterSearch();
+                                    window.sessionStorage.setItem('users', JSON.stringify(this.state.users));
+                                    alert(response.message);
+                                })
+                            } else {
+                                alert(response.message);
+                            }
+                        });
+                    }
+                },
+                {
+                    label: 'Cancel',
+                    onClick: ()=>{}
+                }
+            ]
+        })
     }
 
     render() {
@@ -239,13 +275,21 @@ export class UsersBox extends React.Component {
                                     /> False
                                 </div>
                             </div>
-                            
-                            <div id='user-save'>
-                                <div 
-                                    className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
-                                    onClick={this.handleSave}
-                                >
-                                    Save Changes
+                            <div id='user-buttons'>
+                                <div id='user-save'>
+                                    <div 
+                                        className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
+                                        onClick={this.handleSave}
+                                    >
+                                        Save Changes
+                                    </div>
+                                </div>
+                                <div id='user-delete'>
+                                    {this.state.curUser._id !== '' ? 
+                                        <div id='user-delete-button' className='button delete-button' onClick={this.handleDelete}>
+                                            Delete User
+                                        </div>:''
+                                    }
                                 </div>
                             </div>
                         </div>
