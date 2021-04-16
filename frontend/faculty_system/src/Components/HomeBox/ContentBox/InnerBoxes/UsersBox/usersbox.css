@@ -41,20 +41,12 @@
     margin-left: 2%;
 }
 
-#user-delete-button {
-    margin-right:5%;
-}
-
-
 #user-delete {
     flex:1;
     display:flex;
     align-items: center;
-    justify-content: right;
-}
-
-#user-delete-button {
-    margin-right:5%;
+    justify-content: center;
+    margin-left: 2%;
 }
 
 #user-label {

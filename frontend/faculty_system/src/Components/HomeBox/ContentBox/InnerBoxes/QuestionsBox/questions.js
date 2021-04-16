@@ -190,8 +190,9 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
               message: succMessage,
               question: q
             });
-
+            saved = true;
           if (saved===true) {
+            console.log(updateSetting);
             updateSetting('Training Now', (response)=> {
               if (response.success) {
                 updateText('Training Now');
