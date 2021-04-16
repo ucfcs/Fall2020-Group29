@@ -139,7 +139,7 @@ def get_users():
 ######################################################## Add/Update Data ##############################################
 
 @app.route("/api/faculty/add_question", methods=["POST"])
-#@jwt_required()
+@jwt_required()
 def add_q():
     req = request.get_json()
     question = req["question"]
@@ -153,7 +153,7 @@ def add_q():
         return jsonify(message="Question successfully added.", question=added)
 
 @app.route("/api/faculty/update_question", methods=["PUT"])
-#@jwt_required()
+@jwt_required()
 def update_q():
     req = request.get_json()
     question = req["question"]
@@ -171,13 +171,13 @@ def update_q():
         return jsonify(message="Question successfully updated.", question=updated)
 
 @app.route("/api/faculty/retrain_model", methods=["GET"])
-#@jwt_required()
+@jwt_required()
 def retrain_model():
     train(db=mongo)
     return jsonify(message="Model successfully retrained")
 
 @app.route("/api/faculty/add_tag", methods=["POST"])
-#@jwt_required()
+@jwt_required()
 def add_t():
     req = request.get_json()
     tag = req["tag"]
@@ -198,7 +198,7 @@ def add_t():
         return jsonify(message="Tag already exists in database."), 500
 
 @app.route("/api/faculty/update_tag", methods=["PUT"])
-#@jwt_required()
+@jwt_required()
 def update_t():
     req = request.get_json()
     old_tag = req["old_tag"]
@@ -234,7 +234,7 @@ def update_t():
 
 
 @app.route("/api/faculty/add_user", methods=["POST"])
-#@jwt_required()
+@jwt_required()
 def add_u():
     req = request.get_json()
     user = req["user"]
@@ -247,7 +247,7 @@ def add_u():
 
 
 @app.route("/api/faculty/update_user", methods=["PUT"])
-#@jwt_required()
+@jwt_required()
 def update_u():
     req = request.get_json()
     user = req["user"]
@@ -264,7 +264,7 @@ def update_u():
 ####################################################### Delete Data ###################################################
 
 @app.route("/api/faculty/delete_question", methods=["DELETE"])
-#@jwt_required()
+@jwt_required()
 def delete_q():
     req = request.get_json()
     question = req["question"]
@@ -276,7 +276,7 @@ def delete_q():
         return jsonify(message=message), 500
 
 @app.route("/api/faculty/delete_tag", methods=["DELETE"])
-#@jwt_required()
+@jwt_required()
 def delete_t():
     req = request.get_json()
     tag = req["tag"]
@@ -287,7 +287,7 @@ def delete_t():
         return jsonify(message=message), 500
 
 @app.route("/api/faculty/delete_user", methods=["DELETE"])
-#@jwt_required()
+@jwt_required()
 def delete_u():
     req = request.get_json()
     user = req["user"]
@@ -302,7 +302,7 @@ def delete_u():
 ####################################################### Settings Access ###############################################
 
 @app.route("/api/faculty/check_needs_training", methods=["GET"])
-#@jwt_required()
+@jwt_required()
 def check_needs_training():
     trained = needs_update_check(mongo)
     if (trained != None):
@@ -311,7 +311,7 @@ def check_needs_training():
         return jsonify(success=False, message="Could not access training settings"), 500
 
 @app.route("/api/faculty/update_needs_training", methods=["PUT"])
-#@jwt_required()
+@jwt_required()
 def update_needs_training():
     req = request.get_json()
     value = req["value"]
