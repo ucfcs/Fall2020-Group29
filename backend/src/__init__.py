@@ -5,7 +5,8 @@ from flask_pymongo import PyMongo
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from .database_manager import return_all, update_question, add_question, delete_question, add_tag, update_tag, delete_tag, check_valid_user, needs_update_check, set_needs_update
+from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag, 
+    delete_tag, add_user, update_user, check_valid_user, needs_update_check, set_needs_update)
 from .train import train
 import json
 
@@ -230,6 +231,33 @@ def update_t():
         elif (updated_type == "info"):
             updated["type"] = "information"
         return jsonify(tag=updated)
+
+
+@app.route("/api/faculty/add_user", methods=["POST"])
+#@jwt_required()
+def add_u():
+    req = request.get_json()
+    user = req["user"]
+    new_user = add_user(mongo, user)
+
+    if new_user is None:
+        return jsonify(message="Could not add new user"), 500
+    return jsonify(user=new_user)
+
+
+@app.route("/api/faculty/update_user", methods=["PUT"])
+#@jwt_required()
+def update_u():
+    req = request.get_json()
+    id = req["_id"]
+    user = req["user"]
+
+    updated = update_user(mongo, id, user)
+
+    if updated is None:
+        return jsonify(message="User not found"), 404
+    else:
+        return jsonify(user=updated)
 
 
 ####################################################### Delete Data ###################################################
