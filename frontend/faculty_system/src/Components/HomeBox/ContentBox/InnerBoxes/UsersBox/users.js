@@ -29,9 +29,48 @@ export function getUsers(callback) {
                     window.sessionStorage.setItem('users', JSON.stringify(users));
                     callback(users);
                 });
+              } else {
+                  alert('Could not retrieve users.')
+                  callback([]);
               }
           });
     } else {
         callback(JSON.parse(ufs));
     }
+}
+
+export function saveUser(user, callback) {
+    let options = {
+        method: user._id !== '' ? 'PUT' : 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({user:user})
+    }
+    let call = user._id !== '' ? 'update' : 'add';
+    let succMessage = 'User successfully ' + (user._id !== '' ? 'updated' : 'added');
+
+    fetch('http://127.0.0.1:5000/api/faculty/'+call+'_user', options)
+        .then((res)=> {
+            if (res.status === 401) {
+                callback({
+                    success:false,
+                    message:'User not Authorized'
+                });
+            } else if (res.status === 200) {
+                res.json().then((res)=> {
+                    callback({
+                        success:true,
+                        user:res.user,
+                        message: succMessage
+                    })
+                });
+            } else {
+                callback({
+                    success:false,
+                    message:'Failed to '+call+' user'
+                });
+            }
+        })
 }

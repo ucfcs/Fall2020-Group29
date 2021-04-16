@@ -1,7 +1,7 @@
 import { cloneDeep, isEqual } from 'lodash';
 import React from 'react';
 import {confirmAlert} from 'react-confirm-alert';
-import {defaultUser, getUsers} from './users';
+import {defaultUser, getUsers, saveUser} from './users';
 import SelectionBox from '../SelectionBox';
 import './usersbox.css'
 
@@ -14,20 +14,24 @@ export class UsersBox extends React.Component {
         this.hasChanges = this.hasChanges.bind(this);
         this.saveCurrent = this.saveCurrent.bind(this);
         this.selectItem = this.selectItem.bind(this);
+        this.handleChangeSearch = this.handleChangeSearch.bind(this);
         this.filterSearch = this.filterSearch.bind(this);
         this.canSave = this.canSave.bind(this);
         this.handleChangeAdmin = this.handleChangeAdmin.bind(this);
+        this.handleSave = this.handleSave.bind(this);
 
         this.state = {
             users: [],
             displayedUsers: [],
-            curUser: cloneDeep(defaultUser)
+            curUser: cloneDeep(defaultUser),
+            search: ''
         }
     }
 
     componentDidMount() {
         getUsers((users)=> {
-            this.setState({users:users, displayedUsers:users}, ()=> {
+            this.setState({users:users}, ()=> {
+                this.filterSearch();
                 let ufs = window.sessionStorage.getItem('previous_user');
                 if (ufs !== null) {
                     this.setState({curUser:JSON.parse(ufs)});
@@ -64,7 +68,7 @@ export class UsersBox extends React.Component {
                     buttons: [
                         {
                             label: "Yes",
-                            onClick: ()=>this.setState({curUser: cloneDeep(user)}) 
+                            onClick: ()=>this.setState({curUser: cloneDeep(user)})
                         },
                         {
                             label: "No",
@@ -78,12 +82,16 @@ export class UsersBox extends React.Component {
         }
     }
 
-    filterSearch(event) {
+    handleChangeSearch(event) {
+        this.setState({search:event.target.value}, ()=>this.filterSearch());
+    }
+
+    filterSearch() {
         let users = this.state.users;
         let dis = users.filter(user => {
-            return user.name.toLowerCase().includes(event.target.value.toLowerCase());
+            return user.name.toLowerCase().includes(this.state.search.toLowerCase());
         });
-        this.setState({displayedUsers:dis});
+        this.setState({displayedUsers:dis.sort((a, b)=> a.name > b.name ? 1:-1)});
     }
 
     canSave() {
@@ -96,6 +104,43 @@ export class UsersBox extends React.Component {
         this.setState({curUser:user});
     }
 
+    handleSave(event) {
+        event.preventDefault();
+        confirmAlert({
+            title: 'Are you sure you want to save these changes?',
+            message:'',
+            buttons: [
+                {
+                    label: 'Yes, please save',
+                    onClick: ()=> {
+                        saveUser(this.state.curUser, (response)=> {
+                            let users = this.state.users;
+                            if (response.success) {
+                                let check = users.filter(user=>{
+                                    return user._id === response.user._id
+                                })[0];
+                                if (check === undefined) {
+                                    users.push(response.user);
+                                } else {
+                                    users[users.indexOf(check)] = cloneDeep(response.user);
+                                }
+                                this.setState({users:users, curUser:cloneDeep(response.user)}, ()=>{
+                                    this.filterSearch();
+                                    window.sessionStorage.setItem('users', JSON.stringify(this.state.users));
+                                    alert(response.message);
+                                });
+                            }
+                        })
+                    }
+                },
+                {
+                    label: 'Cancel',
+                    onClick: ()=> {}
+                }
+            ]
+        });
+    }
+
     render() {
         return (
             <>
@@ -105,7 +150,7 @@ export class UsersBox extends React.Component {
                             Users
                         </div>
                         <div id='search-bar-wrapper'>
-                            <input id='search-bar' type='text' placeholder='Search' onChange={this.filterSearch}/>
+                            <input id='search-bar' type='text' placeholder='Search' onChange={this.handleChangeSearch}/>
                         </div>
                         <div id='new-item-selection'>
                             <p className='new-user-text'>

@@ -168,13 +168,13 @@ def add_user(mongo, user):
  
   return new_user
 
-def update_user(mongo, id, user):
+def update_user(mongo, id, NID, name, email, IsAdmin):
   updated = mongo.db.users.find_one_and_update(
     {
       '_id': ObjectId(id)
     }, 
     {
-      '$set': { user }
+      '$set': { 'NID':NID, 'name':name, 'email':email, 'IsAdmin':IsAdmin}
     },
     return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
     )

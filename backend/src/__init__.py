@@ -238,6 +238,7 @@ def update_t():
 def add_u():
     req = request.get_json()
     user = req["user"]
+    user.pop("_id")
     new_user = add_user(mongo, user)
 
     if new_user is None:
@@ -249,10 +250,10 @@ def add_u():
 #@jwt_required()
 def update_u():
     req = request.get_json()
-    id = req["_id"]
     user = req["user"]
+    id = user["_id"]
 
-    updated = update_user(mongo, id, user)
+    updated = update_user(mongo, user["_id"], user["NID"], user["name"], user["email"], user["IsAdmin"])
 
     if updated is None:
         return jsonify(message="User not found"), 404

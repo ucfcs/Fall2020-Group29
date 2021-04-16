@@ -409,7 +409,7 @@ export class QuestionsBox extends React.Component {
                                 })
                         },
                         {
-                            label: 'No, continue working',
+                            label: 'Cancel',
                             onClick: ()=>{}
                         }
                     ]
