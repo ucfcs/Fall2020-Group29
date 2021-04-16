@@ -47,7 +47,7 @@ export class HomeBox extends React.Component {
                         onClick: ()=> logOut()
                     },
                     {
-                        label: "No",
+                        label: "Cancel",
                         onClick: ()=>{}
                     }
                 ]});
