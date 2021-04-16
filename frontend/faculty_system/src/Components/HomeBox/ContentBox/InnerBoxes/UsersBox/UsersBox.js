@@ -1,4 +1,4 @@
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 import React from 'react';
 import {confirmAlert} from 'react-confirm-alert';
 import {defaultUser, getUsers} from './users';
@@ -15,6 +15,8 @@ export class UsersBox extends React.Component {
         this.saveCurrent = this.saveCurrent.bind(this);
         this.selectItem = this.selectItem.bind(this);
         this.filterSearch = this.filterSearch.bind(this);
+        this.canSave = this.canSave.bind(this);
+        this.handleChangeAdmin = this.handleChangeAdmin.bind(this);
 
         this.state = {
             users: [],
@@ -25,12 +27,26 @@ export class UsersBox extends React.Component {
 
     componentDidMount() {
         getUsers((users)=> {
-            this.setState({users:users, displayedUsers:users}, ()=>console.log(this.state.users));
+            this.setState({users:users, displayedUsers:users}, ()=> {
+                let ufs = window.sessionStorage.getItem('previous_user');
+                if (ufs !== null) {
+                    this.setState({curUser:JSON.parse(ufs)});
+                }
+            });
         });
     }
 
     hasChanges() {
-        return false;
+        if (this.state.curUser._id === '') {
+            return !isEqual(this.state.curUser, defaultUser);
+        } else {
+            let users = this.state.users;
+            let check = users.filter(user=> {
+                return user._id === this.state.curUser._id;
+            })[0];
+
+            return !isEqual(this.state.curUser, check);
+        }
     }
 
     saveCurrent(callback) {
@@ -63,7 +79,21 @@ export class UsersBox extends React.Component {
     }
 
     filterSearch(event) {
+        let users = this.state.users;
+        let dis = users.filter(user => {
+            return user.name.toLowerCase().includes(event.target.value.toLowerCase());
+        });
+        this.setState({displayedUsers:dis});
+    }
 
+    canSave() {
+        return this.hasChanges();
+    }
+
+    handleChangeAdmin(event) {
+        let user = this.state.curUser;
+        user.IsAdmin = event.target.value === 'True'
+        this.setState({curUser:user});
     }
 
     render() {
@@ -92,7 +122,6 @@ export class UsersBox extends React.Component {
                                 titles={this.state.displayedUsers.map(user=> ({
                                     title: user.name,
                                     name: user['NID']
-                            
                                 }))}
                                 update={this.selectItem}
                                 curItem={this.state.curUser}
@@ -100,13 +129,89 @@ export class UsersBox extends React.Component {
                         </div>
                     </div>
                     <div id='user-content-body'>
+                        <div id='user-selection-header'>
+                            <div id='user-title'>
+                                <label id='user-label' htmlFor='user-name'>
+                                    User Name
+                                </label>
+                                <input 
+                                type='text' 
+                                className='user-name' 
+                                id='user-name' 
+                                value={this.state.curUser.name} 
+                                onChange={(e)=>{
+                                    e.preventDefault();
+                                    let user = this.state.curUser;
+                                    user.name = e.target.value;
+                                    this.setState({curQuestion:user});
+                                 }}
+                                 />
+                                 <label id='user-email-label' htmlFor='user-email'>
+                                    User Email
+                                </label>
+                                <input 
+                                type='text' 
+                                className='user-email' 
+                                id='user-email' 
+                                value={this.state.curUser.email} 
+                                onChange={(e)=>{
+                                    e.preventDefault();
+                                    let user = this.state.curUser;
+                                    user.email = e.target.value;
+                                    this.setState({curQuestion:user});
+                                 }}
+                                 />
+                                <label id='user-nid-label' htmlFor='user-nid'>
+                                    User NID
+                                </label>
+                                <input 
+                                type='text' 
+                                className='user-nid' 
+                                id='user-nid' 
+                                value={this.state.curUser.NID} 
+                                onChange={(e)=>{
+                                    e.preventDefault();
+                                    let user = this.state.curUser;
+                                    user.NID = e.target.value;
+                                    this.setState({curQuestion:user});
+                                 }}
+                                 />
+                                <label id='user-admin-label' htmlFor='user-admin'>
+                                    User Is Admin
+                                </label>
+                                <div id='user-admin' onChange={this.handleChangeAdmin}>
+                                    True <input 
+                                    type='radio'
+                                    name='user-admin'
+                                    value='True'
+                                    checked={this.state.curUser.IsAdmin}
+                                    />
+                                    <input 
+                                    type='radio'
+                                    name='user-admin'
+                                    value='False'
+                                    checked={!this.state.curUser.IsAdmin}
+                                    /> False
+                                </div>
+                            </div>
+                            
+                            <div id='user-save'>
+                                <div 
+                                    className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
+                                    onClick={this.handleSave}
+                                >
+                                    Save Changes
+                                </div>
+                            </div>
+                        </div>
+                        <div id='user-content'>
 
+                        </div>
                     </div>
                 </div>
             </>
         );
     }
-
 }
 
 export default UsersBox;

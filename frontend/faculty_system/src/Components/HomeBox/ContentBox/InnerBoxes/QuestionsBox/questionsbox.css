@@ -8,8 +8,6 @@
 #question-selection-header {
     flex:1;
     display:flex;
-    /* align-items: center; */
-    /* justify-content: center; */
 }
 
 #question-content-body {
