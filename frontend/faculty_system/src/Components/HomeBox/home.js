@@ -1,10 +1,11 @@
 export const sections = [
   'Questions',
   'Tags',
-  'Users'
+  'Users',
+  'Statistics'
   // 'Contacts',
   // 'Documents',
-  // 'Statistics'
+
 ]
 
 export function retrain(callback) {
