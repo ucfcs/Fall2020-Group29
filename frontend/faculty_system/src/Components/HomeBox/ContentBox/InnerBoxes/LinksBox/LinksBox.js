@@ -220,7 +220,26 @@ export class LinksBox extends React.Component {
                                     this.setState({curLink:link});
                                  }}
                                  />
-                                 <label id='link-url-label' htmlFor='link-url'>
+                            </div>
+                            <div id='link-save'>
+                                <div 
+                                    className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
+                                    onClick={this.handleSave}
+                                >
+                                    Save Changes
+                                </div>
+                            </div>
+                            <div id='link-delete'>
+                                {this.state.curLink._id !== '' ? 
+                                    <div id='link-delete-button' className='button delete-button' onClick={this.handleDelete}>
+                                        Delete Link
+                                    </div>:''
+                                }
+                            </div>
+                        </div>
+                        <div id='link-content'>
+                            <div id='link-url-display'>
+                                <label id='link-url-label' htmlFor='link-url'>
                                     Url
                                 </label>
                                 <input 
@@ -233,29 +252,9 @@ export class LinksBox extends React.Component {
                                     let link = this.state.curLink;
                                     link.url = e.target.value;
                                     this.setState({curLink:link});
-                                 }}
-                                 />
+                                    }}
+                                />
                             </div>
-                            <div id='link-buttons'>
-                                <div id='link-save'>
-                                    <div 
-                                        className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
-                                        onClick={this.handleSave}
-                                    >
-                                        Save Changes
-                                    </div>
-                                </div>
-                                <div id='link-delete'>
-                                    {this.state.curLink._id !== '' ? 
-                                        <div id='link-delete-button' className='button delete-button' onClick={this.handleDelete}>
-                                            Delete Link
-                                        </div>:''
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                        <div id='link-content'>
-
                         </div>
                     </div>
                 </div>

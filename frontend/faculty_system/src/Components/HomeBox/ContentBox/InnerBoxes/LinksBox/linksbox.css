@@ -15,22 +15,14 @@
 #link-selection-header {
     flex:1;
     display:flex;
-    justify-content: left;
-    align-content: left;
-}
-
-#link-buttons {
-    flex:1;
-    display: flex;
-    flex-direction: column;
+    justify-content: center;
 }
 
 #link-title {
     display:flex;
-    flex:6;
+    flex:4;
     flex-direction: column;
-    justify-content: left;
-    align-content: left;
+    align-content: center;
 }
 
 #link-save {
@@ -50,30 +42,42 @@
 }
 
 #link-label {
-    flex:2;
+    flex:1;
+    max-height: 50px;
     font-weight: bold;
     font-size:x-large;
 }
 
 #link-name {
     margin-left: 2%;
+    margin-bottom: 2%;
     flex:1;
+    max-height: 30px;
+}
+
+#link-url-display {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 #link-url-label {
-    margin-top:2%;
-    flex:2;
+    flex:1;
+    max-height: 50px;
     font-weight: bold;
     font-size:x-large;
 }
 
 #link-url {
-    margin-left: 2%;
     flex:1;
+    min-height:30px;
+    min-width:50%;
+    max-width: 80%;
 }
 
 #link-content {
-    flex:1;
+    flex:6;
     display:flex;
     flex-direction: column;
 }
