@@ -14,7 +14,7 @@ import {
 import {update_needs_training} from '../../../home';
 import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
-import {getDocuments} from '../DocumentsBox/documents';
+import {getLinks} from '../LinksBox/links';
 import Select from 'react-select';
 import {confirmAlert} from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -61,7 +61,7 @@ export class QuestionsBox extends React.Component {
             departmentList: [],
             infoList: [],
 
-            documents:[],
+            links:[],
             contacts:[]
         };
     }
@@ -111,8 +111,8 @@ export class QuestionsBox extends React.Component {
             this.setState({contacts:contacts});
         });
 
-        getDocuments((documents)=> {
-            this.setState({documents:documents});
+        getLinks((links)=> {
+            this.setState({links:links});
         });
     }
 
@@ -651,15 +651,15 @@ export class QuestionsBox extends React.Component {
                                             />
                                         </div>
                                     </div>
-                                    <div id='question-documents-box'>
-                                        <h2>Documents</h2>
-                                        <div className='documents field-box'>
+                                    <div id='question-links-box'>
+                                        <h2>Attached Links</h2>
+                                        <div className='links field-box'>
                                             <Select  
-                                            className='document field' 
-                                            id='document-1' 
-                                            value={this.populateDropdownValue('documents', 'document')} 
-                                            options={makeOptions(this.state.documents)} 
-                                            onChange={(e)=>this.handleSelectDropdown(e, 'document')} 
+                                            className='links field' 
+                                            id='link-1' 
+                                            value={this.populateDropdownValue('links', 'link')} 
+                                            options={makeOptions(this.state.links)} 
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'link')} 
                                             />
                                         </div>
                                     </div>

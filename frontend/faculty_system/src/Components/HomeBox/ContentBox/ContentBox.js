@@ -1,6 +1,7 @@
 import {QuestionsBox} from './InnerBoxes/QuestionsBox/QuestionsBox';
 import {TagsBox} from './InnerBoxes/TagsBox/TagsBox';
 import {UsersBox} from './InnerBoxes/UsersBox/UsersBox';
+import {LinksBox} from './InnerBoxes/LinksBox/LinksBox';
 import React from 'react';
 
 
@@ -27,7 +28,8 @@ export class ContentBox extends React.Component {
                     {
                         'navbox-questions' : <QuestionsBox ref={this.contentRef} updateTrain={this.props.updateTrain}/>,
                         'navbox-tags' : <TagsBox ref={this.contentRef} isAdmin={true}/>,
-                        'navbox-users' : <UsersBox ref={this.contentRef}/>
+                        'navbox-users' : <UsersBox ref={this.contentRef}/>,
+                        'navbox-attached-links' : <LinksBox ref={this.contentRef} />
                     }[this.props.selection]
                 }
             </div>

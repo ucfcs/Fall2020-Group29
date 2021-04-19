@@ -224,7 +224,7 @@ export class UsersBox extends React.Component {
                                     e.preventDefault();
                                     let user = this.state.curUser;
                                     user.name = e.target.value;
-                                    this.setState({curQuestion:user});
+                                    this.setState({curUser:user});
                                  }}
                                  />
                                  <label id='user-email-label' htmlFor='user-email'>
@@ -239,7 +239,7 @@ export class UsersBox extends React.Component {
                                     e.preventDefault();
                                     let user = this.state.curUser;
                                     user.email = e.target.value;
-                                    this.setState({curQuestion:user});
+                                    this.setState({curUser:user});
                                  }}
                                  />
                                 <label id='user-nid-label' htmlFor='user-nid'>
@@ -254,7 +254,7 @@ export class UsersBox extends React.Component {
                                     e.preventDefault();
                                     let user = this.state.curUser;
                                     user.NID = e.target.value;
-                                    this.setState({curQuestion:user});
+                                    this.setState({curUser:user});
                                  }}
                                  />
                                 <label id='user-admin-label' htmlFor='user-admin'>
