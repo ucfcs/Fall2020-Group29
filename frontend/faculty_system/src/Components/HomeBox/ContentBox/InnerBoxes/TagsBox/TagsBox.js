@@ -273,7 +273,7 @@ export class TagsBox extends React.Component {
                         onClick: ()=> this.handleAddTag()
                     },
                     {
-                        label: 'No, continue working',
+                        label: 'Cancel',
                         onClick: ()=>{}
                     }
                 ]
@@ -297,7 +297,7 @@ export class TagsBox extends React.Component {
                                 onClick: ()=> this.handleUpdateTag(tagUpdate)
                             },
                             {
-                                label: 'No, continue working',
+                                label: 'Cancel',
                                 onClick: ()=>{}
                             }
                         ]

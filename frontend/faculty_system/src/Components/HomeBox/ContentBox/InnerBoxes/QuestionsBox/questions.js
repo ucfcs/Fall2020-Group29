@@ -48,7 +48,7 @@ export function getQuestions(callback) {
         headers: {
             'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
             'Content-Type': 'application/json'
-        },
+        }
     };
     fetch('http://127.0.0.1:5000/api/faculty/get_questions', options)
       .then((res)=> {
@@ -190,8 +190,9 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
               message: succMessage,
               question: q
             });
-
+            saved = true;
           if (saved===true) {
+            console.log(updateSetting);
             updateSetting('Training Now', (response)=> {
               if (response.success) {
                 updateText('Training Now');

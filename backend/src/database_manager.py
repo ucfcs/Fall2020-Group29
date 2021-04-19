@@ -156,6 +156,48 @@ def check_valid_user(mongo, nid):
   })
   return result is not None
 
+def add_user(mongo, user):
+  new_user = user
+  
+  InsertOneResult_Obj = mongo.db.users.insert_one(new_user) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
+
+  if new_user is None:
+    return None
+  
+  new_user.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_question with the ObjectID (as a string) so that we can actually return something that resembles a document :/
+ 
+  return new_user
+
+def update_user(mongo, id, NID, name, email, IsAdmin):
+  updated = mongo.db.users.find_one_and_update(
+    {
+      '_id': ObjectId(id)
+    }, 
+    {
+      '$set': { 'NID':NID, 'name':name, 'email':email, 'IsAdmin':IsAdmin}
+    },
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return None
+
+  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return updated
+
+def delete_user(mongo, id):
+  to_delete = mongo.db.users.delete_one(
+    {
+      '_id':ObjectId(id)
+    }
+    )
+  if (to_delete.deleted_count == 0): #if there is no match
+    return False, 'User not found.'
+  
+  return True, 'User successfully deleted.'
+
+
 # Order for Tags:
 # 1. Intent (intents)
 # 2. Department (dept)
