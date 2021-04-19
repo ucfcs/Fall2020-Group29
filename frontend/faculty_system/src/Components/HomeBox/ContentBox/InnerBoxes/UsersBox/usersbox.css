@@ -1,0 +1,101 @@
+#user-selection {
+    display:flex;
+    flex-direction: column; 
+    flex:1;
+    border-right: 1px solid black;
+}
+
+#user-content-body {
+    display:flex;
+    flex-direction: column;
+    flex:3;
+    overflow:auto;
+}
+
+#user-selection-header {
+    flex:1;
+    display:flex;
+    justify-content: left;
+    align-content: left;
+}
+
+#user-buttons {
+    flex:1;
+    display: flex;
+    flex-direction: column;
+}
+
+#user-title {
+    display:flex;
+    flex:6;
+    flex-direction: column;
+    justify-content: left;
+    align-content: left;
+}
+
+#user-save {
+    flex:1;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2%;
+}
+
+#user-delete {
+    flex:1;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2%;
+}
+
+#user-label {
+    flex:2;
+    font-weight: bold;
+    font-size:x-large;
+}
+
+#user-name {
+    margin-left: 2%;
+    flex:1;
+}
+
+#user-email-label {
+    margin-top:2%;
+    flex:2;
+    font-weight: bold;
+    font-size:x-large;
+}
+
+#user-email {
+    margin-left: 2%;
+    flex:1;
+}
+
+#user-nid-label {
+    margin-top:2%;
+    flex:2;
+    font-weight: bold;
+    font-size:x-large;
+}
+
+#user-nid {
+    margin-left: 2%;
+    flex:1;
+}
+
+#user-admin-label {
+    margin-top:2%;
+    flex:2;
+    font-weight: bold;
+    font-size:x-large;
+}
+
+#user-content {
+    flex:1;
+    display:flex;
+    flex-direction: column;
+}
+.new-user-text {
+    flex:7;
+}

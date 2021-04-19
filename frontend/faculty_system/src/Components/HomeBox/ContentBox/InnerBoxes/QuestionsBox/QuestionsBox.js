@@ -45,7 +45,6 @@ export class QuestionsBox extends React.Component {
 
         this.state = {
             needsTraining: false,
-            hasChanges: false,
             questions:[],
             displayedQuestions:[],
             curQuestion: cloneDeep(defaultQuestion),
@@ -164,7 +163,7 @@ export class QuestionsBox extends React.Component {
                     buttons: [
                         {
                             label: "Yes",
-                            onClick: ()=>this.setState({curQuestion: cloneDeep(item), hasChanges:false}) 
+                            onClick: ()=>this.setState({curQuestion: cloneDeep(item)}) 
                         },
                         {
                             label: "No",
@@ -173,7 +172,7 @@ export class QuestionsBox extends React.Component {
                     ]
                     })
             } else {
-                this.setState({curQuestion: cloneDeep(item), hasChanges:false});
+                this.setState({curQuestion: cloneDeep(item)});
             }
         }
     }
@@ -410,7 +409,7 @@ export class QuestionsBox extends React.Component {
                                 })
                         },
                         {
-                            label: 'No, continue working',
+                            label: 'Cancel',
                             onClick: ()=>{}
                         }
                     ]

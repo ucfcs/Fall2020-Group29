@@ -1,9 +1,3 @@
-#content-box {
-    flex:5;
-    height:100%;
-    border: 1px solid black;
-}
-
 #question-selection{
     display:flex;
     flex-direction: column; 
@@ -14,8 +8,6 @@
 #question-selection-header {
     flex:1;
     display:flex;
-    /* align-items: center; */
-    /* justify-content: center; */
 }
 
 #question-content-body {
