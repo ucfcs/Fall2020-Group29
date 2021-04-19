@@ -87,9 +87,9 @@ def update_question(question_ID = '6065f38bac9dc35cb433ea88', update = {'name' :
       '_id':ObjectId(question_ID)#'tags': { '$all': [x.lower() for x in tags] } 
     }, 
     {
-      '$set': update#{ itemToUpdate:newContents } 
+      '$set': update
     },
-    upsert=False, # upsert = if thing does not exist, make it exist
+    upsert=False, # upsert = if thing does not exist, make it exist. if we refrence a question wrong, we don't want the database to just make a new question with that wrong id
     return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
     )
   if (updated is None): # if there is no match
@@ -125,7 +125,7 @@ def delete_question(question_ID = '6065f38bac9dc35cb433ea88' ):#tags = ['beep bo
 
 # add a field for a contact
 @app.route('/put_contact', methods=['PUT']) # give an existing question a contact, returns updated document
-def put_contact(tags = ['beep boop', 'noop', 'yoop', 'ploop'], contact_id = '600bb398d59727f52ed1de3c' ):
+def put_contact(id = '607dd47a337d993c65964852', contact_id = '600bb398d59727f52ed1de3c' ):
   # check if this contact actually exists
   found = mongo.db.contacts.find({'_id':ObjectId(contact_id)}) 
   if (found.count() == 0):
@@ -133,12 +133,12 @@ def put_contact(tags = ['beep boop', 'noop', 'yoop', 'ploop'], contact_id = '600
   else:
     updated = mongo.db.questions.find_one_and_update(
       {
-        'tags': { '$all': [x.lower() for x in tags] } 
+        '_id': ObjectId(id)
       }, 
       {
-        '$set': { 'contact_id':contact_id }
+        '$set': { 'contact':contact_id }
       },
-      upsert=True, # upsert = if thing does not exist, make it exist
+      upsert=False, # upsert = if thing does not exist, make it exist
       return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
       )
     if (updated is None): #if there is no match
@@ -163,7 +163,7 @@ def put_related_question(id = '607db3807d8d43d7bc1335df', related_question_ID = 
       {
         '$set': { 'related question': related_question_ID } 
       },
-      upsert=True, # upsert = if thing does not exist, make it exist
+      upsert=False, # upsert = if thing does not exist, make it exist
       return_document=ReturnDocument.AFTER
       )
     if (updated is None): # if there is no match
@@ -184,7 +184,7 @@ def put_link(id = '607db3807d8d43d7bc1335df', link = 'https://www.faqtest.com/ex
     {
       '$addToSet': { 'links': link } # $addToSet makes an array if there is none, adds to the arrray if there is                  repr() returns a printable representational string of the given object, here we use it so that it ignores return characters and reads it as a simple string
     },
-    upsert=True, # upsert = if thing does not exist, make it exist
+    upsert=False, # upsert = if thing does not exist, make it exist
     return_document=ReturnDocument.AFTER
     )
   if (updated is None): # if there is no match
@@ -303,7 +303,7 @@ def put_staff_link(contact_id = '600bb398d59727f52ed1de3c', link = 'beepBoop.ucf
       {
         '$set': { 'link': link }
       },
-      upsert=True, # upsert = if thing does not exist, make it exist
+      upsert=False, # upsert = if thing does not exist, make it exist
       return_document=ReturnDocument.AFTER
       )
     if (updated is None): # if there is no match
