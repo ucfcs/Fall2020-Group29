@@ -80,11 +80,12 @@
 #question-contacts-box {
     flex:1;
     max-height: 25%;
+    margin-bottom:2%;
 }
 
-#question-documents-box {
+#question-links-box {
     flex:1;
-    max-height: 25%;
+    margin-bottom:2%;
 }
 
 #question-follow-up-box {
@@ -213,4 +214,41 @@
 
 .invalid-tags {
     color:red;
+}
+
+.links {
+    
+}
+
+.link {
+    display:flex;
+    flex:1;
+    margin-bottom: 2%;
+}
+
+.link-field {
+    flex:8;
+}
+
+.link-delete {
+    color: red;
+    display:flex;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+    font-weight: bold;
+    font-size:x-large;
+    cursor:pointer;
+    flex:1;
+    border: 1px solid black;
+    margin-right:1%;
+    margin-left:1%;
+}
+
+.link-delete:hover {
+    background-color:#ccc;
+}
+
+.link-delete:active {
+    background-color:#aaa;
 }

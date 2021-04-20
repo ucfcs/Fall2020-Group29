@@ -38,6 +38,10 @@ export class QuestionsBox extends React.Component {
         this.makeTagValue = this.makeTagValue.bind(this);
         this.handleSelectDropdown = this.handleSelectDropdown.bind(this);
         this.populateDropdownValue = this.populateDropdownValue.bind(this);
+        this.refLink = this.refLink.bind(this);
+        this.addLink = this.addLink.bind(this);
+        this.deleteLink = this.deleteLink.bind(this);
+        this.changeLink = this.changeLink.bind(this);
         this.hasValidTags = this.hasValidTags.bind(this);
         this.canSave = this.canSave.bind(this);
         this.handleSave = this.handleSave.bind(this);
@@ -218,26 +222,12 @@ export class QuestionsBox extends React.Component {
 
     deletePattern(event, num) {
         event.preventDefault();
-        confirmAlert({
-            title: 'Are you sure you want to delete this pattern?',
-            message: '',
-            buttons: [
-                {
-                    label: 'Delete Pattern',
-                    onClick: ()=> {
-                        let question = this.state.curQuestion;
-                        let patterns = question.patterns;
-                        patterns.splice(num, 1);
-                        question.patterns = patterns;
-                        this.setState({curQuestion: question});
-                    }
-                },
-                {
-                    label: 'Cancel',
-                    onClick: ()=>{}
-                }
-            ]
-        })
+        let question = this.state.curQuestion;
+        let patterns = question.patterns;
+        patterns.splice(num, 1);
+        question.patterns = patterns;
+        this.setState({curQuestion: question});
+
     }
 
     handleSelectTag(e, tag) {
@@ -284,6 +274,53 @@ export class QuestionsBox extends React.Component {
             };
         }                                      
     }
+
+    refLink(id) {
+        let links = this.state.links;
+        let link = links.filter(l=>
+            l._id === id)[0];
+        if (link !== undefined) {
+            return link;
+        } else {
+            return '';
+        }
+    }
+
+    addLink(event) {
+        event.preventDefault();
+        let question = this.state.curQuestion;
+        if (question.links === undefined) {
+            question.links = [];
+        }
+        question.links.push('');
+        this.setState({curQuestion:question});
+    }
+
+    deleteLink(e, num) {
+        e.preventDefault();
+        let question = this.state.curQuestion;
+        let qLinks = question.links;
+        if (qLinks !== undefined) {
+            qLinks.splice(num, 1);
+            question.links = qLinks;
+            this.setState({curQuestion:question});
+        }
+    }
+
+    changeLink(e, num) {
+        let question = this.state.curQuestion;
+        let qLinks = question.links;
+        if (qLinks !== undefined) {
+            let link = this.refLink(e.value);
+            if (link !== '') {
+                qLinks[num] = link._id;
+                question.links = qLinks;
+                this.setState({curQuestion:question});
+            }
+        }
+    }
+
+   
 
     hasValidTags() {
         let check = this.state.questions.filter(q=> {
@@ -430,7 +467,7 @@ export class QuestionsBox extends React.Component {
                         this.state.curQuestion,
                         this.props.updateTrain,
                         update_needs_training,
-                        response=> {
+                        (response)=> {
                             if (response.success) {
                                 let questions = this.state.questions;
                                 let displayed = this.state.displayedQuestions;
@@ -452,7 +489,7 @@ export class QuestionsBox extends React.Component {
                     label: 'Delete and Don\'t Retrain',
                     onClick: ()=> deleteQuestion(
                         this.state.curQuestion,
-                        response=> {
+                        (response)=> {
                             if (response.success) {
                                 let questions = this.state.questions;
                                 let displayed = this.state.displayedQuestions;
@@ -639,30 +676,6 @@ export class QuestionsBox extends React.Component {
                                     
                                 </div>
                                 <div id='contacts-and-forms'>
-                                    <div id='question-contacts-box'>
-                                        <h2>Contacts</h2>
-                                        <div className='contacts field-box'>
-                                            <Select 
-                                            className='contact field' 
-                                            id='contact-1' 
-                                            value={this.populateDropdownValue('contacts', 'contact')} 
-                                            options={makeOptions(this.state.contacts)} 
-                                            onChange={(e)=>this.handleSelectDropdown(e, 'contact')} 
-                                            />
-                                        </div>
-                                    </div>
-                                    <div id='question-links-box'>
-                                        <h2>Attached Links</h2>
-                                        <div className='links field-box'>
-                                            <Select  
-                                            className='links field' 
-                                            id='link-1' 
-                                            value={this.populateDropdownValue('links', 'link')} 
-                                            options={makeOptions(this.state.links)} 
-                                            onChange={(e)=>this.handleSelectDropdown(e, 'link')} 
-                                            />
-                                        </div>
-                                    </div>
                                     <div id='question-follow-up-box'>
                                         <h2>Follow Up Question</h2>
                                         <div className='follow-ups field-box'>
@@ -672,8 +685,45 @@ export class QuestionsBox extends React.Component {
                                             value={this.populateDropdownValue('questions', 'follow-up')} 
                                             options={makeOptions(
                                                 this.state.questions.filter(
-                                                    q=>q._id!==this.state.curQuestion._id))} 
+                                                    q=>q._id!==this.state.curQuestion._id), true)} 
                                             onChange={(e)=>this.handleSelectDropdown(e, 'follow-up')} 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div id='question-links-box'>
+                                        <h2 id='question-link-header'>
+                                            Attached Links
+                                        </h2>
+                                        <div id='question-link-content'>
+                                            <div className='links field-box'>
+                                                {this.state.curQuestion.links === undefined ? '' : 
+                                                this.state.curQuestion.links.map((link, index)=> {
+                                                    return (
+                                                        <Link
+                                                        num={index}
+                                                        link={link === '' ? '': {value:link, label:this.refLink(link).name}}
+                                                        options={makeOptions(this.state.links, false)}
+                                                        change={this.changeLink}
+                                                        delete={this.deleteLink}
+                                                        />
+                                                    )
+                                                })
+                                                } 
+                                            </div>
+                                            <div className='plus' onClick={this.addLink}>
+                                            +
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id='question-contacts-box'>
+                                        <h2>Contact</h2>
+                                        <div className='contacts field-box'>
+                                            <Select 
+                                            className='contact field' 
+                                            id='contact-1' 
+                                            value={this.populateDropdownValue('contacts', 'contact')} 
+                                            options={makeOptions(this.state.contacts, true)} 
+                                            onChange={(e)=>this.handleSelectDropdown(e, 'contact')} 
                                             />
                                         </div>
                                     </div>
@@ -712,4 +762,21 @@ function Pattern(props) {
             </div>
         </div>
     );
+}
+
+function Link(props) {
+    return (
+        <div className='link'>
+            <Select  
+            className='link-field' 
+            id={'link-' + (props.num)} 
+            value={props.link} 
+            options={props.options} 
+            onChange={(e)=>props.change(e, props.num)}
+            />
+            <div className='link-delete' onClick={(event)=>props.delete(event, props.num)}>
+                X
+            </div>
+        </div>
+    )
 }

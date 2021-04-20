@@ -30,12 +30,14 @@ export const fieldsRequiringTraining = [
   'tags'
 ];
 
-export function makeOptions(values) {
+export function makeOptions(values, addNull) {
   let options = values.map(val=> ({
       value:val._id,
       label:val.name   
   }));
-  options.unshift({value:'0',label:'None'});
+  if (addNull) {
+    options.unshift({value:'0',label:'None'});
+  }
   return options
 }
 
