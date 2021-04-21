@@ -1,0 +1,96 @@
+#contact-selection {
+    display:flex;
+    flex-direction: column; 
+    flex:1;
+    border-right: 1px solid black;
+}
+
+#contact-content-body {
+    display:flex;
+    flex-direction: column;
+    flex:3;
+    overflow:auto;
+}
+
+#contact-selection-header {
+    flex:1;
+    display:flex;
+    justify-content: left;
+    align-content: left;
+}
+
+#contact-buttons {
+    flex:1;
+    display: flex;
+    flex-direction: column;
+}
+
+#contact-title-header {
+    display:flex;
+    flex:6;
+    flex-direction: column;
+    justify-content: left;
+    align-content: left;
+}
+
+#contact-save {
+    flex:1;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2%;
+}
+
+#contact-delete {
+    flex:1;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2%;
+}
+
+#contact-label {
+    flex:2;
+    margin-top:2%;
+    font-weight: bold;
+    font-size:x-large;
+}
+
+#contact-name {
+    
+    margin-left: 2%;
+    flex:1;
+}
+
+#contact-email-label {
+    margin-top:2%;
+    flex:2;
+    font-weight: bold;
+    font-size:x-large;
+}
+
+#contact-email {
+    margin-left: 2%;
+    flex:1;
+}
+
+#contact-title-label {
+    margin-top:2%;
+    flex:2;
+    font-weight: bold;
+    font-size:x-large;
+}
+
+#contact-title {
+    margin-left: 2%;
+    flex:1;
+}
+
+#contact-content {
+    flex:1;
+    display:flex;
+    flex-direction: column;
+}
+.new-contact-text {
+    flex:7;
+}

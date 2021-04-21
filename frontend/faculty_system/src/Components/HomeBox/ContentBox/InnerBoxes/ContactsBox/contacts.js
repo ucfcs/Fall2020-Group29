@@ -1,3 +1,11 @@
+export const defaultContact = {
+  _id:'',
+  title:'',
+  name:'',
+  email:''
+}
+
+
 export function getContacts(callback) {
     let cfs = window.sessionStorage.getItem('contacts');
     if (cfs === null) {
@@ -30,4 +38,18 @@ export function getContacts(callback) {
     } else {
       callback(JSON.parse(cfs));
     }
-  }
+}
+
+export function saveContact(callback) {
+  callback({
+    success:false,
+    message:'Function not yet implemented.'
+  });
+}
+
+export function deleteContact(callback) {
+  callback({
+    success:false,
+    message:'Function not yet implemented.'
+  });
+}
