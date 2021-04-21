@@ -90,7 +90,7 @@ class Result extends Component {
     // if result if no match then ask again
     if (counter < 2) {
       if (result !== "no match") {
-        // Threshold 2
+        // Threshold 2 within counter < 2
         if (threshold > 0.99) {
           return (
             <div className={styles.body}>
@@ -109,7 +109,7 @@ class Result extends Component {
                         className={styles.button}
                         onClick={() => {
                           this.triggerMoreHelp();
-                          // this.increment();
+                          this.reset();
                         }}
                       >
                         Yes
@@ -133,7 +133,7 @@ class Result extends Component {
           );
         }
 
-        // Threshold  1 and 2 (.50 - .90)
+        // Threshold  1 and 2 (.50 - .90) within counter < 2
         if (threshold < 0.99 && threshold > 0.5) {
           return (
             <div className={styles.body}>
@@ -149,7 +149,10 @@ class Result extends Component {
                   <div>
                     {!trigger && (
                       <button
-                        onClick={() => this.triggerEvenMoreHelp()}
+                        onClick={() => {
+                          this.triggerEvenMoreHelp();
+                          this.reset();
+                        }}
                         className={styles.button}
                       >
                         Yes
@@ -157,7 +160,10 @@ class Result extends Component {
                     )}
                     {!trigger && (
                       <button
-                        onClick={() => this.triggerMoreHelp()}
+                        onClick={() => {
+                          this.triggerMoreHelp();
+                          this.increment();
+                        }}
                         className={styles.button}
                       >
                         No
@@ -170,14 +176,14 @@ class Result extends Component {
           );
         }
 
-        // Threshold 1
-        if (threshold <= 0.5) {
+        // Threshold 1 within counter < 2
+        if (threshold < 0.5) {
           return (
             <div className={styles.body}>
               {loading ? (
                 <Loading />
               ) : (
-                "Sorry I don't quite understand your question. Could you try to asking it slightly differently? "
+                "Sorry I don't quite understand your question. Could you try asking it slightly differently? "
               )}
               {!loading && (
                 <div
@@ -186,7 +192,7 @@ class Result extends Component {
                     margin: 20,
                   }}
                 >
-                  {/* <div>
+                  <div>
                     {!trigger && (
                       <button
                         onClick={() => {
@@ -208,14 +214,16 @@ class Result extends Component {
                       >
                         No
                       </button>
-                    )} */}
-                  {/* </div> */}
+                    )}
+                  </div>
                 </div>
               )}
             </div>
           );
         }
-      } else {
+      }
+      // if result === no match
+      else {
         return (
           <div className={styles.body}>
             {loading ? (
@@ -260,10 +268,10 @@ class Result extends Component {
         );
       }
     }
-    // could not find any result
+    // if counter >= 2
     else {
       if (result !== "no match") {
-        // Threshold 2
+        // Threshold 2 within else (if counter >= 2)
         if (threshold > 0.99) {
           return (
             <div className={styles.body}>
@@ -275,14 +283,14 @@ class Result extends Component {
                     margin: 20,
                   }}
                 >
-                  I have reached thank u counter works
+                  Is there something else I can help you with?
                   <div>
                     {!trigger && (
                       <button
                         className={styles.button}
                         onClick={() => {
                           this.triggerMoreHelp();
-                          // this.increment();
+                          this.reset();
                         }}
                       >
                         Yes
@@ -292,7 +300,7 @@ class Result extends Component {
                       <button
                         onClick={() => {
                           this.triggerThankYou();
-                          // this.reset();
+                          this.reset();
                         }}
                         className={styles.button}
                       >
@@ -322,7 +330,10 @@ class Result extends Component {
                   <div>
                     {!trigger && (
                       <button
-                        onClick={() => this.triggerEvenMoreHelp()}
+                        onClick={() => {
+                          this.triggerEvenMoreHelp();
+                          this.reset();
+                        }}
                         className={styles.button}
                       >
                         Yes
@@ -343,7 +354,7 @@ class Result extends Component {
           );
         }
 
-        // Threshold 1
+        // Threshold 1 within else (if counter >= 2)
         if (threshold <= 0.5) {
           return (
             <div className={styles.body}>
@@ -359,7 +370,7 @@ class Result extends Component {
                     margin: 20,
                   }}
                 >
-                  <div>
+                  {/* <div>
                     {!trigger && (
                       <button
                         onClick={() => {
@@ -382,7 +393,7 @@ class Result extends Component {
                         No
                       </button>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               )}
             </div>
@@ -394,7 +405,7 @@ class Result extends Component {
             {loading ? (
               <Loading />
             ) : (
-              "Couldn't find what you were looking for. Would you like to try again?"
+              "Couldn't find what you were looking for. Please contact EMAIL for more help with your question"
             )}
             {!loading && (
               <div
@@ -403,7 +414,7 @@ class Result extends Component {
                   margin: 20,
                 }}
               >
-                <div>
+                {/* <div>
                   {!trigger && (
                     <button
                       onClick={() => this.triggerMoreHelp()}
@@ -420,49 +431,49 @@ class Result extends Component {
                       No
                     </button>
                   )}
-                </div>
+                </div> */}
               </div>
             )}
           </div>
         );
       }
     }
-    return (
-      <div className={styles.body}>
-        {loading ? (
-          <Loading />
-        ) : (
-          "Couldn't find what you were looking for. Would you like to try again?"
-        )}
-        {!loading && (
-          <div
-            style={{
-              textAlign: "center",
-              margin: 20,
-            }}
-          >
-            <div>
-              {!trigger && (
-                <button
-                  onClick={() => this.triggerMoreHelp()}
-                  className={styles.button}
-                >
-                  Yes
-                </button>
-              )}
-              {!trigger && (
-                <button
-                  onClick={() => this.triggerSorryThankYou()}
-                  className={styles.button}
-                >
-                  No
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    );
+    // return (
+    //   <div className={styles.body}>
+    //     {loading ? (
+    //       <Loading />
+    //     ) : (
+    //       "Couldn't find what you were looking for. Would you like to try again?"
+    //     )}
+    //     {!loading && (
+    //       <div
+    //         style={{
+    //           textAlign: "center",
+    //           margin: 20,
+    //         }}
+    //       >
+    //         <div>
+    //           {!trigger && (
+    //             <button
+    //               onClick={() => this.triggerMoreHelp()}
+    //               className={styles.button}
+    //             >
+    //               Yes
+    //             </button>
+    //           )}
+    //           {!trigger && (
+    //             <button
+    //               onClick={() => this.triggerSorryThankYou()}
+    //               className={styles.button}
+    //             >
+    //               No
+    //             </button>
+    //           )}
+    //         </div>
+    //       </div>
+    //     )}
+    //   </div>
+    // );
   }
 }
 Result.propTypes = {
