@@ -39,6 +39,9 @@ class Result extends Component {
   // increments the counter and stores it back into local storage
   increment = () => {
     let count = sessionStorage.getItem("counter");
+    if (count === undefined) {
+      count = 0;
+    }
     count++;
     sessionStorage.setItem("counter", count);
   };
@@ -85,6 +88,11 @@ class Result extends Component {
     const { trigger, loading, result, threshold } = this.state;
     // console.log(threshold);
     let counter = sessionStorage.getItem("counter");
+    // null check
+    if (counter === undefined) {
+      counter = 0;
+      sessionStorage.setItem("counter", counter);
+    }
     console.log("this is counter " + counter);
 
     // if result if no match then ask again
