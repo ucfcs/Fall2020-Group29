@@ -46,8 +46,38 @@ export function deleteLink(link, callback) {
 }
 
 export function saveLink(link, callback) {
-  callback({
-    success:false,
-    message:'Function not yet implemented'
-  })
+
+  let call = link._id === '' ? 'add' : 'update'
+  let method = link._id === '' ? 'POST' : 'PUT'
+  let succMessage = link._id === '' ? 'added.' : 'updated.'
+
+  let options = {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+    },
+    body: JSON.stringify(link)
+  };
+
+  fetch('/api/faculty/' + call + '_link', options)
+    .then((res)=> {
+      if (res.status === 401) {
+        alert('User not Authorized.');
+        callback({});
+      } else if (res.status === 200) {
+        res.json().then((res)=> {
+          callback({
+            success:true,
+            message:'Link successfully ' + succMessage,
+            link: res.link
+          });
+        });
+      } else {
+        callback({
+          success:false,
+          message: 'Failed to ' + call + ' link'
+        });
+      }
+    });
 }

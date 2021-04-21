@@ -114,11 +114,11 @@ export class LinksBox extends React.Component {
                                     return link._id === response.link._id
                                 })[0];
                                 if (check === undefined) {
-                                    links.push(response.user);
+                                    links.push(response.link);
                                 } else {
                                     links[links.indexOf(check)] = cloneDeep(response.link);
                                 }
-                                this.setState({links:links, curUser:cloneDeep(response.link)}, ()=>{
+                                this.setState({links:links, curLink:cloneDeep(response.link)}, ()=>{
                                     this.filterSearch();
                                     window.sessionStorage.setItem('links', JSON.stringify(this.state.links));
                                     alert(response.message);
