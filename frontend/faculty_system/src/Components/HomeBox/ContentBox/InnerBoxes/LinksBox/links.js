@@ -16,11 +16,11 @@ export function getLinks(callback) {
   
       };
   
-      fetch('http://127.0.0.1:5000/api/faculty/get_dummy_links', options)
+      fetch('http://127.0.0.1:5000/api/faculty/get_links', options)
         .then((res)=> {
             if (res.status === 401) {
               res.json().then((res)=> alert(res['message']));
-              callback({});
+              callback([]);
             } else if (res.status === 200) {
               res.json().then((res)=> {
                 window.sessionStorage.setItem('links', JSON.stringify(res['links']));
@@ -29,9 +29,9 @@ export function getLinks(callback) {
             }
         })
         .catch((err) => {
-          alert('Failed to retrieve entities.');
+          alert('Failed to retrieve links.');
           console.log('error occurred', err);
-          callback({});
+          callback([]);
         });
     } else {
       callback(JSON.parse(lfs));
@@ -39,10 +39,43 @@ export function getLinks(callback) {
 }
 
 export function deleteLink(link, callback) {
-  callback({
-    success:false,
-    message:'Function not yet implemented'
-  })
+  
+  let options = {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+    },
+    body: JSON.stringify({'link':link})
+  };
+
+  fetch('http://127.0.0.1:5000/api/faculty/delete_link', options)
+    .then((res)=> {
+      if (res.status === 401) {
+        callback({
+          success:false,
+          message: 'User not Authorized'
+        });
+      } else if (res.status === 200) {
+        callback({
+          success:true,
+          message:'Link successfully deleted.'
+        });
+      } else {
+        res.json().then((res)=> {
+          callback({
+            success:false,
+            message:res.message
+          });
+        })
+      }
+    }).catch((err)=>{
+      callback({
+        success:false,
+        message:'Link could not be deleted'
+      });
+      console.error(err);
+    });
 }
 
 export function saveLink(link, callback) {
@@ -57,14 +90,16 @@ export function saveLink(link, callback) {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
     },
-    body: JSON.stringify(link)
+    body: JSON.stringify({'link':link})
   };
-
-  fetch('/api/faculty/' + call + '_link', options)
+  console.log(options);
+  fetch('http://127.0.0.1:5000/api/faculty/' + call + '_link', options)
     .then((res)=> {
       if (res.status === 401) {
-        alert('User not Authorized.');
-        callback({});
+        callback({
+          success:false,
+          message: 'User not Authorized'
+        });
       } else if (res.status === 200) {
         res.json().then((res)=> {
           callback({
@@ -79,5 +114,11 @@ export function saveLink(link, callback) {
           message: 'Failed to ' + call + ' link'
         });
       }
+    }).catch((err)=>{
+      callback({
+        success:false,
+        message:'Link could not be ' + succMessage
+      });
+      console.error(err);
     });
 }

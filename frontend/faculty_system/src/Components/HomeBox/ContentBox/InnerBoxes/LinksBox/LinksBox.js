@@ -139,11 +139,11 @@ export class LinksBox extends React.Component {
 
     handleDelete(event) {
         confirmAlert({
-            title:'Are you sure you want to delete this user?',
+            title:'Are you sure you want to delete this link?',
             message:'',
             buttons:[
                 {
-                    label: 'Yes, delete user',
+                    label: 'Yes, delete link',
                     onClick: ()=> {
                         deleteLink(this.state.curLink, (response)=> {
                             if (response.success) {
