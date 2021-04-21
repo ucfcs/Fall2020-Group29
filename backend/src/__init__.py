@@ -5,13 +5,15 @@ from flask_pymongo import PyMongo
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from .database_manager import (delete_link, return_all, update_question, add_question, delete_question, add_tag, update_tag, 
-    delete_tag, add_user, update_user, delete_user, check_valid_user, needs_update_check, set_needs_update, add_link,
-    update_link)
+from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag, 
+    delete_tag, check_valid_user, needs_update_check, set_needs_update, add_link, add_contact, update_contact, delete_contact,
+    update_link, delete_link, add_user, update_user, delete_user,)
 from .train import train
 import json
 
+
 ######################################################## Server Initialization ########################################
+
 
 app = Flask(__name__)
 with app.open_resource("config.json") as f:
@@ -25,7 +27,9 @@ jwt = JWTManager(app)
 #The "dnspython" module must be installed to use mongodb+srv:
 mongo = PyMongo(app)
 
+
 ######################################################### Login #######################################################
+
 
 #Faculty_System_API
 @app.route("/api/faculty/login", methods=["GET", "POST"])
@@ -57,13 +61,16 @@ def login():
     except LDAPBindError:
         return jsonify(message="Invalid credentials"), 401
 
+
 ######################################################## Get Data #####################################################
+
 
 @app.route("/api/faculty/get_questions", methods=["GET"])
 def get_questions():
 
     questions = return_all(mongo, "questions")
     return jsonify(questions=questions)
+
 
 @app.route("/api/faculty/get_tags", methods=["GET"])
 def get_tags():
@@ -102,16 +109,19 @@ def get_tags():
         "information": information
     })
 
+
 @app.route("/api/faculty/get_contacts", methods=["GET"])
 def get_contacts():
 
     contacts = return_all(mongo, "contacts")    
     return jsonify(contacts=contacts)
 
+
 @app.route("/api/faculty/get_links", methods=["GET"])
 def get_links():
     links = return_all(mongo, "links")
     return jsonify(links=links)
+
 
 @app.route("/api/faculty/get_users", methods=["GET"])
 def get_users():
@@ -119,7 +129,9 @@ def get_users():
     users = return_all(mongo, "users")
     return jsonify(users=users)
 
+
 ######################################################## Add/Update Data ##############################################
+
 
 @app.route("/api/faculty/add_question", methods=["POST"])
 #@jwt_required()
@@ -134,6 +146,7 @@ def add_q():
         return jsonify(message=("Question already exists with the requested tags\n \"{0}\"".format(ex_name))), 409
     else:
         return jsonify(message="Question successfully added.", question=added)
+
 
 @app.route("/api/faculty/update_question", methods=["PUT"])
 #@jwt_required()
@@ -153,11 +166,13 @@ def update_q():
     else:
         return jsonify(message="Question successfully updated.", question=updated)
 
+
 @app.route("/api/faculty/retrain_model", methods=["GET"])
 #@jwt_required()
 def retrain_model():
     train(db=mongo)
     return jsonify(message="Model successfully retrained")
+
 
 @app.route("/api/faculty/add_tag", methods=["POST"])
 #@jwt_required()
@@ -180,6 +195,7 @@ def add_t():
     else:
         return jsonify(message="Tag already exists in database."), 500
 
+
 @app.route("/api/faculty/update_tag", methods=["PUT"])
 #@jwt_required()
 def update_t():
@@ -199,7 +215,6 @@ def update_t():
         new_tag["type"] = "info"
 
     updated = update_tag(mongo, old_tag, new_tag)
-
     
     if updated == None:
         return jsonify(message="Tag not found."), 404
@@ -214,6 +229,56 @@ def update_t():
         elif (updated_type == "info"):
             updated["type"] = "information"
         return jsonify(tag=updated)
+
+
+@app.route("/api/faculty/add_contact", methods=["POST"])
+#@jwt_required()
+def add_c():
+    req = request.get_json()
+    contact = req["contact"]
+    new_contact = add_contact(mongo, contact["title"], contact["name"], contact["email"])
+
+    if new_contact is None:
+        return jsonify(message="Failed to add Link"), 500
+    return jsonify(contact=new_contact)
+
+
+@app.route("/api/faculty/update_contact", methods=["PUT"])
+#@jwt_required()
+def update_c():
+    req = request.get_json()
+    contact = req["contact"]
+    id = contact.pop("_id")
+    updated = update_contact(mongo, id, contact)
+
+    if updated is None:
+        return jsonify(message="Could not update contact."), 500
+    return jsonify(contact=updated)
+
+
+@app.route("/api/faculty/add_link", methods=["POST"])
+#@jwt_required()
+def add_l():
+    req = request.get_json()
+    link = req["link"]
+    new_link = add_link(mongo, link["name"], link["url"])
+
+    if new_link is None:
+        return jsonify(message="Failed to add Link"), 500
+    return jsonify(link=new_link)
+
+
+@app.route("/api/faculty/update_link", methods=["PUT"])
+#@jwt_required()
+def update_l():
+    req = request.get_json()
+    link = req["link"]
+    id = link.pop("_id")
+    updated = update_link(mongo, id, link)
+
+    if updated is None:
+        return jsonify(message="Could not update link."), 500
+    return jsonify(link=updated)
 
 
 @app.route("/api/faculty/add_user", methods=["POST"])
@@ -243,32 +308,8 @@ def update_u():
         return jsonify(user=updated)
 
 
-@app.route("/api/faculty/add_link", methods=["POST"])
-#@jwt_required()
-def add_l():
-    req = request.get_json()
-    link = req["link"]
-    new_link = add_link(mongo, link["name"], link["url"])
-
-    if new_link is None:
-        return jsonify(message="Failed to add Link"), 500
-    return jsonify(link=new_link)
-
-
-@app.route("/api/faculty/update_link", methods=["PUT"])
-#@jwt_required()
-def update_l():
-    req = request.get_json()
-    link = req["link"]
-    id = link.pop("_id")
-    updated = update_link(mongo, id, link)
-
-    if updated is None:
-        return jsonify(message="Could not update link."), 500
-    return jsonify(link=updated)
-
-
 ####################################################### Delete Data ###################################################
+
 
 @app.route("/api/faculty/delete_question", methods=["DELETE"])
 #@jwt_required()
@@ -282,6 +323,7 @@ def delete_q():
     else:
         return jsonify(message=message), 500
 
+
 @app.route("/api/faculty/delete_tag", methods=["DELETE"])
 #@jwt_required()
 def delete_t():
@@ -293,16 +335,18 @@ def delete_t():
     else:
         return jsonify(message=message), 500
 
-@app.route("/api/faculty/delete_user", methods=["DELETE"])
+
+@app.route("/api/faculty/delete_contact", methods=["DELETE"])
 #@jwt_required()
-def delete_u():
+def delete_c():
     req = request.get_json()
-    user = req["user"]
-    deleted, message = delete_user(mongo, user["_id"])
+    contact = req["contact"]
+
+    deleted, message = delete_contact(mongo, contact["_id"])
     if (deleted):
         return jsonify(message=message)
     else:
-        return jsonify(message=message), 500
+        return jsonify(message=message), 404
 
 
 @app.route("/api/faculty/delete_link", methods=["DELETE"])
@@ -317,7 +361,21 @@ def delete_l():
     else:
         return jsonify(message=message), 404
 
+
+@app.route("/api/faculty/delete_user", methods=["DELETE"])
+#@jwt_required()
+def delete_u():
+    req = request.get_json()
+    user = req["user"]
+    deleted, message = delete_user(mongo, user["_id"])
+    if (deleted):
+        return jsonify(message=message)
+    else:
+        return jsonify(message=message), 500
+
+
 ####################################################### Settings Access ###############################################
+
 
 @app.route("/api/faculty/check_needs_training", methods=["GET"])
 #@jwt_required()
@@ -327,6 +385,7 @@ def check_needs_training():
         return jsonify(success=True,trained=trained)
     else:
         return jsonify(success=False, message="Could not access training settings"), 500
+
 
 @app.route("/api/faculty/update_needs_training", methods=["PUT"])
 #@jwt_required()

@@ -292,7 +292,7 @@ export class QuestionsBox extends React.Component {
         if (question.links === undefined) {
             question.links = [];
         }
-        question.links.push('');
+        question.links.push({_id:'', url:''});
         this.setState({curQuestion:question});
     }
 
@@ -313,7 +313,7 @@ export class QuestionsBox extends React.Component {
         if (qLinks !== undefined) {
             let link = this.refLink(e.value);
             if (link !== '') {
-                qLinks[num] = link._id;
+                qLinks[num] = {_id:link._id, url:link.url};
                 question.links = qLinks;
                 this.setState({curQuestion:question});
             }
@@ -701,7 +701,7 @@ export class QuestionsBox extends React.Component {
                                                     return (
                                                         <Link
                                                         num={index}
-                                                        link={link === '' ? '': {value:link, label:this.refLink(link).name}}
+                                                        link={link._id === '' ? '': {value:link._id, label:this.refLink(link._id).name}}
                                                         options={makeOptions(this.state.links, false)}
                                                         change={this.changeLink}
                                                         delete={this.deleteLink}
@@ -770,7 +770,7 @@ function Link(props) {
             <Select  
             className='link-field' 
             id={'link-' + (props.num)} 
-            value={props.link} 
+            value={props.link._id} 
             options={props.options} 
             onChange={(e)=>props.change(e, props.num)}
             />
