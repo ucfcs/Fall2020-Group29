@@ -5,8 +5,9 @@ from flask_pymongo import PyMongo
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag, 
-    delete_tag, add_user, update_user, delete_user, check_valid_user, needs_update_check, set_needs_update)
+from .database_manager import (delete_link, return_all, update_question, add_question, delete_question, add_tag, update_tag, 
+    delete_tag, add_user, update_user, delete_user, check_valid_user, needs_update_check, set_needs_update, add_link,
+    update_link)
 from .train import train
 import json
 
@@ -130,6 +131,11 @@ def get_documents():
         })
     return jsonify(documents=documents)
 
+@app.route("/api/faculty/get_links", methods=["GET"])
+def get_links():
+    links = return_all(mongo, "links")
+    return jsonify(links=links)
+
 @app.route("/api/faculty/get_users", methods=["GET"])
 def get_users():
 
@@ -251,7 +257,6 @@ def add_u():
 def update_u():
     req = request.get_json()
     user = req["user"]
-    id = user["_id"]
 
     updated = update_user(mongo, user["_id"], user["NID"], user["name"], user["email"], user["IsAdmin"])
 
@@ -259,6 +264,31 @@ def update_u():
         return jsonify(message="User not found"), 404
     else:
         return jsonify(user=updated)
+
+
+@app.route("/api/faculty/add_link", methods=["POST"])
+#@jwt_required()
+def add_l():
+    req = request.get_json()
+    link = req["link"]
+    new_link = add_link(mongo, link["name"], link["url"])
+
+    if new_link is None:
+        return jsonify(message="Failed to add Link"), 500
+    return jsonify(link=new_link)
+
+
+@app.route("/api/faculty/update_link", methods=["PUT"])
+#@jwt_required()
+def update_l():
+    req = request.get_json()
+    link = req["link"]
+    id = link.pop("_id")
+    updated = update_link(mongo, id, link)
+
+    if updated is None:
+        return jsonify(message="Could not update link."), 500
+    return jsonify(link=updated)
 
 
 ####################################################### Delete Data ###################################################
@@ -298,6 +328,17 @@ def delete_u():
         return jsonify(message=message), 500
 
 
+@app.route("/api/faculty/delete_link", methods=["DELETE"])
+#@jwt_required()
+def delete_l():
+    req = request.get_json()
+    link = req["link"]
+
+    deleted, message = delete_link(mongo, link["_id"])
+    if (deleted):
+        return jsonify(message=message)
+    else:
+        return jsonify(message=message), 404
 
 ####################################################### Settings Access ###############################################
 

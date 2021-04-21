@@ -197,7 +197,94 @@ def delete_user(mongo, id):
   
   return True, 'User successfully deleted.'
 
+def add_link(mongo, name, url):
+  new_link = {'name': name, 'url':url}
+  
+  InsertOneResult_Obj = mongo.db.links.insert_one(new_link) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
+  
+  new_link.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_question with the ObjectID (as a string) so that we can actually return something that resembles a document :/
+ 
+  return new_link
 
+def update_link(mongo, id, update):
+  updated = mongo.db.links.find_one_and_update(
+    {
+      '_id': ObjectId(id)
+    }, 
+    {
+      '$set': update
+    },
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return None
+
+  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return updated
+
+def delete_link(mongo, id):
+  # if no question is using this link, we may delete it immediately:
+  found = mongo.db.questions.find({'links':id}) # assumes questions link to link via _id stored as a string
+  if (found.count() == 0):
+    to_delete = mongo.db.links.delete_one(
+      {
+        '_id':ObjectId(id)
+      }
+      )
+    if (to_delete.deleted_count == 0): #if there is no match
+      return False, 'Could not find Link.'
+    return True, 'Link successfully deleted'
+  else: # if it is being used, delete every instance
+    for i in found: # itterate over curor 
+      remove_one_element(str(i['_id']),id, 'links')
+
+    return True, 'Link successfully deleted'
+
+
+def remove_one_element(mongo, id_of_question_with_array, id_of_element, array_name):
+  found = mongo.db.questions.find_one_and_update( 
+    {
+      '_id':ObjectId(id_of_question_with_array)
+    }, 
+    {
+      '$pull' : {array_name : id_of_element}
+    },
+    return_document=ReturnDocument.AFTER
+    )
+  if (found is None): # if there is no match
+    return None
+
+  if not found[array_name]: # delete the whole links field if the deletion makes it empty
+    remove_one_field(mongo, id_of_question_with_array, array_name)
+
+  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+
+  return found #return result as json
+
+
+def remove_one_field(mongo, id_of_question_with_field, field): # tags = ['beep boop', 'noop', 'yoop', 'ploop'], field = 'related questions'
+  found = mongo.db.questions.find_one_and_update( 
+    {
+      '$and': [
+        {'_id':ObjectId(id_of_question_with_field)},#{'tags': { '$all': [x.lower() for x in tags] }},
+        {field: {'$exists': True} }
+      ]
+    }, 
+    {
+      '$unset': { field:"" }
+    },
+    return_document=ReturnDocument.AFTER
+    )
+  if (found is None): # if there is no match
+    None
+
+  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+
+  return found #return result as json
 # Order for Tags:
 # 1. Intent (intents)
 # 2. Department (dept)
