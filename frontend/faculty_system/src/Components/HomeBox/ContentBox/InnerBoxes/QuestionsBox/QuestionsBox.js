@@ -6,7 +6,8 @@ import {
     saveQuestion, 
     defaultQuestion, 
     fieldsRequiringTraining, 
-    makeOptions, 
+    makeContactOptions, 
+    makeFollowUpOptions,
     saveQuestionAndTrain,
     deleteQuestion,
     deleteQuestionAndRetrain
@@ -14,7 +15,7 @@ import {
 import {update_needs_training} from '../../../home';
 import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
-import {getLinks} from '../LinksBox/links';
+// import {getLinks} from '../LinksBox/links';
 import Select from 'react-select';
 import {confirmAlert} from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -36,8 +37,10 @@ export class QuestionsBox extends React.Component {
         this.deletePattern = this.deletePattern.bind(this);
         this.handleSelectTag = this.handleSelectTag.bind(this);
         this.makeTagValue = this.makeTagValue.bind(this);
-        this.handleSelectDropdown = this.handleSelectDropdown.bind(this);
-        this.populateDropdownValue = this.populateDropdownValue.bind(this);
+        this.handleSelectFollowUp = this.handleSelectFollowUp.bind(this);
+        this.handleSelectContact = this.handleSelectContact.bind(this);
+        this.populateFollowUpValue = this.populateFollowUpValue.bind(this);
+        this.populateContactValue = this.populateContactValue.bind(this);
         this.refLink = this.refLink.bind(this);
         this.addLink = this.addLink.bind(this);
         this.deleteLink = this.deleteLink.bind(this);
@@ -65,7 +68,6 @@ export class QuestionsBox extends React.Component {
             departmentList: [],
             infoList: [],
 
-            links:[],
             contacts:[]
         };
     }
@@ -113,10 +115,6 @@ export class QuestionsBox extends React.Component {
 
         getContacts((contacts)=> {
             this.setState({contacts:contacts});
-        });
-
-        getLinks((links)=> {
-            this.setState({links:links});
         });
     }
 
@@ -251,28 +249,60 @@ export class QuestionsBox extends React.Component {
         }
     }
 
-    handleSelectDropdown(e, key) {
+    handleSelectFollowUp(e) {
         let question = this.state.curQuestion;
-        question[key] = e.value;
+        if (e.value === '' && question['follow-up'] !== undefined) {
+            delete question['follow-up'];
+        } else if (e.value !== '') {
+            let followUp = this.state.questions.filter(
+                val=>val._id===e.value)[0]
+            question['follow-up'] = {_id: e.value, name:followUp.name};
+        }
         this.setState({curQuestion:question});
     }
 
-    populateDropdownValue(skey, qkey) {
-        if (this.state.curQuestion[qkey] === undefined) {
-            return '';
-        } else if (this.state.curQuestion[qkey] === '0') {
-            return {
-                value:'0', 
-                label:'None'
-            };
+    handleSelectContact(e) {
+        let question = this.state.curQuestion;
+        let contacts = this.state.contacts;
+        let contact = contacts.filter(con=>{
+            return con._id === e.value;
+        })[0];
+        if (contact !== undefined) {
+            question.contact = cloneDeep(contact);
+            this.setState({curQuestion:question});
+        } else if (question.contact !== undefined) {
 
-        } else {
-            return {
-                value:this.state.curQuestion[qkey],
-                label: this.state[skey].filter(
-                    val=>val._id===this.state.curQuestion[qkey])[0].name
-            };
-        }                                      
+            delete question.contact;
+            this.setState({curQuestion:question});    
+        }
+    }
+
+    populateFollowUpValue() {
+        if (this.state.curQuestion['follow-up'] === undefined) {
+            return '';
+        }
+
+        return {
+            value:this.state.curQuestion['follow-up']._id,
+            label: this.state.questions.filter(
+                val=>val._id===this.state.curQuestion['follow-up']._id)[0].name
+        };
+                                             
+    }
+
+    populateContactValue() {
+        if (this.state.curQuestion.contact === undefined) {
+            return '';
+        }
+
+        let contact = this.state.contacts.filter(
+            val=>val._id===this.state.curQuestion.contact._id)[0];
+
+        return {
+            value:this.state.curQuestion.contact._id,
+            label: contact.title + ' - ' + contact.name
+        };
+                                              
     }
 
     refLink(id) {
@@ -319,8 +349,6 @@ export class QuestionsBox extends React.Component {
             }
         }
     }
-
-   
 
     hasValidTags() {
         let check = this.state.questions.filter(q=> {
@@ -477,7 +505,7 @@ export class QuestionsBox extends React.Component {
                                     q._id !== this.state.curQuestion._id);
                                 this.setState({questions:remaining, displayedQuestions:dis, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
                                     window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
-                                    alert('Question succesfully deleted.')
+                                    alert('Question succesfully deleted.');
                                 });
                             } else {
                                 console.error(response.message);
@@ -682,15 +710,15 @@ export class QuestionsBox extends React.Component {
                                             <Select  
                                             className='follow-up field' 
                                             id='follow-up-1'
-                                            value={this.populateDropdownValue('questions', 'follow-up')} 
-                                            options={makeOptions(
+                                            value={this.populateFollowUpValue()}
+                                            options={makeFollowUpOptions(
                                                 this.state.questions.filter(
-                                                    q=>q._id!==this.state.curQuestion._id), true)} 
-                                            onChange={(e)=>this.handleSelectDropdown(e, 'follow-up')} 
+                                                    q=>q._id!==this.state.curQuestion._id))}
+                                            onChange={this.handleSelectFollowUp}
                                             />
                                         </div>
                                     </div>
-                                    <div id='question-links-box'>
+                                    {/* <div id='question-links-box'>
                                         <h2 id='question-link-header'>
                                             Attached Links
                                         </h2>
@@ -714,16 +742,16 @@ export class QuestionsBox extends React.Component {
                                             +
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
                                     <div id='question-contacts-box'>
                                         <h2>Contact</h2>
                                         <div className='contacts field-box'>
                                             <Select 
                                             className='contact field' 
                                             id='contact-1' 
-                                            value={this.populateDropdownValue('contacts', 'contact')} 
-                                            options={makeOptions(this.state.contacts, true)} 
-                                            onChange={(e)=>this.handleSelectDropdown(e, 'contact')} 
+                                            value={this.populateContactValue()}
+                                            options={makeContactOptions(this.state.contacts)}
+                                            onChange={this.handleSelectContact} 
                                             />
                                         </div>
                                     </div>
@@ -764,19 +792,4 @@ function Pattern(props) {
     );
 }
 
-function Link(props) {
-    return (
-        <div className='link'>
-            <Select  
-            className='link-field' 
-            id={'link-' + (props.num)} 
-            value={props.link._id} 
-            options={props.options} 
-            onChange={(e)=>props.change(e, props.num)}
-            />
-            <div className='link-delete' onClick={(event)=>props.delete(event, props.num)}>
-                X
-            </div>
-        </div>
-    )
-}
+//      

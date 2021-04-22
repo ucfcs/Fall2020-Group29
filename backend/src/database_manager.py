@@ -47,6 +47,12 @@ def update_question(mongo, id, update_dict):
   if exists:
     return None, q_name
 
+  if not update_dict.has_key('contact'):
+    remove_one_field(id, 'contact')
+
+  if not update_dict.has_key('follow-up'):
+    remove_one_field(id, 'follow-up')
+
   updated = mongo.db.questions.find_one_and_update(
     {
       '_id': ObjectId(id)
@@ -64,6 +70,19 @@ def update_question(mongo, id, update_dict):
   updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return updated, ''
+
+def update_question_follow_ups(mongo, follow_id, new_name):
+
+  updated = mongo.db.questions.find_many_and_update(
+    {
+      'follow-up._id': follow_id
+    },
+    {
+      '$set': {'follow-up.name':new_name}
+    }
+  )
+
+
 
 def check_question_exists(mongo, id, tags):
   result = mongo.db.questions.find_one({
@@ -197,49 +216,49 @@ def delete_user(mongo, id):
   
   return True, 'User successfully deleted.'
 
-def add_link(mongo, name, url):
-  new_link = {'name': name, 'url':url}
+# def add_link(mongo, name, url):
+#   new_link = {'name': name, 'url':url}
   
-  InsertOneResult_Obj = mongo.db.links.insert_one(new_link) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
+#   InsertOneResult_Obj = mongo.db.links.insert_one(new_link) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
   
-  new_link.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_question with the ObjectID (as a string) so that we can actually return something that resembles a document :/
+#   new_link.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_question with the ObjectID (as a string) so that we can actually return something that resembles a document :/
  
-  return new_link
+#   return new_link
 
-def update_link(mongo, id, update):
-  updated = mongo.db.links.find_one_and_update(
-    {
-      '_id': ObjectId(id)
-    }, 
-    {
-      '$set': update
-    },
-    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
-    )
-  if (updated is None): #if there is no match
-    return None
+# def update_link(mongo, id, update):
+#   updated = mongo.db.links.find_one_and_update(
+#     {
+#       '_id': ObjectId(id)
+#     }, 
+#     {
+#       '$set': update
+#     },
+#     return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+#     )
+#   if (updated is None): #if there is no match
+#     return None
 
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
-  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+#   fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+#   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
-  return updated
+#   return updated
 
-def delete_link(mongo, id):
-  # if no question is using this link, we may delete it immediately:
-  found = mongo.db.questions.find({'links':{'_id':id}}) # assumes questions link to link via _id stored as a string
+# def delete_link(mongo, id):
+#   # if no question is using this link, we may delete it immediately:
+#   found = mongo.db.questions.find({'links._id':id}) # assumes questions link to link via _id stored as a string
   
-  to_delete = mongo.db.links.delete_one(
-    {
-      '_id':ObjectId(id)
-    }
-    )
-  if (to_delete.deleted_count == 0): #if there is no match
-    return False, 'Could not find Link.'
-  if (found.count() == 0): # if it is being used, delete every instance
-    for i in found: # itterate over curor 
-      remove_one_element(str(i['_id']),{'_id':id}, 'links')
+#   to_delete = mongo.db.links.delete_one(
+#     {
+#       '_id':ObjectId(id)
+#     }
+#     )
+#   if (to_delete.deleted_count == 0): #if there is no match
+#     return False, 'Could not find Link.'
+#   if (found.count() > 0): # if it is being used, delete every instance
+#     for i in found: # itterate over curor 
+#       remove_one_element(mongo, str(i['_id']), id, 'links._id')
 
-    return True, 'Link successfully deleted'
+#     return True, 'Link successfully deleted'
 
 
 def remove_one_element(mongo, id_of_question_with_array, id_of_element, array_name):
@@ -286,11 +305,8 @@ def remove_one_field(mongo, id_of_question_with_field, field): # tags = ['beep b
   return found #return result as json
 
 
-def add_contact(mongo, title, name, email):
-  new_contact = {
-    'title':title,
-    'name': name, 
-    'email':email}
+def add_contact(mongo, contact):
+  new_contact = contact
   
   InsertOneResult_Obj = mongo.db.contacts.insert_one(new_contact) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
   
@@ -300,6 +316,23 @@ def add_contact(mongo, title, name, email):
 
 
 def update_contact(mongo, id, update):
+
+  found = mongo.db.questions.find({'contact._id':id})
+
+  if found.count() != 0:
+    mongo.db.questions.update_many(
+      {
+        'contact._id':id
+      },
+      {
+        '$set': {
+          'contact.title':update['title'],
+          'contact.name':update['name'],
+          'contact.email':update['email']
+        }
+      }
+    )
+
   updated = mongo.db.contacts.find_one_and_update(
     {
       '_id': ObjectId(id)
@@ -320,20 +353,20 @@ def update_contact(mongo, id, update):
 
 def delete_contact(mongo, id):
   # if no question is using this contact, we may delete it immediately:
-  found = mongo.db.questions.find({'contact':id}) # assumes questions link to link via _id stored as a string
-  if (found.count() == 0):
-    to_delete = mongo.db.contacts.delete_one(
-      {
-        '_id':ObjectId(id)
-      }
-      )
-    if (to_delete.deleted_count == 0): #if there is no match
-      return False, 'Could not find Contact.'
-    return True, 'Contact successfully deleted'
-  else: # if it is being used, delete every instance
+  found = mongo.db.questions.find({'contact._id':id}) # assumes questions link to link via _id stored as a string
+  
+  if (found.count() != 0): # if it is being used, delete every instance
     for i in found: # itterate over curor 
-      remove_one_field(str(i['_id']),id, 'contact')
+      remove_one_field(mongo, str(i['_id']), 'contact')
 
+  to_delete = mongo.db.contacts.delete_one(
+    {
+      '_id':ObjectId(id)
+    }
+    )
+  if (to_delete.deleted_count == 0): #if there is no match
+    return False, 'Could not find Contact.'
+  else:
     return True, 'Contact successfully deleted'
 
 

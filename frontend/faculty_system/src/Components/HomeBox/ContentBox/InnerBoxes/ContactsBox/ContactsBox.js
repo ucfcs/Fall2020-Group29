@@ -1,7 +1,7 @@
 import { cloneDeep, isEqual } from 'lodash';
 import React from 'react';
 import {confirmAlert} from 'react-confirm-alert';
-import {defaultContact, getContacts, saveContact, deleteContact} from './contacts';
+import {defaultContact, getContacts, saveContact, deleteContact, removeFromQuestions} from './contacts';
 import SelectionBox from '../SelectionBox';
 import './contactsbox.css'
 
@@ -152,11 +152,14 @@ export class ContactsBox extends React.Component {
                                 contacts = contacts.filter(contact=> {
                                     return contact._id !== this.state.curContact._id;
                                 });
-                                this.setState({contacts:contacts, curContact:cloneDeep(defaultContact)}, ()=> {
-                                    this.filterSearch();
-                                    window.sessionStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-                                    alert(response.message);
-                                })
+                                removeFromQuestions(this.state.curContact, ()=> {
+                                    this.setState({contacts:contacts, curContact:cloneDeep(defaultContact)}, ()=> {
+                                        this.filterSearch();
+                                        window.sessionStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    
+                                        alert(response.message);
+                                    });
+                                });
                             } else {
                                 alert(response.message);
                             }

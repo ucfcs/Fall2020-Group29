@@ -30,16 +30,65 @@ export const fieldsRequiringTraining = [
   'tags'
 ];
 
-export function makeOptions(values, addNull) {
+export function makeContactOptions(values) {
+  let options = values.map(val=> ({
+      value:val._id,
+      label:val.title + ' - ' + val.name   
+  }));
+  options.unshift({value:'',label:'None'});
+
+  return options
+}
+
+export function makeFollowUpOptions(values) {
   let options = values.map(val=> ({
       value:val._id,
       label:val.name   
   }));
-  if (addNull) {
-    options.unshift({value:'0',label:'None'});
-  }
+  options.unshift({value:'',label:'None'});
+
   return options
 }
+
+function formatQuestion(question) {
+  let tags = question.tags;
+  question.tags = {
+    'intent': tags[0],
+    'department': tags[1],
+    'category': tags[2],
+    'information': tags[3]
+  }
+}
+
+function hasField(question, field) {
+  return question[field].length !== 0;
+}
+
+function hasAllFields(question) {
+  let hasAllFields = true;
+  let missingFields = [];
+  requiredFields.forEach(field => {
+    if (field === 'tags') {
+      tagTypes.forEach(tag => {
+        if (!hasField(question.tags, tag)) {
+          hasAllFields = false;
+          missingFields.push(tag);
+        }
+      });
+    } else {
+      if (!hasField(question, field)) {
+        hasAllFields = false;
+        missingFields.push(field);
+      }
+    }
+  });
+    
+    return {
+      hasFields: hasAllFields,
+      missingFields: missingFields
+    }
+}
+
 
 export function getQuestions(callback) {
 
@@ -368,44 +417,4 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
         });
       }
     });
-}
-
-
-function formatQuestion(question) {
-  let tags = question.tags;
-  question.tags = {
-    'intent': tags[0],
-    'department': tags[1],
-    'category': tags[2],
-    'information': tags[3]
-  }
-}
-
-function hasField(question, field) {
-  return question[field].length !== 0;
-}
-
-function hasAllFields(question) {
-  let hasAllFields = true;
-  let missingFields = [];
-  requiredFields.forEach(field => {
-    if (field === 'tags') {
-      tagTypes.forEach(tag => {
-        if (!hasField(question.tags, tag)) {
-          hasAllFields = false;
-          missingFields.push(tag);
-        }
-      });
-    } else {
-      if (!hasField(question, field)) {
-        hasAllFields = false;
-        missingFields.push(field);
-      }
-    }
-  });
-    
-    return {
-      hasFields: hasAllFields,
-      missingFields: missingFields
-    }
 }

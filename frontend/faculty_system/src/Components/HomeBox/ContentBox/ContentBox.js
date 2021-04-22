@@ -31,7 +31,7 @@ export class ContentBox extends React.Component {
                         'navbox-tags' : <TagsBox ref={this.contentRef} isAdmin={true} />,
                         'navbox-users' : <UsersBox ref={this.contentRef} />,
                         'navbox-contacts': <ContactsBox ref={this.contentRef} />,
-                        'navbox-attached-links' : <LinksBox ref={this.contentRef} />
+                        // 'navbox-attached-links' : <LinksBox ref={this.contentRef} />
                     }[this.props.selection]
                 }
             </div>

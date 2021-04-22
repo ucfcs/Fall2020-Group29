@@ -6,8 +6,8 @@ from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
 from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag, 
-    delete_tag, check_valid_user, needs_update_check, set_needs_update, add_link, add_contact, update_contact, delete_contact,
-    update_link, delete_link, add_user, update_user, delete_user,)
+    delete_tag, check_valid_user, needs_update_check, set_needs_update, add_contact, update_contact, delete_contact,
+    add_user, update_user, delete_user,)
 from .train import train
 import json
 
@@ -236,7 +236,8 @@ def update_t():
 def add_c():
     req = request.get_json()
     contact = req["contact"]
-    new_contact = add_contact(mongo, contact["title"], contact["name"], contact["email"])
+    contact.pop("_id")
+    new_contact = add_contact(mongo, contact)
 
     if new_contact is None:
         return jsonify(message="Failed to add Link"), 500
@@ -256,29 +257,29 @@ def update_c():
     return jsonify(contact=updated)
 
 
-@app.route("/api/faculty/add_link", methods=["POST"])
-#@jwt_required()
-def add_l():
-    req = request.get_json()
-    link = req["link"]
-    new_link = add_link(mongo, link["name"], link["url"])
+# @app.route("/api/faculty/add_link", methods=["POST"])
+# #@jwt_required()
+# def add_l():
+#     req = request.get_json()
+#     link = req["link"]
+#     new_link = add_link(mongo, link["name"], link["url"])
 
-    if new_link is None:
-        return jsonify(message="Failed to add Link"), 500
-    return jsonify(link=new_link)
+#     if new_link is None:
+#         return jsonify(message="Failed to add Link"), 500
+#     return jsonify(link=new_link)
 
 
-@app.route("/api/faculty/update_link", methods=["PUT"])
-#@jwt_required()
-def update_l():
-    req = request.get_json()
-    link = req["link"]
-    id = link.pop("_id")
-    updated = update_link(mongo, id, link)
+# @app.route("/api/faculty/update_link", methods=["PUT"])
+# #@jwt_required()
+# def update_l():
+#     req = request.get_json()
+#     link = req["link"]
+#     id = link.pop("_id")
+#     updated = update_link(mongo, id, link)
 
-    if updated is None:
-        return jsonify(message="Could not update link."), 500
-    return jsonify(link=updated)
+#     if updated is None:
+#         return jsonify(message="Could not update link."), 500
+#     return jsonify(link=updated)
 
 
 @app.route("/api/faculty/add_user", methods=["POST"])
@@ -349,17 +350,17 @@ def delete_c():
         return jsonify(message=message), 404
 
 
-@app.route("/api/faculty/delete_link", methods=["DELETE"])
-#@jwt_required()
-def delete_l():
-    req = request.get_json()
-    link = req["link"]
+# @app.route("/api/faculty/delete_link", methods=["DELETE"])
+# #@jwt_required()
+# def delete_l():
+#     req = request.get_json()
+#     link = req["link"]
 
-    deleted, message = delete_link(mongo, link["_id"])
-    if (deleted):
-        return jsonify(message=message)
-    else:
-        return jsonify(message=message), 404
+#     deleted, message = delete_link(mongo, link["_id"])
+#     if (deleted):
+#         return jsonify(message=message)
+#     else:
+#         return jsonify(message=message), 404
 
 
 @app.route("/api/faculty/delete_user", methods=["DELETE"])

@@ -1,3 +1,6 @@
+import {getQuestions} from '../QuestionsBox/questions'
+
+
 export const defaultContact = {
   _id:'',
   title:'',
@@ -121,4 +124,24 @@ export function deleteContact(contact, callback) {
       });
       console.error(err);
     });
+}
+
+export function removeFromQuestions(contact, callback) {
+  getQuestions((questions)=>{
+    questions.forEach(question => {
+      if (question.contact !== undefined && question.contact._id === contact._id) {
+        delete question.contact;
+      }
+    });
+    window.sessionStorage.setItem('questions', JSON.stringify(questions));
+    let pre_q = window.sessionStorage.getItem('previous_question');
+    if (pre_q !== null) {
+      let question = JSON.parse(pre_q);
+      if (question.contact !== undefined && question.contact._id === contact._id) {
+        delete question.contact;
+        window.sessionStorage.setItem('previous_question', JSON.stringify(question));
+      }
+    }
+    callback();
+  })
 }
