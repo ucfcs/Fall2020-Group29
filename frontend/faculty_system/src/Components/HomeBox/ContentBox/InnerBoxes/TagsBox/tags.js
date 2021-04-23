@@ -1,5 +1,5 @@
 import {getQuestions} from '../QuestionsBox/questions';
-import {route, getToken} from '../../../../../requestUtils';
+import {route, headers} from '../../../../../requestUtils';
 
 export const defaultTag = {
   _id:'',
@@ -33,9 +33,7 @@ export function getTags(callback) {
   if (tfs === null) {
     let options = {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: headers
 
     };
 
@@ -101,10 +99,7 @@ export function updateTag(tags, callback) {
 
   let options = {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + getToken()
-    },
+    headers: headers,
     body: JSON.stringify({'new_tag': tags.newTag, 'old_tag': tags.oldTag})
   };
   fetch(route + 'update_tag', options)
@@ -136,10 +131,7 @@ export function updateTag(tags, callback) {
 export function addTag(tag, callback) {
   let options = {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + getToken()
-    },
+    headers: headers,
     body: JSON.stringify({'tag': tag})
   };
 
@@ -172,10 +164,7 @@ export function addTag(tag, callback) {
 export function deleteTag(tag, callback) {
   let options = {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + getToken()
-    },
+    headers: headers,
     body: JSON.stringify({'tag': tag})
   };
 

@@ -1,4 +1,4 @@
-import {route, getToken} from '../../../../../requestUtils';
+import {route, headers} from '../../../../../requestUtils';
 
 
 export const defaultUser = {
@@ -14,9 +14,7 @@ export function getUsers(callback) {
     if (ufs === null) {
         let options = {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: headers
         };
 
         fetch(route + 'get_users', options)
@@ -43,10 +41,7 @@ export function getUsers(callback) {
 export function saveUser(user, callback) {
     let options = {
         method: user._id !== '' ? 'PUT' : 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + getToken(),
-            'Content-Type': 'application/json'
-        },
+        headers: headers,
         body: JSON.stringify({user:user})
     }
     let call = user._id !== '' ? 'update' : 'add';
@@ -79,10 +74,7 @@ export function saveUser(user, callback) {
 export function deleteUser(user, callback) {
     let options = {
         method: 'DELETE',
-        headers: {
-            'Authorization': 'Bearer ' + getToken(),
-            'Content-Type': 'application/json'
-        },
+        headers: headers,
         body: JSON.stringify({user:user})
     };
 

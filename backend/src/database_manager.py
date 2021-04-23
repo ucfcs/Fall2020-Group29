@@ -47,11 +47,11 @@ def update_question(mongo, id, update_dict):
   if exists:
     return None, q_name
 
-  if not update_dict.has_key('contact'):
-    remove_one_field(id, 'contact')
+  if 'contact' not in update_dict:
+    remove_one_field(mongo, id, 'contact')
 
-  if not update_dict.has_key('follow-up'):
-    remove_one_field(id, 'follow-up')
+  if 'follow-up' not in update_dict:
+    remove_one_field(mongo, id, 'follow-up')
 
   updated = mongo.db.questions.find_one_and_update(
     {
@@ -297,7 +297,7 @@ def remove_one_field(mongo, id_of_question_with_field, field): # tags = ['beep b
     return_document=ReturnDocument.AFTER
     )
   if (found is None): # if there is no match
-    None
+    return None
 
   fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
@@ -339,6 +339,9 @@ def update_contact(mongo, id, update):
     }, 
     {
       '$set': update
+    } if 'departments' in update else { # if the updated contact doesn't have a departments array, remove it
+      '$set': update,
+      '$unset': {'departments':''}
     },
     return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
     )

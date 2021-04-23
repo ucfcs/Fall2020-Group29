@@ -261,6 +261,33 @@ def update_u():
         return jsonify(user=updated)
 
 
+@app.route("/faculty/add_contact", methods=["POST"])
+@jwt_required(optional=DEV)
+def add_c():
+    req = request.get_json()
+    contact = req["contact"]
+    contact.pop("_id")
+    new_contact = add_contact(mongo, contact)
+    
+    if new_contact is None:
+        return jsonify(message="Could not add new contact"), 500
+    return jsonify(contact=new_contact)
+
+
+@app.route("/faculty/update_contact", methods=["PUT"])
+@jwt_required(optional=DEV)
+def update_c():
+    req = request.get_json()
+    contact = req["contact"]
+    id = contact.pop("_id")
+
+    updated = update_contact(mongo, id, contact)
+
+    if updated is None:
+        return jsonify(message="Could not update contact"), 500
+    return jsonify(contact=updated)
+
+
 ####################################################### Delete Data ###################################################
 
 @app.route("/faculty/delete_question", methods=["DELETE"])

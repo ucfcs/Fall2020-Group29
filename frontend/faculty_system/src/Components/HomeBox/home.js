@@ -1,4 +1,4 @@
-import {route, getToken} from '../../requestUtils'
+import {route, headers} from '../../requestUtils'
 
 export const sections = [
   'Questions',
@@ -12,10 +12,7 @@ export const sections = [
 export function retrain(callback) {
     let options = {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + getToken()
-        }
+        headers: headers
       };
   
       fetch(route + 'retrain_model', options)
@@ -44,10 +41,7 @@ export function retrain(callback) {
 export function check_needs_training(callback) {
   let options = {
     method: 'GET',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + getToken()
-    }
+    headers: headers
   };
   fetch(route + 'check_needs_training', options)
     .then((res)=> {
@@ -77,10 +71,7 @@ export function check_needs_training(callback) {
 export function update_needs_training(value, callback) {
   let options = {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + getToken()
-    },
+    headers: headers,
     body: JSON.stringify({'value': value})
   };
   fetch(route + 'update_needs_training', options)

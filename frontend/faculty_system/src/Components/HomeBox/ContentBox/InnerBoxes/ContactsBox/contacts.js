@@ -1,5 +1,5 @@
 import {getQuestions} from '../QuestionsBox/questions'
-import {route, getToken} from '../../../../../requestUtils';
+import {route, headers} from '../../../../../requestUtils';
 
 export const defaultContact = {
   _id:'',
@@ -13,10 +13,7 @@ export function getContacts(callback) {
     if (cfs === null) {
       let options = {
           method: 'GET',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-  
+          headers: headers,
       };
   
       fetch(route + 'get_contacts', options)
@@ -48,14 +45,11 @@ export function saveContact(contact, callback) {
 
   let options = {
     method: method,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + getToken(),
-    },
+    headers: headers,
     body: JSON.stringify({'contact':contact})
   };
   console.log(options);
-  fetch('http://127.0.0.1:5000/api/faculty/' + call + '_contact', options)
+  fetch(route + call + '_contact', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -88,14 +82,11 @@ export function saveContact(contact, callback) {
 export function deleteContact(contact, callback) {
   let options = {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + getToken(),
-    },
+    headers: headers,
     body: JSON.stringify({'contact':contact})
   };
 
-  fetch('http://127.0.0.1:5000/api/faculty/delete_contact', options)
+  fetch(route + 'delete_contact', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({

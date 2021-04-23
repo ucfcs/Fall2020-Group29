@@ -1,4 +1,4 @@
-import {route, getToken} from '../../../../../requestUtils';
+import {route, headers} from '../../../../../requestUtils';
 
 export const defaultQuestion = {
   '_id': '',
@@ -98,9 +98,7 @@ export function getQuestions(callback) {
   if (qfs === null) {
     let options = {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
+        headers: headers
     };
     fetch(route + 'get_questions', options)
       .then((res)=> {
@@ -153,10 +151,7 @@ export function saveQuestion(question, callback) {
 
   let options = {
     method: method,
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization':'Bearer ' + getToken()
-    },
+    headers: headers,
     body: JSON.stringify({'question': question, 'retrain': false})
   };
 
@@ -218,10 +213,7 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
 
   let options = {
     method: method,
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + getToken()
-    },
+    headers: headers,
     body: JSON.stringify({'question': question})
   };
 
@@ -250,10 +242,7 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
                 updateText('Training Now');
                 options = {
                   method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + getToken()
-                  }
+                  headers: headers
                 };
         
                 fetch(route + 'retrain_model', options)
@@ -306,10 +295,7 @@ export function deleteQuestion(question, callback) {
 
   let options = {
     method: 'DELETE',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + getToken()
-    },
+    headers: headers,
     body: JSON.stringify({'question': question})
   }
 
@@ -350,10 +336,7 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
 
   let options = {
     method: 'DELETE',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + getToken()
-    },
+    headers: headers,
     body: JSON.stringify({'question': question})
   }
 
@@ -376,10 +359,7 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
               updateText('Training Now');
               options = {
                 method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': 'Bearer ' + getToken()
-                }
+                headers: headers
               };
       
               fetch(route + 'retrain_model', options)
