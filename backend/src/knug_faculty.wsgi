@@ -2,6 +2,6 @@
 import sys 
 import logging
 logging.basicConfig(stream=sys.stderr)
-sys.path.insert(0, '/var/www/ucf-ai-advising-chatbot/backend')
-from src import app as application
+sys.path.insert(0, '/var/www/ucf-ai-advising-chatbot/backend/src')
+from knug_faculty import app as application
 application.secret_key = "9A4725BD-0372-11E6-9614-507B9DE7AD01"

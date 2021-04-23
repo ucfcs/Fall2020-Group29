@@ -1,5 +1,5 @@
 from torch.utils.data import Dataset
-from .database_manager import return_all
+from database_manager import return_all
 import json
 import pandas as pd
 from flask import jsonify
