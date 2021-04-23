@@ -136,7 +136,7 @@ def get_documents():
         })
     return jsonify(documents=documents)
 
-@app.route("/api/faculty/get_users", methods=["GET"])
+@app.route("/faculty/get_users", methods=["GET"])
 def get_users():
 
     users = return_all(mongo, "users")
@@ -240,7 +240,7 @@ def update_t():
 
 
 
-@app.route("/api/faculty/add_user", methods=["POST"])
+@app.route("/faculty/add_user", methods=["POST"])
 @jwt_required()
 def add_u():
     req = request.get_json()
@@ -253,7 +253,7 @@ def add_u():
     return jsonify(user=new_user)
 
 
-@app.route("/api/faculty/update_user", methods=["PUT"])
+@app.route("/faculty/update_user", methods=["PUT"])
 @jwt_required()
 def update_u():
     req = request.get_json()
@@ -294,7 +294,7 @@ def delete_t():
         return jsonify(message=message), 500
 
 
-@app.route("/api/faculty/delete_user", methods=["DELETE"])
+@app.route("/faculty/delete_user", methods=["DELETE"])
 @jwt_required()
 def delete_u():
     req = request.get_json()
