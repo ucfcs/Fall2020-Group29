@@ -10,7 +10,7 @@ import json
 import json
 
 # Set to true when running development server, false before pushing to main
-DEV = False
+DEV = True
 
 if DEV:
     from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag,
@@ -40,10 +40,6 @@ jwt = JWTManager(app)
 mongo = PyMongo(app)
 
 ######################################################### Login #######################################################
-
-@app.route("/", methods=["GET"])
-def test():
-    return jsonify(message="This has been a test!")
 
 
 #Faculty_System_API
@@ -149,7 +145,7 @@ def get_users():
 ######################################################## Add/Update Data ##############################################
 
 @app.route("/faculty/add_question", methods=["POST"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def add_q():
     req = request.get_json()
     question = req["question"]
@@ -163,7 +159,7 @@ def add_q():
         return jsonify(message="Question successfully added.", question=added)
 
 @app.route("/faculty/update_question", methods=["PUT"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def update_q():
     req = request.get_json()
     question = req["question"]
@@ -181,13 +177,13 @@ def update_q():
         return jsonify(message="Question successfully updated.", question=updated)
 
 @app.route("/faculty/retrain_model", methods=["GET"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def retrain_model():
     train(db=mongo)
     return jsonify(message="Model successfully retrained")
 
 @app.route("/faculty/add_tag", methods=["POST"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def add_t():
     req = request.get_json()
     tag = req["tag"]
@@ -208,7 +204,7 @@ def add_t():
         return jsonify(message="Tag already exists in database."), 500
 
 @app.route("/faculty/update_tag", methods=["PUT"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def update_t():
     req = request.get_json()
     old_tag = req["old_tag"]
@@ -243,7 +239,7 @@ def update_t():
 
 
 @app.route("/faculty/add_user", methods=["POST"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def add_u():
     req = request.get_json()
     user = req["user"]
@@ -256,11 +252,10 @@ def add_u():
 
 
 @app.route("/faculty/update_user", methods=["PUT"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def update_u():
     req = request.get_json()
     user = req["user"]
-    id = user["_id"]
 
     updated = update_user(mongo, user["_id"], user["NID"], user["name"], user["email"], user["IsAdmin"])
 
@@ -273,7 +268,7 @@ def update_u():
 ####################################################### Delete Data ###################################################
 
 @app.route("/faculty/delete_question", methods=["DELETE"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def delete_q():
     req = request.get_json()
     question = req["question"]
@@ -285,7 +280,7 @@ def delete_q():
         return jsonify(message=message), 500
 
 @app.route("/faculty/delete_tag", methods=["DELETE"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def delete_t():
     req = request.get_json()
     tag = req["tag"]
@@ -297,7 +292,7 @@ def delete_t():
 
 
 @app.route("/faculty/delete_contact", methods=["DELETE"])
-#@jwt_required()
+@jwt_required(optional=DEV)
 def delete_c():
     req = request.get_json()
     contact = req["contact"]
@@ -323,7 +318,7 @@ def delete_c():
 
 
 @app.route("/faculty/delete_user", methods=["DELETE"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def delete_u():
     req = request.get_json()
     user = req["user"]
@@ -338,7 +333,7 @@ def delete_u():
 
 
 @app.route("/faculty/check_needs_training", methods=["GET"])
-#@jwt_required()
+@jwt_required(optional=DEV)
 def check_needs_training():
     trained = needs_update_check(mongo)
     if (trained != None):
@@ -347,7 +342,7 @@ def check_needs_training():
         return jsonify(success=False, message="Could not access training settings"), 500
 
 @app.route("/faculty/update_needs_training", methods=["PUT"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def update_needs_training():
     req = request.get_json()
     value = req["value"]
