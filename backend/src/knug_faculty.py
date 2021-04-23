@@ -119,18 +119,8 @@ def get_tags():
 
 @app.route("/faculty/get_contacts", methods=["GET"])
 def get_contacts():
-    cons = return_all(mongo, "contacts")
-    contacts = []
-    for c in cons:
-        contacts.append({
-            "_id": c["_id"],
-            "name": c["Name"],
-            "title": c["Title"],
-            "email": c["Email"],
-            "phone": c["Phone"],
-            "office": c["Office"]
-        })
-    
+
+    contacts = return_all(mongo, "contacts")
     return jsonify(contacts=contacts)
 
 @app.route("/faculty/get_documents", methods=["GET"])
