@@ -3,7 +3,10 @@ import json
 import pandas as pd
 from flask import jsonify
 
-DEV = False
+with open("config.json") as f:
+    config = json.load(f)
+
+DEV = config["dev_mode"]
 
 if DEV:
     from .database_manager import return_all

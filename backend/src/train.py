@@ -8,8 +8,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import normalize
 from torch.utils.data import DataLoader
 
+with open("config.json") as f:
+    config = json.load(f)
 
-DEV = False
+DEV = config["dev_mode"]
 
 if DEV:
     from .dataset import ChatDataset, fetch_data

@@ -7,10 +7,17 @@ from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
 import json
 
-import json
+######################################################## Server Initialization ########################################
 
-# Set to true when running development server, false before pushing to main
-DEV = True
+
+app = Flask(__name__)
+with app.open_resource("config.json") as f:
+    config = json.load(f)
+
+for key in config["server_settings"]:
+    app.config[key] = config["server_settings"][key]
+
+DEV = config["dev_mode"]
 
 if DEV:
     from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag,
@@ -22,17 +29,6 @@ else:
      delete_tag, check_valid_user, needs_update_check, set_needs_update, add_contact, update_contact, delete_contact,
       add_user, update_user, delete_user)
     from train import train
-
-
-
-######################################################## Server Initialization ########################################
-
-
-app = Flask(__name__)
-with app.open_resource("config.json") as f:
-    config = json.load(f)
-for key in config:
-    app.config[key] = config[key]
 
 CORS(app)
 jwt = JWTManager(app)

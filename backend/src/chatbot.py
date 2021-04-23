@@ -4,8 +4,10 @@ import numpy as np
 import pandas as pd
 
 
-DEV = False
+with open("config.json") as f:
+    config = json.load(f)
 
+DEV = config["dev_mode"]
 
 if DEV:
     from .model import NeuralNet
