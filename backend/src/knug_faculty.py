@@ -5,11 +5,24 @@ from flask_pymongo import PyMongo
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag, 
-    delete_tag, check_valid_user, needs_update_check, set_needs_update, add_contact, update_contact, delete_contact,
-    add_user, update_user, delete_user,)
-from train import train
 import json
+
+import json
+
+# Set to true when running development server, false before pushing to main
+DEV = False
+
+if DEV:
+    from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag,
+     delete_tag, check_valid_user, needs_update_check, set_needs_update, add_contact, update_contact, delete_contact,
+      add_user, update_user, delete_user)
+    from .train import train
+else:
+    from database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag,
+     delete_tag, check_valid_user, needs_update_check, set_needs_update, add_contact, update_contact, delete_contact,
+      add_user, update_user, delete_user)
+    from train import train
+
 
 
 ######################################################## Server Initialization ########################################
@@ -110,18 +123,8 @@ def get_tags():
 
 @app.route("/faculty/get_contacts", methods=["GET"])
 def get_contacts():
-    cons = return_all(mongo, "contacts")
-    contacts = []
-    for c in cons:
-        contacts.append({
-            "_id": c["_id"],
-            "name": c["Name"],
-            "title": c["Title"],
-            "email": c["Email"],
-            "phone": c["Phone"],
-            "office": c["Office"]
-        })
-    
+
+    contacts = return_all(mongo, "contacts")
     return jsonify(contacts=contacts)
 
 @app.route("/faculty/get_documents", methods=["GET"])
@@ -136,6 +139,12 @@ def get_documents():
             "link": f["link to file"]
         })
     return jsonify(documents=documents)
+
+@app.route("/faculty/get_users", methods=["GET"])
+def get_users():
+
+    users = return_all(mongo, "users")
+    return jsonify(users=users)
 
 ######################################################## Add/Update Data ##############################################
 
@@ -233,6 +242,34 @@ def update_t():
         return jsonify(tag=updated)
 
 
+@app.route("/faculty/add_user", methods=["POST"])
+@jwt_required()
+def add_u():
+    req = request.get_json()
+    user = req["user"]
+    user.pop("_id")
+    new_user = add_user(mongo, user)
+
+    if new_user is None:
+        return jsonify(message="Could not add new user"), 500
+    return jsonify(user=new_user)
+
+
+@app.route("/faculty/update_user", methods=["PUT"])
+@jwt_required()
+def update_u():
+    req = request.get_json()
+    user = req["user"]
+    id = user["_id"]
+
+    updated = update_user(mongo, user["_id"], user["NID"], user["name"], user["email"], user["IsAdmin"])
+
+    if updated is None:
+        return jsonify(message="User not found"), 404
+    else:
+        return jsonify(user=updated)
+
+
 ####################################################### Delete Data ###################################################
 
 @app.route("/faculty/delete_question", methods=["DELETE"])
@@ -286,7 +323,7 @@ def delete_c():
 
 
 @app.route("/faculty/delete_user", methods=["DELETE"])
-#@jwt_required()
+@jwt_required()
 def delete_u():
     req = request.get_json()
     user = req["user"]

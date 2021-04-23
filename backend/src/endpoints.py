@@ -5,9 +5,16 @@ from flask_pymongo import PyMongo
 from ldap3 import Connection, Server
 from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
-from .database_manager import return_all, update_question, add_question, delete_question, add_tag, update_tag, delete_tag, check_valid_user, needs_update_check, set_needs_update
-from .train import train
 import json
+
+DEV = True
+
+if DEV:
+    from .database_manager import return_all, update_question, add_question, delete_question, add_tag, update_tag, delete_tag, check_valid_user, needs_update_check, set_needs_update
+    from .train import train
+else:
+    from database_manager import return_all, update_question, add_question, delete_question, add_tag, update_tag, delete_tag, check_valid_user, needs_update_check, set_needs_update
+    from train import train
 
 ######################################################## Server Initialization ########################################
 
