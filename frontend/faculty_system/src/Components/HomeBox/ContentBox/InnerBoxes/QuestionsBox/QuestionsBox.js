@@ -51,7 +51,7 @@ export class QuestionsBox extends React.Component {
         this.handleDelete = this.handleDelete.bind(this);
 
         this.state = {
-            needsTraining: false,
+            search: '',
             questions:[],
             displayedQuestions:[],
             curQuestion: cloneDeep(defaultQuestion),
@@ -179,12 +179,16 @@ export class QuestionsBox extends React.Component {
         }
     }
 
-    filterSearch(event) {
+    handleChangeSearch(event) {
+        this.setState({search:event.target.value}, ()=>this.filterSearch())
+    }
+
+    filterSearch() {
         let questions = this.state.questions;
         let dis = questions.filter(q=> {
-            let contained = q.name.toLowerCase().includes(event.target.value.toLowerCase())
+            let contained = q.name.toLowerCase().includes(this.state.search.toLowerCase()); 
             if (!contained) {
-                if (q.response.toLowerCase().includes(event.target.value.toLowerCase())) {
+                if (q.response.toLowerCase().includes(this.state.search.toLowerCase())) {
                     contained = true;
                 }
             }
@@ -395,9 +399,17 @@ export class QuestionsBox extends React.Component {
                                         questions.push(cloneDeep(response.question));
                                         this.setState({curQuestion:cloneDeep(response.question)});
                                     } else {
+                                        if (question.name !== response.question.name) {
+                                            questions.forEach(q=>{
+                                                if (q.followUp!== undefined && q.followUp._id === response.question._id) {
+                                                    q.followUp.name = response.question.name;
+                                                }
+                                            });
+                                        }
                                         questions[questions.indexOf(question)] = cloneDeep(response.question);
                                     }
                                     this.setState({questions:questions}, ()=> {
+                                        this.filterSearch();
                                         window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                         alert(response.message);
                                     });
@@ -420,9 +432,17 @@ export class QuestionsBox extends React.Component {
                                         questions.push(cloneDeep(response.question));
                                         this.setState({curQuestion:cloneDeep(response.question)});
                                     } else {
+                                        if (question.name !== response.question.name) {
+                                            questions.forEach(q=>{
+                                                if (q.followUp!== undefined && q.followUp._id === response.question._id) {
+                                                    q.followUp.name = response.question.name;
+                                                }
+                                            });
+                                        }
                                         questions[questions.indexOf(question)] = cloneDeep(response.question);
                                     }
                                     this.setState({questions:questions, needsTraining:true}, ()=> {
+                                        this.filterSearch();
                                         window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                         update_needs_training('Needs Training', (response)=> {
                                             if (response.success) {
@@ -461,9 +481,17 @@ export class QuestionsBox extends React.Component {
                                             questions.push(cloneDeep(response.question));
                                             this.setState({curQuestion:cloneDeep(response.question)});
                                         } else {
+                                            if (question.name !== response.question.name) {
+                                                questions.forEach(q=>{
+                                                    if (q.followUp!== undefined && q.followUp._id === response.question._id) {
+                                                        q.followUp.name = response.question.name;
+                                                    }
+                                                });
+                                            }
                                             questions[questions.indexOf(question)] = cloneDeep(response.question);
                                         }
                                         this.setState({questions:questions}, ()=> {
+                                            this.filterSearch();
                                             window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                             alert(response.message);
                                         });
@@ -480,7 +508,7 @@ export class QuestionsBox extends React.Component {
                     ]
                 });
             }
-        }
+        } 
     }
 
     handleDelete(event) {
@@ -498,12 +526,12 @@ export class QuestionsBox extends React.Component {
                         (response)=> {
                             if (response.success) {
                                 let questions = this.state.questions;
-                                let displayed = this.state.displayedQuestions;
                                 let remaining = questions.filter(q=> 
                                     q._id !== this.state.curQuestion._id);
-                                let dis = displayed.filter(q=>
-                                    q._id !== this.state.curQuestion._id);
-                                this.setState({questions:remaining, displayedQuestions:dis, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
+
+                                questions.forEach()
+                                this.setState({questions:remaining, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
+                                    this.filterSearch();
                                     window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                     alert('Question succesfully deleted.');
                                 });
@@ -520,14 +548,12 @@ export class QuestionsBox extends React.Component {
                         (response)=> {
                             if (response.success) {
                                 let questions = this.state.questions;
-                                let displayed = this.state.displayedQuestions;
                                 let remaining = questions.filter(q=> 
                                     q._id !== this.state.curQuestion._id);
-                                let dis = displayed.filter(q=>
-                                    q._id !== this.state.curQuestion._id);
-                                this.setState({questions:remaining, displayedQuestions:dis, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
+                                this.setState({questions:remaining, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
+                                    this.filterSearch();
                                     window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
-                                    alert('Question succesfully deleted.')
+                                    alert('Question succesfully deleted.');
                                 });
                             } else {
                                 console.error(response.message);
