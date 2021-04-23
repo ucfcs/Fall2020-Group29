@@ -11,10 +11,12 @@ import json
 DEV = False
 
 if DEV:
-    from .database_manager import return_all, update_question, add_question, delete_question, add_tag, update_tag, delete_tag, check_valid_user, needs_update_check, set_needs_update
+    from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag,
+     delete_tag, check_valid_user, needs_update_check, set_needs_update, add_user, update_user, delete_user)
     from .train import train
 else:
-    from database_manager import return_all, update_question, add_question, delete_question, add_tag, update_tag, delete_tag, check_valid_user, needs_update_check, set_needs_update
+    from database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag,
+     delete_tag, check_valid_user, needs_update_check, set_needs_update, add_user, update_user, delete_user)
     from train import train
 
 
@@ -247,6 +249,35 @@ def update_t():
         return jsonify(tag=updated)
 
 
+
+@app.route("/api/faculty/add_user", methods=["POST"])
+@jwt_required()
+def add_u():
+    req = request.get_json()
+    user = req["user"]
+    user.pop("_id")
+    new_user = add_user(mongo, user)
+
+    if new_user is None:
+        return jsonify(message="Could not add new user"), 500
+    return jsonify(user=new_user)
+
+
+@app.route("/api/faculty/update_user", methods=["PUT"])
+@jwt_required()
+def update_u():
+    req = request.get_json()
+    user = req["user"]
+    id = user["_id"]
+
+    updated = update_user(mongo, user["_id"], user["NID"], user["name"], user["email"], user["IsAdmin"])
+
+    if updated is None:
+        return jsonify(message="User not found"), 404
+    else:
+        return jsonify(user=updated)
+
+
 ####################################################### Delete Data ###################################################
 
 @app.route("/faculty/delete_question", methods=["DELETE"])
@@ -267,6 +298,18 @@ def delete_t():
     req = request.get_json()
     tag = req["tag"]
     deleted, message = delete_tag(mongo, tag["_id"], tag["name"], tag["type"])
+    if (deleted):
+        return jsonify(message=message)
+    else:
+        return jsonify(message=message), 500
+
+
+@app.route("/api/faculty/delete_user", methods=["DELETE"])
+@jwt_required()
+def delete_u():
+    req = request.get_json()
+    user = req["user"]
+    deleted, message = delete_user(mongo, user["_id"])
     if (deleted):
         return jsonify(message=message)
     else:
