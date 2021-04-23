@@ -1,3 +1,5 @@
+import {route} from '../../../../../routeconfig';
+
 export const defaultQuestion = {
   '_id': '',
   'name': '',
@@ -50,7 +52,7 @@ export function getQuestions(callback) {
             'Content-Type': 'application/json'
         }
     };
-    fetch('http://127.0.0.1:5000/api/faculty/get_questions', options)
+    fetch(route + 'get_questions', options)
       .then((res)=> {
           if (res.status === 401) {
             alert('User not Authorized');
@@ -108,7 +110,7 @@ export function saveQuestion(question, callback) {
     body: JSON.stringify({'question': question, 'retrain': false})
   };
 
-  fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
+  fetch(route + call, options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -173,7 +175,7 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
     body: JSON.stringify({'question': question})
   };
 
-  fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
+  fetch(route + call, options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -204,7 +206,7 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
                   }
                 };
         
-                fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+                fetch(route + 'retrain_model', options)
                   .then((res)=> {
                     if (res.status === 401) {
                       callback({
@@ -261,7 +263,7 @@ export function deleteQuestion(question, callback) {
     body: JSON.stringify({'question': question})
   }
 
-  fetch('http://127.0.0.1:5000/api/faculty/delete_question', options)
+  fetch(route + 'delete_question', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -305,7 +307,7 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
     body: JSON.stringify({'question': question})
   }
 
-  fetch('http://127.0.0.1:5000/api/faculty/delete_question', options)
+  fetch(route + 'delete_question', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -330,7 +332,7 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
                 }
               };
       
-              fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+              fetch(route + 'retrain_model', options)
                 .then((res)=> {
                   if (res.status === 401) {
                     callback({

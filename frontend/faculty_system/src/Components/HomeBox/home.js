@@ -1,3 +1,5 @@
+import {route} from '../../routeconfig'
+
 export const sections = [
   'Questions',
   'Tags',
@@ -16,7 +18,7 @@ export function retrain(callback) {
         }
       };
   
-      fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+      fetch(route + 'retrain_model', options)
       .then((res)=> {
         if (res.status === 401) {
           callback({
@@ -47,7 +49,7 @@ export function check_needs_training(callback) {
         'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
     }
   };
-  fetch('http://127.0.0.1:5000/api/faculty/check_needs_training', options)
+  fetch(route + 'check_needs_training', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -81,7 +83,7 @@ export function update_needs_training(value, callback) {
     },
     body: JSON.stringify({'value': value})
   };
-  fetch('http://127.0.0.1:5000/api/faculty/update_needs_training', options)
+  fetch(route + 'update_needs_training', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({

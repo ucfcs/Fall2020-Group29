@@ -1,3 +1,6 @@
+import {route} from '../../../../../routeconfig';
+
+
 export function getDocuments(callback) {
     let dfs = window.sessionStorage.getItem('documents');
     if (dfs === null) {
@@ -10,7 +13,7 @@ export function getDocuments(callback) {
   
       };
   
-      fetch('http://127.0.0.1:5000/api/faculty/get_documents', options)
+      fetch(route + 'get_documents', options)
         .then((res)=> {
             if (res.status === 401) {
               res.json().then((res)=> alert(res['message']));

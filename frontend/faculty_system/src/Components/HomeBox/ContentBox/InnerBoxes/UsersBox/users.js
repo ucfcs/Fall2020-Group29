@@ -1,3 +1,5 @@
+import {route} from '../../../../../routeconfig';
+
 
 export const defaultUser = {
     _id:'',
@@ -18,7 +20,7 @@ export function getUsers(callback) {
             }
         };
 
-        fetch('http://127.0.0.1:5000/api/faculty/get_users', options)
+        fetch(route + 'get_users', options)
           .then((res)=> {
             if (res.status === 401) {
                 alert('User not Authorized');
@@ -51,7 +53,7 @@ export function saveUser(user, callback) {
     let call = user._id !== '' ? 'update' : 'add';
     let succMessage = 'User successfully ' + (user._id !== '' ? 'updated' : 'added');
 
-    fetch('http://127.0.0.1:5000/api/faculty/'+call+'_user', options)
+    fetch(route + call + '_user', options)
         .then((res)=> {
             if (res.status === 401) {
                 callback({
@@ -85,7 +87,7 @@ export function deleteUser(user, callback) {
         body: JSON.stringify({user:user})
     };
 
-    fetch('http://127.0.0.1:5000/api/faculty/delete_user', options)
+    fetch(route + 'delete_user', options)
         .then((res)=> {
             if (res.status === 401) {
                 callback({
