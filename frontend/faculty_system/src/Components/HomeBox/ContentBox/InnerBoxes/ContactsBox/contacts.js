@@ -1,5 +1,5 @@
 import {getQuestions} from '../QuestionsBox/questions'
-import {route} from '../../../../../requestUtils';
+import {route, getToken} from '../../../../../requestUtils';
 
 export const defaultContact = {
   _id:'',
@@ -50,7 +50,7 @@ export function saveContact(contact, callback) {
     method: method,
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+      'Authorization': 'Bearer ' + getToken(),
     },
     body: JSON.stringify({'contact':contact})
   };
@@ -90,7 +90,7 @@ export function deleteContact(contact, callback) {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+      'Authorization': 'Bearer ' + getToken(),
     },
     body: JSON.stringify({'contact':contact})
   };
