@@ -1,4 +1,4 @@
-import {route} from '../../../../../routeconfig';
+import {route} from '../../../../../requestUtils';
 
 export function getContacts(callback) {
     let cfs = window.sessionStorage.getItem('contacts');
@@ -6,8 +6,7 @@ export function getContacts(callback) {
       let options = {
           method: 'GET',
           headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+              'Content-Type': 'application/json'
           },
   
       };

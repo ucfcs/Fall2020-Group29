@@ -1,4 +1,4 @@
-import {route} from '../../routeconfig';
+import {route} from '../../requestUtils';
 
 export function login(nID, pass) {
 

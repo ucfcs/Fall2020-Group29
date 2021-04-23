@@ -1,4 +1,4 @@
-import {route} from '../../../../../routeconfig';
+import {route, getToken} from '../../../../../requestUtils';
 
 export const defaultQuestion = {
   '_id': '',
@@ -48,7 +48,6 @@ export function getQuestions(callback) {
     let options = {
         method: 'GET',
         headers: {
-            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
             'Content-Type': 'application/json'
         }
     };
@@ -105,7 +104,7 @@ export function saveQuestion(question, callback) {
     method: method,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization':'Bearer ' + window.sessionStorage.getItem('token'),
+        'Authorization':'Bearer ' + getToken()
     },
     body: JSON.stringify({'question': question, 'retrain': false})
   };
@@ -170,7 +169,7 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
     method: method,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+        'Authorization': 'Bearer ' + getToken()
     },
     body: JSON.stringify({'question': question})
   };
@@ -202,7 +201,7 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
                   method: 'GET',
                   headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+                    'Authorization': 'Bearer ' + getToken()
                   }
                 };
         
@@ -258,7 +257,7 @@ export function deleteQuestion(question, callback) {
     method: 'DELETE',
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+        'Authorization': 'Bearer ' + getToken()
     },
     body: JSON.stringify({'question': question})
   }
@@ -302,7 +301,7 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
     method: 'DELETE',
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+        'Authorization': 'Bearer ' + getToken()
     },
     body: JSON.stringify({'question': question})
   }
@@ -328,7 +327,7 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+                  'Authorization': 'Bearer ' + getToken()
                 }
               };
       

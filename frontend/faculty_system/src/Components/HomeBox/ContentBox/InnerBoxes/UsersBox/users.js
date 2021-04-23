@@ -1,4 +1,4 @@
-import {route} from '../../../../../routeconfig';
+import {route, getToken} from '../../../../../requestUtils';
 
 
 export const defaultUser = {
@@ -15,7 +15,6 @@ export function getUsers(callback) {
         let options = {
             method: 'GET',
             headers: {
-                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
                 'Content-Type': 'application/json'
             }
         };
@@ -45,7 +44,7 @@ export function saveUser(user, callback) {
     let options = {
         method: user._id !== '' ? 'PUT' : 'POST',
         headers: {
-            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+            'Authorization': 'Bearer ' + getToken(),
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({user:user})
@@ -81,7 +80,7 @@ export function deleteUser(user, callback) {
     let options = {
         method: 'DELETE',
         headers: {
-            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+            'Authorization': 'Bearer ' + getToken(),
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({user:user})

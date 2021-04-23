@@ -1,4 +1,4 @@
-import {route} from '../../../../../routeconfig';
+import {route} from '../../../../../requestUtils';
 
 
 export function getDocuments(callback) {
@@ -7,8 +7,7 @@ export function getDocuments(callback) {
       let options = {
           method: 'GET',
           headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+              'Content-Type': 'application/json'
           },
   
       };

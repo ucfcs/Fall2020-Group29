@@ -1,4 +1,4 @@
-import {route} from '../../routeconfig'
+import {route, getToken} from '../../requestUtils'
 
 export const sections = [
   'Questions',
@@ -14,7 +14,7 @@ export function retrain(callback) {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+            'Authorization': 'Bearer ' + getToken()
         }
       };
   
@@ -46,7 +46,7 @@ export function check_needs_training(callback) {
     method: 'GET',
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+        'Authorization': 'Bearer ' + getToken()
     }
   };
   fetch(route + 'check_needs_training', options)
@@ -79,7 +79,7 @@ export function update_needs_training(value, callback) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+      'Authorization': 'Bearer ' + getToken()
     },
     body: JSON.stringify({'value': value})
   };

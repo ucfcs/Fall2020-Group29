@@ -1,5 +1,5 @@
 import {getQuestions} from '../QuestionsBox/questions';
-import {route} from '../../../../../routeconfig';
+import {route, getToken} from '../../../../../requestUtils';
 
 export const defaultTag = {
   _id:'',
@@ -28,15 +28,13 @@ export function hasAllFields(tag) {
 }
 
 
-
 export function getTags(callback) {
   let tfs = window.sessionStorage.getItem('tags');
   if (tfs === null) {
     let options = {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+            'Content-Type': 'application/json'
         },
 
     };
@@ -100,11 +98,12 @@ export function checkDependents(tag, callback) {
 }
 
 export function updateTag(tags, callback) {
+
   let options = {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+      'Authorization': 'Bearer ' + getToken()
     },
     body: JSON.stringify({'new_tag': tags.newTag, 'old_tag': tags.oldTag})
   };
@@ -139,7 +138,7 @@ export function addTag(tag, callback) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+      'Authorization': 'Bearer ' + getToken()
     },
     body: JSON.stringify({'tag': tag})
   };
@@ -175,7 +174,7 @@ export function deleteTag(tag, callback) {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+      'Authorization': 'Bearer ' + getToken()
     },
     body: JSON.stringify({'tag': tag})
   };
