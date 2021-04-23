@@ -1,6 +1,5 @@
 import React from 'react';
 import {login} from './loginHandler';
-import Loader from 'react-loader';
 import './login.css';
 
 export class LoginBox extends React.Component {
@@ -78,13 +77,7 @@ export class LoginBox extends React.Component {
         </div>
 
         {/* Displays a loading animation while the login API waits for a response. Otherwise displayes nothing. */}
-        {this.state.loading ? 
-          <div>
-            Logging In
-            <br/>
-            <Loader/>
-          </div> : ''
-        }
+        {this.state.loading ? 'Logging In...' : ''}
       </div>
     )
   }
