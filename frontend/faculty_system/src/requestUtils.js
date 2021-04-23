@@ -8,7 +8,7 @@ export function getToken() {
     if (token === null) {
         return '';
     } else {
-        return JSON.parse(token);
+        return token;
     }
 }
 
