@@ -10,7 +10,7 @@ export function login(nID, pass) {
             password: pass,
         })
     };
-    fetch("http://127.0.0.1:5000/api/faculty/login", options)
+    fetch("http://10.171.204.196/api/faculty/login", options)
       .then((res) => {
         if (res.status === 401) {
           res.json().then((res)=> alert(res['message']));
