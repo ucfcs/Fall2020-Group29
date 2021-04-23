@@ -10,7 +10,7 @@ export function LoginBox () {
     return (
       <div>
         <h1>
-        Knug-Bot Faculty Login
+        KnugBot Faculty Login
         </h1>
         <div className='login-box'>
           <div className='login-form'>
