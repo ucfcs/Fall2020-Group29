@@ -144,6 +144,12 @@ def get_documents():
         })
     return jsonify(documents=documents)
 
+@app.route("/api/faculty/get_users", methods=["GET"])
+def get_users():
+
+    users = return_all(mongo, "users")
+    return jsonify(users=users)
+
 ######################################################## Add/Update Data ##############################################
 
 @app.route("/faculty/add_question", methods=["POST"])
