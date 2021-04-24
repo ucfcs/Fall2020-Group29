@@ -429,7 +429,9 @@ class Result extends Component {
             </div>
           );
         }
-      } else {
+      }
+      // else if result === no match
+      else {
         return (
           <div className={styles.body}>
             {loading ? (
@@ -444,7 +446,7 @@ class Result extends Component {
                   margin: 20,
                 }}
               >
-                {/* <div>
+                <div>
                   {!trigger && (
                     <button
                       onClick={() => this.triggerMoreHelp()}
@@ -461,7 +463,7 @@ class Result extends Component {
                       No
                     </button>
                   )}
-                </div> */}
+                </div>
               </div>
             )}
           </div>

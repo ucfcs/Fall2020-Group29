@@ -28,8 +28,13 @@ def home():
     return "Home Page"
 
 
-# GET request to store form responses
-@app.route("/api/submit-feedback", methods=["POST", "GET"])
+# POST request to add 1 to count in "Number of questions asked" stat
+@app.route("/api/questions-asked", methods = ["POST"])
+def update_count():
+    return "count"
+
+# POST request to store form responses
+@app.route("/api/submit-feedback", methods=["POST"])
 def store_response():
     feedback = request.get_json()
     answered = feedback["answer"]
