@@ -1,8 +1,11 @@
 from torch.utils.data import Dataset
-from .database_manager import return_all
+# Make relative when done.
+# from .database_manager import return_all
 import json
 import pandas as pd
 from flask import jsonify
+from utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
+import numpy as np
 
 class ChatDataset(Dataset):
 
@@ -16,6 +19,55 @@ class ChatDataset(Dataset):
 
     def __len__(self):
         return self.n_samples
+
+def preprocess(data):
+
+    all_words = []
+    tags = []
+    xy = []
+
+    for index, row in data.iterrows():
+
+        # Extract the tags.
+        tag = row["tag"]
+        tags.append(tag)
+
+        # Tokenize the tags.
+        w = tokenize(row["pattern"])
+        all_words.extend(w)
+
+        # Include the pattern and label in the dataset.
+        xy.append((w, tag))
+
+    # Set the ignore words, perform stemming, and sort.
+    ignore_words = ["?", ".", "!"]
+    all_words = [stem(w) for w in all_words if w not in ignore_words]
+    all_words = sorted(set(all_words))
+    tags = sorted(set(tags))
+
+    X = []
+    y = []
+
+    for (pattern, tag) in xy:
+
+        # Set the bag of words for each pattern.
+        bag = bag_of_words(pattern, all_words)
+        X.append(bag)
+
+        # Set the class labels.
+        label = tags.index(tag)
+        y.append(label)
+
+    num_classes = len(tags)
+
+    # Set the training data.
+    X = np.array(X)
+    y = np.array(y)
+
+    # Normalize the training data.
+    # X = normalize(X, norm="l2")
+
+    return X, y, num_classes, all_words, tags
 
 def fetch_data(db, params):
     
