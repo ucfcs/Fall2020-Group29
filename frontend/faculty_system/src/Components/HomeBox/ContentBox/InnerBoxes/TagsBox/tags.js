@@ -48,8 +48,7 @@ export function getTags(callback) {
               callback(res['tags']);
             });
           }
-      })
-      .catch((err) => {
+      }).catch((err) => {
         alert('Failed to retrieve entities.');
         console.log('error occurred', err);
         callback({});
@@ -125,6 +124,11 @@ export function updateTag(tags, callback) {
           });
         });
       }
+  }).catch((err)=> {
+    callback({
+      success:false,
+      message: err
+    });
   });
 }
 
@@ -158,6 +162,11 @@ export function addTag(tag, callback) {
           });
         });
       }
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
     });
 }
 
@@ -190,5 +199,10 @@ export function deleteTag(tag, callback) {
           });
         });
       }
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
     });
 }

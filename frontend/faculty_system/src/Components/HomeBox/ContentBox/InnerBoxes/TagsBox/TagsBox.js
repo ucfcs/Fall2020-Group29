@@ -37,7 +37,7 @@ export class TagsBox extends React.Component {
         this.handleDelete = this.handleDelete.bind(this);
 
         this.state = {
-            selected:null,
+            search:'',
             tags:{
                 'intent': [],
                 'category': [],
@@ -47,7 +47,10 @@ export class TagsBox extends React.Component {
             },
             displayedTags:[],
             curTag: cloneDeep(defaultTag),
-            curType: 'all'
+            curType: 'all',
+
+            savingTag:false,
+            deletingTag:false
         }
     }
 
@@ -122,15 +125,10 @@ export class TagsBox extends React.Component {
 
     updateDisplayedTags() {
         let tags = this.concatTags();
-        let searchVal = '';
-        let search = document.getElementById('search-bar');
-        if (search !== undefined) {
-            searchVal = search.value;
-        }
 
         let dis = tags.filter(t=>{
             return (this.state.curType === 'all' || t.type === this.state.curType) && 
-            t.name.toLowerCase().includes(searchVal.toLowerCase());
+            t.name.toLowerCase().includes(this.state.search.toLowerCase());
         });
 
         dis.sort((a, b)=> (a.name > b.name) ? 1 : -1)
@@ -147,8 +145,9 @@ export class TagsBox extends React.Component {
     }
 
     filterSearch(event) {
-        event.preventDefault();
-        this.updateDisplayedTags();
+        this.setState({search:event.target.value}, ()=> {
+            this.updateDisplayedTags();
+        });
     }
 
     handleSelectType(event) {
@@ -190,74 +189,82 @@ export class TagsBox extends React.Component {
     }
 
     handleAddTag() {
-        addTag(this.state.curTag, (response) => {
-            if (response.success) {
-                let newTag = response.tag;
-                let tags = this.state.tags;
-                let tagTypeList = tags[newTag.type];
-                tagTypeList.push(cloneDeep(newTag));
-                this.setState({curTag:cloneDeep(newTag)});
-
-                tags[newTag.type] = tagTypeList;
-                this.setState({tags:tags}, ()=> {
-                    window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
-                    this.updateDisplayedTags();
-                    alert(response.message);
+        this.setState({savingTag:true}, ()=> {
+            addTag(this.state.curTag, (response) => {
+                this.setState({savingTag:false}, ()=> {
+                    if (response.success) {
+                        let newTag = response.tag;
+                        let tags = this.state.tags;
+                        let tagTypeList = tags[newTag.type];
+                        tagTypeList.push(cloneDeep(newTag));
+                        this.setState({curTag:cloneDeep(newTag)});
+        
+                        tags[newTag.type] = tagTypeList;
+                        this.setState({tags:tags}, ()=> {
+                            window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
+                            this.updateDisplayedTags();
+                            alert(response.message);
+                        });
+                    } else {
+                        console.error(response.message);
+                        alert('Could not save tag - \n' + response.message);
+                    }
                 });
-            } else {
-                console.error(response.message);
-                alert('Could not save tag - \n' + response.message);
-            }
+            });
         });
     }
 
     handleUpdateTag(tags) {
-        updateTag(tags, (response)=> {
-            if (response.success) {
-                let newTag = response.tag;
-                let tags = this.state.tags;
-                let tagTypeList = tags[newTag.type];
-                let check = tagTypeList.filter(tag=> {
-                    return tag._id === newTag._id;
-                })[0];
-
-                /* 
-                When updating a tag name, go through the questions stored in local storage and 
-                change any instance of the old tag name to the new tag name for the corresponding
-                type.
-                */
-                let qfs = window.sessionStorage.getItem('questions');
-                let previousQFS = window.sessionStorage.getItem('previous_question');
-                if (qfs !== null) {
-                    let questions = JSON.parse(qfs);
-                    questions.forEach(question => {
-                        if (question.tags[newTag.type] === check.name) {
-                            question.tags[newTag.type] = newTag.name;
+        this.setState({savingTag:true}, ()=> {
+            updateTag(tags, (response)=> {
+                this.setState({savingTag:false}, ()=> {
+                    if (response.success) {
+                        let newTag = response.tag;
+                        let tags = this.state.tags;
+                        let tagTypeList = tags[newTag.type];
+                        let check = tagTypeList.filter(tag=> {
+                            return tag._id === newTag._id;
+                        })[0];
+        
+                        /* 
+                        When updating a tag name, go through the questions stored in local storage and 
+                        change any instance of the old tag name to the new tag name for the corresponding
+                        type.
+                        */
+                        let qfs = window.sessionStorage.getItem('questions');
+                        let previousQFS = window.sessionStorage.getItem('previous_question');
+                        if (qfs !== null) {
+                            let questions = JSON.parse(qfs);
+                            questions.forEach(question => {
+                                if (question.tags[newTag.type] === check.name) {
+                                    question.tags[newTag.type] = newTag.name;
+                                }
+                            });
+                            window.sessionStorage.setItem('questions', JSON.stringify(questions));
                         }
-                    });
-                    window.sessionStorage.setItem('questions', JSON.stringify(questions));
-                }
-
-                if (previousQFS !== null) {
-                    let question = JSON.parse(previousQFS);
-                    if (question.tags[newTag.type] === check.name) {
-                        question.tags[newTag.type] = newTag.name;
-                        window.sessionStorage.setItem('previous_question', JSON.stringify(question));
+        
+                        if (previousQFS !== null) {
+                            let question = JSON.parse(previousQFS);
+                            if (question.tags[newTag.type] === check.name) {
+                                question.tags[newTag.type] = newTag.name;
+                                window.sessionStorage.setItem('previous_question', JSON.stringify(question));
+                            }
+                        }
+                        
+                        tagTypeList[tagTypeList.indexOf(check)] = newTag;
+                        tags[newTag.type] = tagTypeList;
+                        this.setState({tags:tags, curTag:cloneDeep(newTag)}, ()=> {
+                            window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
+                            this.updateDisplayedTags();
+                            alert(response.message);
+                        });
+        
+                    } else {
+                        console.error(response.message);
+                        alert('Could not save tag - \n' + response.message);
                     }
-                }
-                
-                tagTypeList[tagTypeList.indexOf(check)] = newTag;
-                tags[newTag.type] = tagTypeList;
-                this.setState({tags:tags, curTag:cloneDeep(newTag)}, ()=> {
-                    window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
-                    this.updateDisplayedTags();
-                    alert(response.message);
                 });
-
-            } else {
-                console.error(response.message);
-                alert('Could not save tag - \n' + response.message);
-            }
+            });
         });
     }
 
@@ -332,22 +339,26 @@ export class TagsBox extends React.Component {
                     buttons: [
                         {
                             label: 'Yes, delete tag',
-                            onClick: ()=> deleteTag(this.state.curTag, (response)=> {
-                                if (response.success) {
-                                    let tags = this.state.tags;
-                                    let remaining = tags[this.state.curTag.type].filter(tag=>
-                                        tag._id !== this.state.curTag._id
-                                    );
-                                    tags[this.state.curTag.type] = remaining;
-                                    this.setState({tags:tags, curTag:cloneDeep(defaultTag)}, ()=> {
-                                        this.updateDisplayedTags();
-                                        window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
-                                        alert(response.message);
+                            onClick: ()=> this.setState({deletingTag:true}, ()=> {
+                                deleteTag(this.state.curTag, (response)=> {
+                                    this.setState({deletingTag:false}, ()=> {
+                                        if (response.success) {
+                                            let tags = this.state.tags;
+                                            let remaining = tags[this.state.curTag.type].filter(tag=>
+                                                tag._id !== this.state.curTag._id
+                                            );
+                                            tags[this.state.curTag.type] = remaining;
+                                            this.setState({tags:tags, curTag:cloneDeep(defaultTag)}, ()=> {
+                                                this.updateDisplayedTags();
+                                                window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
+                                                alert(response.message);
+                                            });
+                                        } else {
+                                            console.error(response.message);
+                                            alert(response.message);
+                                        }
                                     });
-                                } else {
-                                    console.error(response.message);
-                                    alert(response.message);
-                                }
+                                });
                             })
                         },
                         {
@@ -446,6 +457,7 @@ export class TagsBox extends React.Component {
                                 >
                                     Save Changes
                                 </div>
+                                {this.state.savingTag ? 'Saving Tag, please wait' : ''}
                             </div>
                             <div id='tag-delete'>
                                 {this.state.curTag._id !== '' ? 
@@ -453,6 +465,7 @@ export class TagsBox extends React.Component {
                                         Delete Tag
                                     </div>:''
                                 }
+                                {this.state.deletingTag ? 'Deleting Tag, please wait' : ''}
                             </div>
                         </div>
                         <div id='tag-content'>

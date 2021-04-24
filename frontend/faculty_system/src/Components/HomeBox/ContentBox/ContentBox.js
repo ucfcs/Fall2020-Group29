@@ -1,7 +1,7 @@
 import {QuestionsBox} from './InnerBoxes/QuestionsBox/QuestionsBox';
 import {TagsBox} from './InnerBoxes/TagsBox/TagsBox';
 import {UsersBox} from './InnerBoxes/UsersBox/UsersBox';
-import {LinksBox} from './InnerBoxes/LinksBox/LinksBox';
+// import {LinksBox} from './InnerBoxes/LinksBox/LinksBox';
 import {ContactsBox} from './InnerBoxes/ContactsBox/ContactsBox';
 import React from 'react';
 

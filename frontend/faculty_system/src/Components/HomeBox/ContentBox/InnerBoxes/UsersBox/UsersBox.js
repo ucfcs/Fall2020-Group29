@@ -25,7 +25,10 @@ export class UsersBox extends React.Component {
             users: [],
             displayedUsers: [],
             curUser: cloneDeep(defaultUser),
-            search: ''
+            search: '',
+
+            savingUser:false,
+            deletingUser:false
         }
     }
 
@@ -114,26 +117,30 @@ export class UsersBox extends React.Component {
                 {
                     label: 'Yes, please save',
                     onClick: ()=> {
-                        saveUser(this.state.curUser, (response)=> {
-                            let users = this.state.users;
-                            if (response.success) {
-                                let check = users.filter(user=>{
-                                    return user._id === response.user._id
-                                })[0];
-                                if (check === undefined) {
-                                    users.push(response.user);
-                                } else {
-                                    users[users.indexOf(check)] = cloneDeep(response.user);
-                                }
-                                this.setState({users:users, curUser:cloneDeep(response.user)}, ()=>{
-                                    this.filterSearch();
-                                    window.sessionStorage.setItem('users', JSON.stringify(this.state.users));
-                                    alert(response.message);
+                        this.setState({savingUser:true}, ()=> {
+                            saveUser(this.state.curUser, (response)=> {
+                                this.setState({savingUser:false}, ()=> {
+                                    let users = this.state.users;
+                                    if (response.success) {
+                                        let check = users.filter(user=>{
+                                            return user._id === response.user._id
+                                        })[0];
+                                        if (check === undefined) {
+                                            users.push(response.user);
+                                        } else {
+                                            users[users.indexOf(check)] = cloneDeep(response.user);
+                                        }
+                                        this.setState({users:users, curUser:cloneDeep(response.user)}, ()=>{
+                                            this.filterSearch();
+                                            window.sessionStorage.setItem('users', JSON.stringify(this.state.users));
+                                            alert(response.message);
+                                        });
+                                    } else {
+                                        alert(response.message);
+                                    }
                                 });
-                            } else {
-                                alert(response.message);
-                            }
-                        })
+                            });
+                        });
                     }
                 },
                 {
@@ -152,20 +159,24 @@ export class UsersBox extends React.Component {
                 {
                     label: 'Yes, delete user',
                     onClick: ()=> {
-                        deleteUser(this.state.curUser, (response)=> {
-                            if (response.success) {
-                                let users = this.state.users;
-                                users = users.filter(user=> {
-                                    return user._id !== this.state.curUser._id;
+                        this.setState({deletingUser:true}, ()=> {
+                            deleteUser(this.state.curUser, (response)=> {
+                                this.setState({deletingUser:false}, ()=> {
+                                    if (response.success) {
+                                        let users = this.state.users;
+                                        users = users.filter(user=> {
+                                            return user._id !== this.state.curUser._id;
+                                        });
+                                        this.setState({users:users, curUser:cloneDeep(defaultUser)}, ()=> {
+                                            this.filterSearch();
+                                            window.sessionStorage.setItem('users', JSON.stringify(this.state.users));
+                                            alert(response.message);
+                                        })
+                                    } else {
+                                        alert(response.message);
+                                    }
                                 });
-                                this.setState({users:users, curUser:cloneDeep(defaultUser)}, ()=> {
-                                    this.filterSearch();
-                                    window.sessionStorage.setItem('users', JSON.stringify(this.state.users));
-                                    alert(response.message);
-                                })
-                            } else {
-                                alert(response.message);
-                            }
+                            });
                         });
                     }
                 },
@@ -283,6 +294,7 @@ export class UsersBox extends React.Component {
                                     >
                                         Save Changes
                                     </div>
+                                    {this.state.savingUser ? 'Saving User, please wait' : ''}
                                 </div>
                                 <div id='user-delete'>
                                     {this.state.curUser._id !== '' ? 
@@ -290,6 +302,7 @@ export class UsersBox extends React.Component {
                                             Delete User
                                         </div>:''
                                     }
+                                    {this.state.deletingUser ? 'Deleting User, please wait' : ''}
                                 </div>
                             </div>
                         </div>

@@ -32,6 +32,9 @@ export function getUsers(callback) {
                   alert('Could not retrieve users.')
                   callback([]);
               }
+          }).catch((err)=> {
+              alert('Could not retrieve users, ', err)
+              callback([]);
           });
     } else {
         callback(JSON.parse(ufs));
@@ -68,7 +71,12 @@ export function saveUser(user, callback) {
                     message:'Failed to '+call+' user'
                 });
             }
-        })
+        }).catch((err)=> {
+            callback({
+                success:false,
+                message: err
+            });
+        });
 }
 
 export function deleteUser(user, callback) {
@@ -98,5 +106,10 @@ export function deleteUser(user, callback) {
                     message: 'Unable to delete user.'
                 })
             }
-        })
+        }).catch((err)=> {
+            callback({
+                success:false,
+                message: err
+            });
+        });
 }

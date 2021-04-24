@@ -35,6 +35,11 @@ export function retrain(callback) {
               trained: false
             });
         }
+      }).catch((err)=> {
+        callback({
+          success:false,
+          message: err
+        });
       });
 }
 
@@ -65,7 +70,12 @@ export function check_needs_training(callback) {
           });
         });
       }
-    })
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
+    });
 }
 
 export function update_needs_training(value, callback) {
@@ -93,7 +103,12 @@ export function update_needs_training(value, callback) {
           })
         })
       } 
-    })
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
+    });
 }
 
 export function logOut() {

@@ -24,7 +24,10 @@ export class ContactsBox extends React.Component {
             contacts: [],
             displayedContacts: [],
             curContact: cloneDeep(defaultContact),
-            search: ''
+            search: '',
+
+            savingContact:false,
+            deletingContact:false
         }
     }
 
@@ -108,26 +111,30 @@ export class ContactsBox extends React.Component {
                 {
                     label: 'Yes, please save',
                     onClick: ()=> {
-                        saveContact(this.state.curContact, (response)=> {
-                            let contacts = this.state.contacts;
-                            if (response.success) {
-                                let check = contacts.filter(contact=>{
-                                    return contact._id === response.contact._id
-                                })[0];
-                                if (check === undefined) {
-                                    contacts.push(response.contact);
-                                } else {
-                                    contacts[contacts.indexOf(check)] = cloneDeep(response.contact);
-                                }
-                                this.setState({contacts:contacts, curContact:cloneDeep(response.contact)}, ()=>{
-                                    this.filterSearch();
-                                    window.sessionStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-                                    alert(response.message);
+                        this.setState({savingContact:true}, ()=> {
+                            saveContact(this.state.curContact, (response)=> {
+                                this.setState({savingContact:false}, ()=> {
+                                    let contacts = this.state.contacts;
+                                    if (response.success) {
+                                        let check = contacts.filter(contact=>{
+                                            return contact._id === response.contact._id
+                                        })[0];
+                                        if (check === undefined) {
+                                            contacts.push(response.contact);
+                                        } else {
+                                            contacts[contacts.indexOf(check)] = cloneDeep(response.contact);
+                                        }
+                                        this.setState({contacts:contacts, curContact:cloneDeep(response.contact)}, ()=>{
+                                            this.filterSearch();
+                                            window.sessionStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+                                            alert(response.message);
+                                        });
+                                    } else {
+                                        alert(response.message);
+                                    }
                                 });
-                            } else {
-                                alert(response.message);
-                            }
-                        })
+                            });
+                        });
                     }
                 },
                 {
@@ -146,23 +153,27 @@ export class ContactsBox extends React.Component {
                 {
                     label: 'Yes, delete contact',
                     onClick: ()=> {
-                        deleteContact(this.state.curContact, (response)=> {
-                            if (response.success) {
-                                let contacts = this.state.contacts;
-                                contacts = contacts.filter(contact=> {
-                                    return contact._id !== this.state.curContact._id;
-                                });
-                                removeFromQuestions(this.state.curContact, ()=> {
-                                    this.setState({contacts:contacts, curContact:cloneDeep(defaultContact)}, ()=> {
-                                        this.filterSearch();
-                                        window.sessionStorage.setItem('contacts', JSON.stringify(this.state.contacts));
-    
+                        this.setState({deletingContact:true}, ()=> {
+                            deleteContact(this.state.curContact, (response)=> {
+                                this.setState({deletingContact:false}, ()=> {
+                                    if (response.success) {
+                                        let contacts = this.state.contacts;
+                                        contacts = contacts.filter(contact=> {
+                                            return contact._id !== this.state.curContact._id;
+                                        });
+                                        removeFromQuestions(this.state.curContact, ()=> {
+                                            this.setState({contacts:contacts, curContact:cloneDeep(defaultContact)}, ()=> {
+                                                this.filterSearch();
+                                                window.sessionStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+            
+                                                alert(response.message);
+                                            });
+                                        });
+                                    } else {
                                         alert(response.message);
-                                    });
+                                    }
                                 });
-                            } else {
-                                alert(response.message);
-                            }
+                            });
                         });
                     }
                 },
@@ -263,6 +274,7 @@ export class ContactsBox extends React.Component {
                                     >
                                         Save Changes
                                     </div>
+                                    {this.state.savingContact ? 'Saving Contact, please wait' : ''}
                                 </div>
                                 <div id='contact-delete'>
                                     {this.state.curContact._id !== '' ? 
@@ -270,6 +282,7 @@ export class ContactsBox extends React.Component {
                                             Delete Contact
                                         </div>:''
                                     }
+                                    {this.state.deletingContact ? 'Deleting Contact, please wait' : ''}
                                 </div>
                             </div>
                         </div>
