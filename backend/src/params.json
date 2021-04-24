@@ -15,12 +15,13 @@
         },
         
     "num_epochs_ints": 1,
-    "num_epochs_dept": 100,
+    "num_epochs_dept": 1500,
     "num_epochs_cat": 250,
     "num_epochs_info": 350,
     
     "batch_size": 8,
     "learning_rate": 3e-4,
     "hidden_size": 8,
-    "num_folds": 10
+    "num_folds": 10,
+    "patience": 10
 }
