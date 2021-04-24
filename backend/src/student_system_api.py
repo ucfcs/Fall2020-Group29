@@ -4,7 +4,7 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo import ReturnDocument
 import traceback
-from apitest import get_question
+from database_manager import form_response
 
 
 # from ...ai import chatbot
@@ -28,8 +28,21 @@ def home():
     return "Home Page"
 
 
+# GET request to store form responses
+@app.route("/api/submit-feedback", methods=["POST", "GET"])
+def store_response():
+    feedback = request.get_json()
+    answered = feedback["answer"]
+    rating = feedback["enjoyment"]
+    simplicity = feedback["ease"]
+    
+    feedback_confirmation = form_response(mongo, answered, rating, simplicity)
+    if(feedback != None):
+        return jsonify({"feedback": feedback_confirmation})
+    return "sorry feedback is empty"
+
 # POST to recieve an input
-@app.route("/api/user-response", methods=["POST", "GET"])
+@app.route("/api/get-user-response", methods=["POST", "GET"])
 def create_response():
     try:
         # Saves the json in the user_response variable.
