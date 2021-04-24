@@ -72,8 +72,7 @@ def update_question(mongo, id, update_dict):
   return updated, ''
 
 def update_question_follow_ups(mongo, follow_id, new_name):
-
-  updated = mongo.db.questions.find_many_and_update(
+  mongo.db.questions.find_many_and_update(
     {
       'follow-up._id': follow_id
     },
@@ -81,7 +80,6 @@ def update_question_follow_ups(mongo, follow_id, new_name):
       '$set': {'follow-up.name':new_name}
     }
   )
-
 
 
 def check_question_exists(mongo, id, tags):

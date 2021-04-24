@@ -30,6 +30,7 @@ export class QuestionsBox extends React.Component {
         this.hasChanges = this.hasChanges.bind(this);
         this.hasTrainableChanges = this.hasTrainableChanges.bind(this);
         this.selectItem = this.selectItem.bind(this);
+        this.handleChangeSearch = this.handleChangeSearch.bind(this);
         this.filterSearch = this.filterSearch.bind(this);
         this.changeResponse = this.changeResponse.bind(this);
         this.changePattern = this.changePattern.bind(this);
@@ -41,13 +42,17 @@ export class QuestionsBox extends React.Component {
         this.handleSelectContact = this.handleSelectContact.bind(this);
         this.populateFollowUpValue = this.populateFollowUpValue.bind(this);
         this.populateContactValue = this.populateContactValue.bind(this);
-        this.refLink = this.refLink.bind(this);
-        this.addLink = this.addLink.bind(this);
-        this.deleteLink = this.deleteLink.bind(this);
-        this.changeLink = this.changeLink.bind(this);
+        // this.refLink = this.refLink.bind(this);
+        // this.addLink = this.addLink.bind(this);
+        // this.deleteLink = this.deleteLink.bind(this);
+        // this.changeLink = this.changeLink.bind(this);
         this.hasValidTags = this.hasValidTags.bind(this);
         this.canSave = this.canSave.bind(this);
+        this.saveAndTrain = this.saveAndTrain.bind(this);
+        this.saveNoTrain = this.saveNoTrain.bind(this);
         this.handleSave = this.handleSave.bind(this);
+        this.deleteAndTrain = this.deleteAndTrain.bind(this);
+        this.deleteNoTrain = this.deleteNoTrain.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
 
         this.state = {
@@ -68,7 +73,10 @@ export class QuestionsBox extends React.Component {
             departmentList: [],
             infoList: [],
 
-            contacts:[]
+            contacts:[],
+
+            savingQuestion: false,
+            deletingQuestion:false
         };
     }
 
@@ -309,50 +317,50 @@ export class QuestionsBox extends React.Component {
                                               
     }
 
-    refLink(id) {
-        let links = this.state.links;
-        let link = links.filter(l=>
-            l._id === id)[0];
-        if (link !== undefined) {
-            return link;
-        } else {
-            return '';
-        }
-    }
+    // refLink(id) {
+    //     let links = this.state.links;
+    //     let link = links.filter(l=>
+    //         l._id === id)[0];
+    //     if (link !== undefined) {
+    //         return link;
+    //     } else {
+    //         return '';
+    //     }
+    // }
 
-    addLink(event) {
-        event.preventDefault();
-        let question = this.state.curQuestion;
-        if (question.links === undefined) {
-            question.links = [];
-        }
-        question.links.push({_id:'', url:''});
-        this.setState({curQuestion:question});
-    }
+    // addLink(event) {
+    //     event.preventDefault();
+    //     let question = this.state.curQuestion;
+    //     if (question.links === undefined) {
+    //         question.links = [];
+    //     }
+    //     question.links.push({_id:'', url:''});
+    //     this.setState({curQuestion:question});
+    // }
 
-    deleteLink(e, num) {
-        e.preventDefault();
-        let question = this.state.curQuestion;
-        let qLinks = question.links;
-        if (qLinks !== undefined) {
-            qLinks.splice(num, 1);
-            question.links = qLinks;
-            this.setState({curQuestion:question});
-        }
-    }
+    // deleteLink(e, num) {
+    //     e.preventDefault();
+    //     let question = this.state.curQuestion;
+    //     let qLinks = question.links;
+    //     if (qLinks !== undefined) {
+    //         qLinks.splice(num, 1);
+    //         question.links = qLinks;
+    //         this.setState({curQuestion:question});
+    //     }
+    // }
 
-    changeLink(e, num) {
-        let question = this.state.curQuestion;
-        let qLinks = question.links;
-        if (qLinks !== undefined) {
-            let link = this.refLink(e.value);
-            if (link !== '') {
-                qLinks[num] = {_id:link._id, url:link.url};
-                question.links = qLinks;
-                this.setState({curQuestion:question});
-            }
-        }
-    }
+    // changeLink(e, num) {
+    //     let question = this.state.curQuestion;
+    //     let qLinks = question.links;
+    //     if (qLinks !== undefined) {
+    //         let link = this.refLink(e.value);
+    //         if (link !== '') {
+    //             qLinks[num] = {_id:link._id, url:link.url};
+    //             question.links = qLinks;
+    //             this.setState({curQuestion:question});
+    //         }
+    //     }
+    // }
 
     hasValidTags() {
         let check = this.state.questions.filter(q=> {
@@ -376,6 +384,92 @@ export class QuestionsBox extends React.Component {
         return this.hasValidTags().valid && this.hasChanges()
     }
 
+    saveAndTrain() {
+        this.setState({savingQuestion:true}, ()=> {
+            saveQuestionAndTrain(
+                this.state.curQuestion, 
+                this.props.updateTrain,
+                update_needs_training,
+                response=> {
+                    this.setState({savingQuestion:false}, ()=> {
+                        if (response.success) {
+                            let questions = this.state.questions;
+                            let question = questions.filter(q=>
+                                q._id === this.state.curQuestion._id)[0];
+                            if (question === undefined) {
+                                questions.push(cloneDeep(response.question));
+                                this.setState({curQuestion:cloneDeep(response.question)});
+                            } else {
+                                if (question.name !== response.question.name) {
+                                    questions.forEach(q=>{
+                                        if (q.followUp!== undefined && q.followUp._id === response.question._id) {
+                                            q.followUp.name = response.question.name;
+                                        }
+                                    });
+                                }
+                                questions[questions.indexOf(question)] = cloneDeep(response.question);
+                            }
+                            this.setState({questions:questions}, ()=> {
+                                this.filterSearch();
+                                window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                alert(response.message);
+                            });
+                        } else {
+                            console.error(response.message);
+                            alert('Could not save question - \n' + response.message);
+                        }
+                    });
+                }
+            );
+        });
+    }
+
+    saveNoTrain(needsTraining) {
+        this.setState({savingQuestion:true}, ()=> {
+            saveQuestion(
+                this.state.curQuestion, 
+                response=> {
+                    this.setState({savingQuestion:false}, ()=> {
+                        if (response.success) {
+                            let questions = this.state.questions;
+                            let question = questions.filter(q=>
+                                q._id === this.state.curQuestion._id)[0];
+                            if (question === undefined) {
+                                questions.push(cloneDeep(response.question));
+                                this.setState({curQuestion:cloneDeep(response.question)});
+                            } else {
+                                if (question.name !== response.question.name) {
+                                    questions.forEach(q=>{
+                                        if (q.followUp!== undefined && q.followUp._id === response.question._id) {
+                                            q.followUp.name = response.question.name;
+                                        }
+                                    });
+                                }
+                                questions[questions.indexOf(question)] = cloneDeep(response.question);
+                            }
+                            this.setState({questions:questions, needsTraining:true}, ()=> {
+                                this.filterSearch();
+                                window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                if (needsTraining) {
+                                    update_needs_training('Needs Training', (response)=> {
+                                        if (response.success) {
+                                            this.props.updateTrain('Needs Training');
+                                        } else {
+                                            alert(response.message);
+                                        }
+                                    });
+                                }
+                            });
+                        } else {
+                            console.error(response.message);
+                            alert('Could not save question - \n' + response.message);
+                        }
+                    });
+                }
+            );
+        });
+    }
+
     handleSave(event) {
         event.preventDefault();
         if (this.canSave()) {
@@ -386,77 +480,11 @@ export class QuestionsBox extends React.Component {
                     buttons: [
                         {
                             label: 'Save and Retrain',
-                            onClick: ()=> saveQuestionAndTrain(
-                                this.state.curQuestion, 
-                                this.props.updateTrain,
-                                update_needs_training,
-                                response=> {
-                                if (response.success) {
-                                    let questions = this.state.questions;
-                                    let question = questions.filter(q=>
-                                        q._id === this.state.curQuestion._id)[0];
-                                    if (question === undefined) {
-                                        questions.push(cloneDeep(response.question));
-                                        this.setState({curQuestion:cloneDeep(response.question)});
-                                    } else {
-                                        if (question.name !== response.question.name) {
-                                            questions.forEach(q=>{
-                                                if (q.followUp!== undefined && q.followUp._id === response.question._id) {
-                                                    q.followUp.name = response.question.name;
-                                                }
-                                            });
-                                        }
-                                        questions[questions.indexOf(question)] = cloneDeep(response.question);
-                                    }
-                                    this.setState({questions:questions}, ()=> {
-                                        this.filterSearch();
-                                        window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
-                                        alert(response.message);
-                                    });
-                                } else {
-                                    console.error(response.message);
-                                    alert('Could not save question - \n' + response.message);
-                                }
-                            })
+                            onClick: ()=> this.saveAndTrain()
                         },
                         {
                             label: 'Save and Don\'t Retrain',
-                            onClick: ()=>saveQuestion(
-                                this.state.curQuestion, 
-                                response=> {
-                                if (response.success) {
-                                    let questions = this.state.questions;
-                                    let question = questions.filter(q=>
-                                        q._id === this.state.curQuestion._id)[0];
-                                    if (question === undefined) {
-                                        questions.push(cloneDeep(response.question));
-                                        this.setState({curQuestion:cloneDeep(response.question)});
-                                    } else {
-                                        if (question.name !== response.question.name) {
-                                            questions.forEach(q=>{
-                                                if (q.followUp!== undefined && q.followUp._id === response.question._id) {
-                                                    q.followUp.name = response.question.name;
-                                                }
-                                            });
-                                        }
-                                        questions[questions.indexOf(question)] = cloneDeep(response.question);
-                                    }
-                                    this.setState({questions:questions, needsTraining:true}, ()=> {
-                                        this.filterSearch();
-                                        window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
-                                        update_needs_training('Needs Training', (response)=> {
-                                            if (response.success) {
-                                                this.props.updateTrain('Needs Training');
-                                            } else {
-                                                alert(response.message);
-                                            }
-                                        });
-                                    });
-                                } else {
-                                    console.error(response.message);
-                                    alert('Could not save question - \n' + response.message);
-                                }
-                            })
+                            onClick: ()=> this.saveNoTrain(true)
                         },
                         {
                             label: 'Cancel',
@@ -471,35 +499,7 @@ export class QuestionsBox extends React.Component {
                     buttons: [
                         {
                             label: 'Yes, please save',
-                            onClick: ()=>saveQuestion(this.state.curQuestion, 
-                                response=> {
-                                    if (response.success) {
-                                        let questions = this.state.questions;
-                                        let question = questions.filter(q=>
-                                            q._id === this.state.curQuestion._id)[0];
-                                        if (question === undefined) {
-                                            questions.push(cloneDeep(response.question));
-                                            this.setState({curQuestion:cloneDeep(response.question)});
-                                        } else {
-                                            if (question.name !== response.question.name) {
-                                                questions.forEach(q=>{
-                                                    if (q.followUp!== undefined && q.followUp._id === response.question._id) {
-                                                        q.followUp.name = response.question.name;
-                                                    }
-                                                });
-                                            }
-                                            questions[questions.indexOf(question)] = cloneDeep(response.question);
-                                        }
-                                        this.setState({questions:questions}, ()=> {
-                                            this.filterSearch();
-                                            window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
-                                            alert(response.message);
-                                        });
-                                    } else {
-                                        console.error(response.message);
-                                        alert('Could not save question - \n' + response.message);
-                                    }
-                                })
+                            onClick: ()=> this.saveNoTrain(false)
                         },
                         {
                             label: 'Cancel',
@@ -511,6 +511,71 @@ export class QuestionsBox extends React.Component {
         } 
     }
 
+    deleteAndTrain() {
+        this.setState({deletingQuestion:true},()=> {
+            deleteQuestionAndRetrain(
+                this.state.curQuestion,
+                this.props.updateTrain,
+                update_needs_training,
+                (response)=> {
+                    this.setState({deletingQuestion:false}, ()=> {
+                        if (response.success) {
+                            let questions = this.state.questions;
+                            let remaining = questions.filter(q=> 
+                                q._id !== this.state.curQuestion._id);
+
+                            remaining.forEach(q=> {
+                                if (q.followUp !== undefined && q.followUp._id === this.state.curQuestion._id) {
+                                    delete q.followUp;
+                                } 
+                            });
+                            this.setState({questions:remaining, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
+                                this.filterSearch();
+                                window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                alert('Question succesfully deleted.');
+                            });
+                        } else {
+                            console.error(response.message);
+                            alert('Could not delete question -\n' + response.message);
+                        }
+                    });
+                }
+            );
+        });
+    }
+
+    deleteNoTrain() {
+        this.setState({deletingQuestion:true}, ()=> {
+            deleteQuestion(
+                this.state.curQuestion,
+                (response)=> {
+                    this.setState({deletingQuestion:false}, ()=> {
+                        if (response.success) {
+                            let questions = this.state.questions;
+                            let remaining = questions.filter(q=> 
+                                q._id !== this.state.curQuestion._id);
+
+                            remaining.forEach(q=> {
+                                if (q.followUp !== undefined && q.followUp._id === this.state.curQuestion._id) {
+                                    delete q.followUp;
+                                } 
+                            });
+                            this.setState({questions:remaining, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
+                                this.filterSearch();
+                                window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
+                                alert('Question succesfully deleted.');
+                            });
+                        } else {
+                            console.error(response.message);
+                            this.props.updateTrain('Needs Training');
+                            alert('Could not delete question -\n' + response.message);
+                        }
+                    });
+                }
+            );
+        });
+    }
+
     handleDelete(event) {
         event.preventDefault();
         confirmAlert({
@@ -519,48 +584,11 @@ export class QuestionsBox extends React.Component {
             buttons: [
                 {
                     label: 'Delete and Retrain',
-                    onClick: ()=> deleteQuestionAndRetrain(
-                        this.state.curQuestion,
-                        this.props.updateTrain,
-                        update_needs_training,
-                        (response)=> {
-                            if (response.success) {
-                                let questions = this.state.questions;
-                                let remaining = questions.filter(q=> 
-                                    q._id !== this.state.curQuestion._id);
-
-                                questions.forEach()
-                                this.setState({questions:remaining, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
-                                    this.filterSearch();
-                                    window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
-                                    alert('Question succesfully deleted.');
-                                });
-                            } else {
-                                console.error(response.message);
-                                alert('Could not delete question -\n' + response.message);
-                            }
-                    })
+                    onClick: this.deleteAndTrain
                 },
                 {
                     label: 'Delete and Don\'t Retrain',
-                    onClick: ()=> deleteQuestion(
-                        this.state.curQuestion,
-                        (response)=> {
-                            if (response.success) {
-                                let questions = this.state.questions;
-                                let remaining = questions.filter(q=> 
-                                    q._id !== this.state.curQuestion._id);
-                                this.setState({questions:remaining, curQuestion:cloneDeep(defaultQuestion)}, ()=> {
-                                    this.filterSearch();
-                                    window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
-                                    alert('Question succesfully deleted.');
-                                });
-                            } else {
-                                console.error(response.message);
-                                this.props.updateTrain('Needs Training');
-                                alert('Could not delete question -\n' + response.message);
-                            }
-                    })
+                    onClick: this.deleteNoTrain
                 },
                 {
                     label: 'Cancel',
@@ -579,7 +607,7 @@ export class QuestionsBox extends React.Component {
                             Questions
                         </div>
                         <div id='search-bar-wrapper'>
-                            <input id='search-bar' type='text' placeholder='Search' onChange={this.filterSearch}/>
+                            <input id='search-bar' type='text' placeholder='Search' onChange={this.handleChangeSearch}/>
                         </div>
                         <div id='new-item-selection'>
                             <p className='new-question-text'>
@@ -629,6 +657,7 @@ export class QuestionsBox extends React.Component {
                                 >
                                     Save Changes
                                 </div>
+                                {this.state.savingQuestion ? 'Saving, please wait' : ''}
                             </div>
                         </div>
                         <div id='question-content'>
@@ -785,8 +814,10 @@ export class QuestionsBox extends React.Component {
                                         {this.state.curQuestion._id !== '' ? 
                                             <div id='question-delete-button' className='button delete-button' onClick={this.handleDelete}>
                                                 Delete Question
-                                            </div>:''
+                                            </div>
+                                            :''
                                         }
+                                        {this.state.deletingQuestion ? 'Deleting, please wait' : ''}
                                     </div>
                                 </div>
                             </div>
@@ -816,6 +847,4 @@ function Pattern(props) {
             </div>
         </div>
     );
-}
-
-//      
+}   

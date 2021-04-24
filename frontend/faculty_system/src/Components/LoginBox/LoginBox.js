@@ -71,13 +71,10 @@ export class LoginBox extends React.Component {
                 <label htmlFor='password'>Password</label>
               <input className='login-text' id='password' type='password' placeholder='Password' onChange={this.handleChangePass}/>
               </div>
-              <input className='btn' type='submit' value='Sign On'/>
+              <input className='btn' type='submit' value={this.state.loading ? 'Logging In, Please Wait...' : 'Sign On'}/>
             </form>
           </div>
         </div>
-
-        {/* Displays a loading animation while the login API waits for a response. Otherwise displayes nothing. */}
-        {this.state.loading ? 'Logging In...' : ''}
       </div>
     )
   }

@@ -113,8 +113,7 @@ export function getQuestions(callback) {
                 callback(questions);
             });
           }
-      })
-      .catch((err) => {
+      }).catch((err) => {
         alert('Failed to retrieve questions.');
         console.log('error occurred', err);
         callback([]);
@@ -182,8 +181,12 @@ export function saveQuestion(question, callback) {
             });
         });
       }
-    })
-  
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
+    });
 }
 
 export function saveQuestionAndTrain(question, updateText, updateSetting,  callback) {
@@ -265,6 +268,11 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
                         alert('Error: System could not be retrained.');
                       });
                     }
+                  }).catch((err)=> {
+                    callback({
+                      success:false,
+                      message: err
+                    });
                   });
                 } else {
                   alert(response.message);
@@ -281,7 +289,12 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
             });
         });
       }
-    });  
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
+    });
 }
 
 export function deleteQuestion(question, callback) {
@@ -322,6 +335,11 @@ export function deleteQuestion(question, callback) {
             });
         });
       }
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
     });
 }
 
@@ -365,9 +383,9 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
               fetch(route + 'retrain_model', options)
                 .then((res)=> {
                   if (res.status === 401) {
-                    callback({
-                      success: false,
-                      message: 'User not Authorized'
+                    updateSetting('Needs Training', (finResponse)=> {
+                      updateText('Needs Training');
+                      alert('Error: User not Authorized');
                     });
                   } else if (res.status===200) {
                     res.json().then((res)=> {
@@ -382,6 +400,11 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
                       alert('Error: System could not be retrained.');
                     });
                   }
+                }).catch((err)=> {
+                  updateSetting('Needs Training', (finResponse)=> {
+                    updateText('Needs Training');
+                    alert(err);
+                  });
                 });
               } else {
                 alert(response.message);
@@ -397,5 +420,10 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
             });
         });
       }
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
     });
 }
