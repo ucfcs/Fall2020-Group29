@@ -1,9 +1,11 @@
 import { cloneDeep, isEqual } from 'lodash';
 import React from 'react';
 import {confirmAlert} from 'react-confirm-alert';
-import {defaultContact, getContacts, saveContact, deleteContact, removeFromQuestions} from './contacts';
+import {defaultContact, getContacts, saveContact, deleteContact, removeFromQuestions, makeDepartmentOptions} from './contacts';
 import SelectionBox from '../SelectionBox';
 import './contactsbox.css'
+import { getTags } from '../TagsBox/tags';
+import Select from 'react-select';
 
 
 export class ContactsBox extends React.Component {
@@ -19,9 +21,13 @@ export class ContactsBox extends React.Component {
         this.canSave = this.canSave.bind(this);
         this.handleSave = this.handleSave.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleChangeDepartment = this.handleChangeDepartment.bind(this);
+        this.handleDeleteDepartment = this.handleDeleteDepartment.bind(this);
+        this.addDepartment = this.addDepartment.bind(this);
 
         this.state = {
             contacts: [],
+            departments: [],
             displayedContacts: [],
             curContact: cloneDeep(defaultContact),
             search: '',
@@ -40,6 +46,10 @@ export class ContactsBox extends React.Component {
                     this.setState({curContact:JSON.parse(ufs)});
                 }
             });
+        });
+
+        getTags((tags)=> {
+            this.setState({departments:tags.department});
         });
     }
 
@@ -185,6 +195,49 @@ export class ContactsBox extends React.Component {
         })
     }
 
+    handleChangeDepartment(event, num) {
+        let contact = this.state.curContact;
+        let departments = contact.departments;
+        if (departments !== undefined) {
+            let new_dept = this.state.departments.filter(d=> {
+                return d._id === event.value;
+            })[0];
+            if (new_dept !== undefined) {
+                departments[num] = {
+                    _id:new_dept._id,
+                    name:new_dept.name
+                }
+                contact.departments = departments;
+                this.setState({curContact:contact}, ()=> console.log(this.state.curContact));
+            }
+        }
+    }
+
+    handleDeleteDepartment(event, num) {
+        event.preventDefault();
+        let contact = this.state.curContact;
+        let departments = contact.departments;
+        if (departments !== undefined) {
+            departments.splice(num, 1);
+            if (departments.length === 0) {
+                delete contact.departments;
+            }
+        }
+        this.setState({curContact:contact});
+    }
+
+    addDepartment(event) {
+        event.preventDefault();
+        let contact = this.state.curContact;
+        let departments = contact.departments;
+        if (departments === undefined) {
+            departments = [];
+        }
+        departments.push('');
+        contact.departments = departments;
+        this.setState({curContact:contact});
+    }
+
     render() {
         return (
             <>
@@ -265,6 +318,32 @@ export class ContactsBox extends React.Component {
                                     this.setState({curContact:contact});
                                  }}
                                  />
+                                <label id='contact-departments-label' htmlFor='contact-departments-box'>
+                                    Display Contact for Departments:
+                                </label>
+                                <div id='contact-departments-wrapper'>
+                                    <div id='contact-departments-box'>
+                                    
+                                        {this.state.curContact.departments === undefined ? '' :
+                                            this.state.curContact.departments.map((dept, index)=> {
+                                                return <Department 
+                                                value={dept === '' ? '' : {
+                                                    value:dept._id,
+                                                    label:dept.name
+                                                }}
+                                                num={index}
+                                                options={makeDepartmentOptions(this.state.departments)}
+                                                change={this.handleChangeDepartment}
+                                                delete={this.handleDeleteDepartment}
+                                                />
+                                            })
+                                        }
+                                    
+                                    </div>
+                                    <div className='plus contact-plus' onClick={this.addDepartment}>
+                                        +
+                                    </div>
+                                </div>
                             </div>
                             <div id='contact-buttons'>
                                 <div id='contact-save'>
@@ -286,9 +365,6 @@ export class ContactsBox extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        <div id='contact-content'>
-
-                        </div>
                     </div>
                 </div>
             </>
@@ -297,3 +373,19 @@ export class ContactsBox extends React.Component {
 }
 
 export default ContactsBox;
+
+function Department(props) {
+    return (
+        <div className='contact-department'>
+            <Select
+            className='contact-department-select'
+            value={props.value}
+            options={props.options}
+            onChange={(event)=>props.change(event, props.num)} 
+            />
+            <div className='contact-department-delete' onClick={(event)=>props.delete(event, props.num)}>
+                X
+            </div>
+        </div>
+    )
+}

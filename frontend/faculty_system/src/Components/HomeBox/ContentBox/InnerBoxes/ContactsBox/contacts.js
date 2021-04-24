@@ -1,5 +1,6 @@
 import {getQuestions} from '../QuestionsBox/questions'
 import {route, headers} from '../../../../../requestUtils';
+import { getTags } from '../TagsBox/tags';
 
 export const defaultContact = {
   _id:'',
@@ -132,4 +133,13 @@ export function removeFromQuestions(contact, callback) {
     }
     callback();
   })
+}
+
+export function makeDepartmentOptions(departments) {
+  return departments.map(dept=> {
+    return {
+      value:dept._id,
+      label:dept.name
+    }
+  });
 }
