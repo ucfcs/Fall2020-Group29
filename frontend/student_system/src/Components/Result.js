@@ -3,6 +3,7 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import Chatbot, { Loading } from "react-simple-chatbot";
 import styles from "./Result.module.css";
+import Linkify from "react-linkify";
 
 class Result extends Component {
   constructor(props) {
@@ -25,7 +26,7 @@ class Result extends Component {
     const input = { name: lookup };
     // stores returned data in api_response
     const api_response = await axios.post(
-      "http://127.0.0.1:5000/api/user-response",
+      "http://127.0.0.1:5000/api/get-user-response",
       input
     );
     // set the state to the relevant data it needs to hold
@@ -34,6 +35,15 @@ class Result extends Component {
       result: api_response.data.answer,
       threshold: api_response.data.probability,
     });
+
+    // const feedbackAnswer = steps.answer.value;
+    // console.log(feedbackAnswer);
+  }
+
+  getFeedBack() {
+    const { steps } = this.props;
+    const feedbackAnswer = steps.answer.value;
+    console.log(feedbackAnswer);
   }
 
   // increments the counter and stores it back into local storage
@@ -63,22 +73,30 @@ class Result extends Component {
       this.props.triggerNextStep({ trigger: "More Help" });
     });
   }
-  // trigger
+  // triggers thank you
   triggerThankYou() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "Thank you" });
     });
   }
-
+  // triggers Even More Help
   triggerEvenMoreHelp() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "Even More Help" });
     });
   }
 
+  // triggers Sorry Thank you
   triggerSorryThankYou() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "Sorry Thank you" });
+    });
+  }
+
+  // triggers ask again differently
+  triggerAskAgainDifferently() {
+    this.setState({ trigger: true }, () => {
+      this.props.triggerNextStep({ trigger: "ask again differently" });
     });
   }
 
@@ -102,7 +120,11 @@ class Result extends Component {
         if (threshold > 0.99) {
           return (
             <div className={styles.body}>
-              {loading ? <Loading /> : result}
+              {loading ? (
+                <Loading />
+              ) : (
+                <Linkify className={styles.linkify}>{result}</Linkify>
+              )}
               {!loading && (
                 <div
                   style={{
@@ -145,7 +167,7 @@ class Result extends Component {
         if (threshold < 0.99 && threshold > 0.5) {
           return (
             <div className={styles.body}>
-              {loading ? <Loading /> : result}
+              {loading ? <Loading /> : <Linkify>{result}</Linkify>}
               {!loading && (
                 <div
                   style={{
@@ -169,7 +191,7 @@ class Result extends Component {
                     {!trigger && (
                       <button
                         onClick={() => {
-                          this.triggerMoreHelp();
+                          this.triggerAskAgainDifferently();
                           this.increment();
                         }}
                         className={styles.button}
@@ -283,7 +305,7 @@ class Result extends Component {
         if (threshold > 0.99) {
           return (
             <div className={styles.body}>
-              {loading ? <Loading /> : result}
+              {loading ? <Loading /> : <Linkify>{result}</Linkify>}
               {!loading && (
                 <div
                   style={{
@@ -326,7 +348,7 @@ class Result extends Component {
         if (threshold < 0.99 && threshold > 0.5) {
           return (
             <div className={styles.body}>
-              {loading ? <Loading /> : result}
+              {loading ? <Loading /> : <Linkify>{result}</Linkify>}
               {!loading && (
                 <div
                   style={{

@@ -1,0 +1,14 @@
+.body {
+  border-color: white;
+  text-align: center;
+  padding: 1px;
+  font-family: Arial;
+  font-size: 11pt;
+  background-color: #eee;
+  max-width: 100%;
+  width: 100%;
+  border-radius: 20px;
+  margin: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}

@@ -4,6 +4,7 @@ import React from "react";
 import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
 import Result from "./Components/Result";
+import ThankYou from "./Components/ThankYou";
 
 function App(props) {
   sessionStorage.setItem("counter", 0);
@@ -58,7 +59,12 @@ function App(props) {
       waitAction: true,
       trigger: "More Help",
     },
-
+    {
+      id: "ask again differently",
+      message:
+        "Sorry, I do not understand your question. Could you try asking it slightly differently?",
+      trigger: "userInput",
+    },
     {
       id: "Even More Help",
       message: "Is there something else I can assist you with?",
@@ -128,7 +134,11 @@ function App(props) {
     },
     {
       id: "thanks-feedback",
-      message: "Thanks! Your data was submitted successfully!",
+      // instead call a component here and end the chatbot
+      // store all the inputs in the component and make the api
+      // requests in that component and call it thankYou!
+      component: <ThankYou />,
+      // message: "Thanks! Your data was submitted successfully!",
       end: true,
     },
   ];
