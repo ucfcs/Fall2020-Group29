@@ -48,7 +48,7 @@ class Result extends Component {
         questionAsked: lookup,
       });
     } catch (err) {
-      alert("try failed fo getting user response");
+      alert("try failed for getting user response");
       console.log("error occurred", err);
     }
   }
