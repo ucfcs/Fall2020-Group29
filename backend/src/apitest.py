@@ -916,7 +916,7 @@ def inc_num_times_referred_to_advisor():
 
   # we record the date of this person being refered to an advisor
   new_record = {'date':datetime.utcnow() }
-  InsertOneResult_Obj = mongo.db.referred_to_advisor.insert_one(new_record) 
+  InsertOneResult_Obj = mongo.db.referred_to_advisor_record.insert_one(new_record) 
   new_record.update({'_id':str(InsertOneResult_Obj.inserted_id)})
   
   # we return both the updated statistic, and the referral record
