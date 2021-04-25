@@ -19,6 +19,13 @@ else:
 
 
 def early_stop(params, loss_list, epoch):
+    """
+    Checks if a model should stop early during training.
+
+    :params: set of parameters for the model.
+    :loss_list: current list of loss values for the model.
+    :epoch: the current epoch.
+    """
 
     delta = params['early_stop_delta']
     patience = params['early_stop_patience']
@@ -35,6 +42,15 @@ def early_stop(params, loss_list, epoch):
 
 
 def k_fold_cross_validation(data, params, modifier, verbose=False, graphic=False):
+    """
+    Perform k-fold cross-validation for the models given the training data.
+
+    :data: data to train and validate the model. 
+    :params: set of parameters for the model.
+    :modifier: name of the model.
+    :verbose: parameter to show training progress in the terminal.
+    :graphic: parameter to show training performance curves.
+    """
 
     # Set the parameters.
     batch_size = params['batch_size']
@@ -42,19 +58,6 @@ def k_fold_cross_validation(data, params, modifier, verbose=False, graphic=False
     learning_rate = params['learning_rate']
     num_folds = params['num_folds']
     num_epochs = params['max_epochs']
-
-    # # Set the number of epochs.
-    # if modifier == 'ints':
-    #     num_epochs = params['num_epochs_ints']
-    # elif modifier == 'dept':
-    #     num_epochs = params['num_epochs_dept']
-    # elif modifier == 'cat':
-    #     num_epochs = params['num_epochs_cat']
-    # elif modifier == 'info':
-    #     num_epochs = params['num_epochs_info']
-    # else:
-    #     print("Invalid modifier.")
-    #     return 0.0
 
     # Preprocess the data.
     X, y, num_classes, all_words, tags = preprocess(data)
@@ -124,6 +127,7 @@ def k_fold_cross_validation(data, params, modifier, verbose=False, graphic=False
             val_accuracy = (pred == y_test_fold).sum() / len(y_test_fold)
             fold_val_loss_list.append(fold_val_loss)
 
+            # Save the best prediction.
             if val_accuracy > top_acc:
                 top_acc = val_accuracy
                 top_y_pred = pred
@@ -133,50 +137,69 @@ def k_fold_cross_validation(data, params, modifier, verbose=False, graphic=False
             stop, diff = early_stop(params, fold_val_loss_list, epoch)
 
             if stop:
-                print("Stopping early!")
+                if verbose:
+                    print("Stopping early!")
                 max_epochs = epoch
                 break
                 
-            # Report epoch metrics.
-            print("Epoch {}/{}\tVal. Loss: {:.4f}\tVal. Accuracy: {:.2f}\tDiff: {:.4f}".format(epoch + 1, num_epochs, fold_val_loss, val_accuracy, diff))
+            if verbose:
+                # Report epoch metrics.
+                print("Epoch {}/{}\tVal. Loss: {:.4f}\tVal. Accuracy: {:.2f}\tDiff: {:.4f}".format(epoch + 1, num_epochs, fold_val_loss, val_accuracy, diff))
             
+        # Calculate the F1 score and confusion matrix.
+        f1 = f1_score(top_y_true, top_y_pred, average='macro')
+        confusion = confusion_matrix(top_y_true, top_y_pred)
+        
+        # Save the values in their appropriate lists.
         max_epochs_list.append(max_epochs)
         val_acc_list.append(float(val_accuracy))
         val_loss_list.append(fold_val_loss_list[max_epochs - 1])
-
-        f1 = f1_score(top_y_true, top_y_pred, average='macro')
-        confusion = confusion_matrix(top_y_true, top_y_pred)
         f1_list.append(f1)
         conf_matrix_list.append(confusion)
 
-        # Report the model's metrics.
-        print("\nFinal Validation Accuracy: {}".format(val_accuracy))
-        print("Num. of Epochs for Early Stopping:", max_epochs)
-        print("F1 Score:", f1)
-        print("Confusion Matrix:", confusion)
+        if verbose:
+            # Report the model's metrics.
+            print("\nFinal Validation Accuracy: {}".format(val_accuracy))
+            print("Num. of Epochs for Early Stopping:", max_epochs)
+            print("F1 Score:", f1)
+            print("Confusion Matrix:", confusion)
 
+    # Get the best fold.
+    best_fold = np.argmax(val_acc_list)
+    val_conf_matrix = conf_matrix_list[best_fold]
+
+    # Compute the average performance metrics.
     avg_val_acc = np.mean(val_acc_list)
     avg_val_loss = np.mean(val_loss_list)
     avg_num_epochs = int(np.mean(max_epochs_list))
     avg_val_f1_score = np.mean(f1_list)
-    avg_val_conf_matrix = np.mean(confusion)
         
-    # Report the final metrics.
-    print("\nValidation complete.")
-    print("Validation Accuracies:", val_acc_list)
-    print("Validation Losses:", val_loss_list)
-    print("F1 Scores:", f1_list)
-    print("Average Validation Accuracy: {:.2f}".format(avg_val_acc))
-    print("Average Validation Loss: {:.4f}".format(avg_val_loss))
-    print("Num. of Epochs:", max_epochs_list)
-    print("Average Num. of Epochs:", avg_num_epochs)
-    print("Averave F1 Score:", avg_val_f1_score)
-    print("Average Confusion Matrix:", avg_val_conf_matrix)
+    if verbose:
+        # Report the final metrics.
+        print("\nValidation complete.")
+        print("Validation Accuracies:", val_acc_list)
+        print("Validation Losses:", val_loss_list)
+        print("F1 Scores:", f1_list)
+        print("Average Validation Accuracy: {:.2f}".format(avg_val_acc))
+        print("Average Validation Loss: {:.4f}".format(avg_val_loss))
+        print("Num. of Epochs:", max_epochs_list)
+        print("Average Num. of Epochs:", avg_num_epochs)
+        print("Averave F1 Score:", avg_val_f1_score)
+        print("Best Confusion Matrix:", val_conf_matrix)
 
-    return avg_val_acc, avg_val_loss, avg_num_epochs, avg_val_f1_score, avg_val_conf_matrix
+    return avg_val_acc, avg_val_loss, avg_num_epochs, avg_val_f1_score, val_conf_matrix
 
 
 def evaluate(verbose=False, graphic=False):
+    """
+    Sets up the cross-validation loop and validates the models,
+    automatically updating the number of epochs for training
+    using early stopping. Returns the average validation accuracy,
+    loss, and F1 score.
+
+    :verbose: parameter to show training progress in the terminal.
+    :graphic: parameter to show training performance curves.
+    """
 
     # Load the configured parameters.
     params_file = "params.json"
@@ -184,6 +207,7 @@ def evaluate(verbose=False, graphic=False):
         params = json.load(f)
 
     FLAGS = params["FLAGS"]
+    new_params = params
 
     val_acc_list = []
     val_loss_list = []
@@ -207,14 +231,17 @@ def evaluate(verbose=False, graphic=False):
             print("\nPerforming Cross Validation: Intents")
         
         # Train the model.
-        avg_val_acc, avg_val_loss, avg_num_epochs, avg_val_f1_score, avg_val_conf_matrix = k_fold_cross_validation(data, params, modifier, verbose, graphic)
+        avg_val_acc, avg_val_loss, avg_num_epochs, avg_val_f1_score, val_conf_matrix = k_fold_cross_validation(data, params, modifier, verbose, graphic)
 
         # Save the performance metrics.
         val_acc_list.append(avg_val_acc)
         val_loss_list.append(avg_val_loss)
         val_f1_list.append(avg_val_f1_score)
-        val_conf_matrix_list.append(avg_val_conf_matrix)
+        val_conf_matrix_list.append(val_conf_matrix)
         num_epochs_list.append(avg_num_epochs)
+
+        # Update the number of epochs.
+        new_params['num_epochs_ints'] = avg_num_epochs
 
     if FLAGS["dept"] == 1:
 
@@ -226,14 +253,17 @@ def evaluate(verbose=False, graphic=False):
             print("\nPerforming Cross Validation: Departments")
         
         # Train the model.
-        avg_val_acc, avg_val_loss, avg_num_epochs, avg_val_f1_score, avg_val_conf_matrix = k_fold_cross_validation(data, params, modifier, verbose, graphic)
+        avg_val_acc, avg_val_loss, avg_num_epochs, avg_val_f1_score, val_conf_matrix = k_fold_cross_validation(data, params, modifier, verbose, graphic)
 
         # Save the performance metrics.
         val_acc_list.append(avg_val_acc)
         val_loss_list.append(avg_val_loss)
         val_f1_list.append(avg_val_f1_score)
-        val_conf_matrix_list.append(avg_val_conf_matrix)
+        val_conf_matrix_list.append(val_conf_matrix)
         num_epochs_list.append(avg_num_epochs)
+
+        # Update the number of epochs.
+        new_params['num_epochs_dept'] = avg_num_epochs
 
     if FLAGS["cat"] == 1:
 
@@ -245,14 +275,17 @@ def evaluate(verbose=False, graphic=False):
             print("\nPerforming Cross Validation: Categories")
 
         # Train the model.
-        avg_val_acc, avg_val_loss, avg_num_epochs, avg_val_f1_score, avg_val_conf_matrix = k_fold_cross_validation(data, params, modifier, verbose, graphic)
+        avg_val_acc, avg_val_loss, avg_num_epochs, avg_val_f1_score, val_conf_matrix = k_fold_cross_validation(data, params, modifier, verbose, graphic)
 
         # Save the performance metrics.
         val_acc_list.append(avg_val_acc)
         val_loss_list.append(avg_val_loss)
         val_f1_list.append(avg_val_f1_score)
-        val_conf_matrix_list.append(avg_val_conf_matrix)
+        val_conf_matrix_list.append(val_conf_matrix)
         num_epochs_list.append(avg_num_epochs)
+
+        # Update the number of epochs.
+        new_params['num_epochs_cat'] = avg_num_epochs
 
     if FLAGS["info"] == 1:
 
@@ -264,41 +297,40 @@ def evaluate(verbose=False, graphic=False):
             print("\nPerforming Cross Validation: Information")
 
         # Train the model.
-        avg_val_acc, avg_val_loss, avg_num_epochs, avg_val_f1_score, avg_val_conf_matrix = k_fold_cross_validation(data, params, modifier, verbose, graphic)
+        avg_val_acc, avg_val_loss, avg_num_epochs, avg_val_f1_score, val_conf_matrix = k_fold_cross_validation(data, params, modifier, verbose, graphic)
 
         # Save the performance metrics.
         val_acc_list.append(avg_val_acc)
         val_loss_list.append(avg_val_loss)
         val_f1_list.append(avg_val_f1_score)
-        val_conf_matrix_list.append(avg_val_conf_matrix)
+        val_conf_matrix_list.append(val_conf_matrix)
         num_epochs_list.append(avg_num_epochs)
+
+        # Update the number of epochs.
+        new_params['num_epochs_info'] = avg_num_epochs
 
     # Calculate the average metrics.
     total_avg_val_acc = np.mean(val_acc_list)
     total_avg_val_loss = np.mean(val_loss_list)
     total_avg_f1_score = np.mean(val_f1_list)
-    total_avg_conf_matrix = np.mean(val_conf_matrix_list)
 
     if verbose:
         print("\nTotal Average Cross-Validation Accuracy: {:.2f}".format(total_avg_val_acc))
         print("Total Average Cross-Validation Loss: {:.4f}".format(total_avg_val_loss))
         print("Total Average Cross-Validation F1 Score: {:.2f}".format(total_avg_f1_score))
-        print("Total Average Cross-Validation Confusion Matrix:", total_avg_conf_matrix)
-        print("Epochs:", num_epochs_list)
 
-    new_params = params
-    new_params['num_epochs_ints'] = num_epochs_list[0]
-    new_params['num_epochs_dept'] = num_epochs_list[1]
-    new_params['num_epochs_cat'] = num_epochs_list[2]
-    new_params['num_epochs_info'] = num_epochs_list[3]
+        for i in range(len(val_conf_matrix_list)):
+            print("Confusion Matrix #{}:\n{}".format(i + 1, val_conf_matrix_list[i]))
 
+    # Update the params.json file.
     with open("params.json", "w") as write_file:
         json.dump(new_params, write_file, indent=4)
 
     if verbose:
         print("\nEpochs for each model updated.")
+        print("New Epochs:", num_epochs_list)
 
-    return total_avg_val_acc, total_avg_val_loss, total_avg_f1_score, total_avg_conf_matrix
+    return total_avg_val_acc, total_avg_val_loss, total_avg_f1_score
 
 
 if __name__ == "__main__":
