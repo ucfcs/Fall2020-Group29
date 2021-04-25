@@ -9,10 +9,6 @@ import { route } from "../Constants/constants";
 class ThankYou extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      feedbackConf: "",
-    };
   }
 
   async componentDidMount() {
@@ -26,8 +22,6 @@ class ThankYou extends Component {
   }
 
   render() {
-    const { feedbackConf } = this.state;
-    console.log(feedbackConf);
     return (
       <div className={styles.body}>
         <p>Thanks! Your data was submitted successfully!</p>
