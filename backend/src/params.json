@@ -3,25 +3,22 @@
     "file_dept": "data/entities_dept.csv",
     "file_cat": "data/entities_cat.csv",
     "file_info": "data/entities_info.csv",
-
     "num_predictions": 1,
-
-    "FLAGS":
-        {
-            "ints": 0,
-            "dept": 1,
-            "cat": 0,
-            "info": 0
-        },
-        
-    "num_epochs_ints": 1,
-    "num_epochs_dept": 1500,
-    "num_epochs_cat": 250,
-    "num_epochs_info": 350,
-    
+    "FLAGS": {
+        "ints": 1,
+        "dept": 1,
+        "cat": 1,
+        "info": 1
+    },
+    "max_epochs": 1500,
+    "num_epochs_ints": 5,
+    "num_epochs_dept": 296,
+    "num_epochs_cat": 344,
+    "num_epochs_info": 123,
     "batch_size": 8,
-    "learning_rate": 3e-4,
-    "hidden_size": 8,
+    "learning_rate": 0.0003,
+    "hidden_size": 64,
     "num_folds": 10,
-    "patience": 10
+    "early_stop_patience": 10,
+    "early_stop_delta": 0.0001
 }
