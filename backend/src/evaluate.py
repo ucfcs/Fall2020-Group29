@@ -1,13 +1,21 @@
 import json
-import torch
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import torch
 import torch.nn as nn
 from sklearn.metrics import confusion_matrix, f1_score
 from sklearn.model_selection import KFold
-from dataset import preprocess
-from model import NeuralNet
-import numpy as np
-import pandas as pd
+
+DEV = True
+
+if DEV:
+    from dataset import preprocess
+    from model import NeuralNet
+    
+else:
+    from .dataset import preprocess
+    from .model import NeuralNet
 
 
 def early_stop(params, loss_list, epoch):
