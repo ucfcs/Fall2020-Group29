@@ -131,11 +131,8 @@ class Result extends Component {
 
   // Renders the answer display box in the chatbot
   render() {
-    // the constants that are passed in the render (state values)
     const { trigger, loading, result, threshold } = this.state;
-    // console.log(wholeResponse);
 
-    // if result if no match then ask again
     if (this.state.counter >= 2) {
       if (result !== "no match") {
         // Threshold 2 within else (if counter >= 2)
