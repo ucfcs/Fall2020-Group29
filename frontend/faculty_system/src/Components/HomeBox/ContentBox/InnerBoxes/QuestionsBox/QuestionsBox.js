@@ -88,9 +88,9 @@ export class QuestionsBox extends React.Component {
 
         getQuestions((questions)=> {
             this.setState({
-                questions:questions,
-                displayedQuestions:questions
+                questions:questions
             }, ()=>{
+                this.filterSearch();
                 let qFromStorage = window.sessionStorage.getItem('previous_question');
                 if (qFromStorage != null){
                     this.setState({curQuestion:JSON.parse(qFromStorage)});
@@ -202,7 +202,12 @@ export class QuestionsBox extends React.Component {
             }
             return contained; 
         });
-        this.setState({displayedQuestions: dis});
+        this.setState({displayedQuestions: dis.sort((a,b)=> {
+            let s1 = `${a.tags.department} : ${a.tags.category} : ${a.tags.information}`;
+            let s2 = `${b.tags.department} : ${b.tags.category} : ${b.tags.information}`;
+
+            return s1 >= s2;
+        })});
     }
 
     changeResponse(event) {
@@ -449,6 +454,7 @@ export class QuestionsBox extends React.Component {
                             }
                             this.setState({questions:questions, needsTraining:true}, ()=> {
                                 this.filterSearch();
+                                alert(response.message);
                                 window.sessionStorage.setItem("questions", JSON.stringify(this.state.questions));
                                 if (needsTraining) {
                                     update_needs_training('Needs Training', (response)=> {
@@ -603,33 +609,29 @@ export class QuestionsBox extends React.Component {
             <>
                 <div id='content-wrapper'>
                     <div id='question-selection'>
+                    
                         <div className='section-title'>
                             Questions
                         </div>
                         <div id='search-bar-wrapper'>
-                            <input id='search-bar' type='text' placeholder='Search' onChange={this.handleChangeSearch}/>
-                        </div>
-                        <div id='new-item-selection'>
-                            <p className='new-question-text'>
-                                Add New Question
-                            </p>
-                            <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultQuestion)}>
-                                +
-                            </div>
+                            <input id='search-bar' type='text' placeholder='Search Questions' onChange={this.handleChangeSearch}/>
                         </div>
                         <div className='selection-wrapper'>
                             <SelectionBox 
                                 name='questions' 
                                 content={this.state.displayedQuestions} 
                                 titles={this.state.displayedQuestions.map(q=> ({
-                                    title:`${q.tags.department}:${q.tags.category}:${q.tags.information}`,
+                                    title:`${q.tags.department} : ${q.tags.category} : ${q.tags.information}`,
                                     name: q.name
                             
                                 }))}
                                 update={this.selectItem} 
                                 curItem={this.state.curQuestion}
                             />
-                        </div>
+                            <div id='add-question-button' onClick={(e)=>this.selectItem(e, defaultQuestion)}>
+                            +
+                            </div>
+                        </div>   
                     </div>
                     <div id='question-content-body'>
                         <div id='question-selection-header'>
@@ -641,6 +643,7 @@ export class QuestionsBox extends React.Component {
                                 type='text' 
                                 className='question-name' 
                                 id='question-name' 
+                                placeholder='Question Name'
                                 value={this.state.curQuestion.name} 
                                 onChange={(e)=>{
                                     e.preventDefault();
@@ -651,18 +654,22 @@ export class QuestionsBox extends React.Component {
                                  />
                             </div>
                             <div id='question-save'>
+                                {this.canSave() === false && !this.state.savingQuestion ? '' : 
                                 <div 
                                     className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
                                     onClick={this.handleSave}
+                                    id='question-save-button'
                                 >
-                                    Save Changes
+                                    {this.state.savingQuestion ? 'Saving...' : 'Save Changes'}
                                 </div>
-                                {this.state.savingQuestion ? 'Saving, please wait' : ''}
+                                }    
                             </div>
                         </div>
                         <div id='question-content'>
                             <div id='entity-box'>
-                                <h2>Tags</h2>
+                                <label id='question-tags-label' htmlFor='entities'>
+                                    Tags
+                                </label>
                                 <div className={this.hasValidTags().valid ? 'hide invalid-tags' : 'show invalid-tags'}>
                                     Question already exists with the given combination of tags:<br/> "{this.hasValidTags().name}"
                                 </div>
@@ -732,15 +739,25 @@ export class QuestionsBox extends React.Component {
                             <div id='entered-fields'>
                                 <div id='patterns-and-responses'>
                                     <div id='response-box'>
-                                        <h2>Response to Question</h2>
+                                        <label id='response-label' htmlFor='response'>
+                                            Response
+                                        </label>
                                         <textarea 
                                             id='response'
+                                            placeholder='Response Text'
                                             value={this.state.curQuestion.response} 
                                             onChange={this.changeResponse} 
                                         />
                                     </div>
                                     <div id='patterns-box'>
-                                        <h2>Patterns</h2>
+                                        <div id='patterns-header'>
+                                            <label id='patterns-label' htmlFor='patterns'>
+                                                Patterns
+                                            </label>
+                                            <div className='plus' onClick={this.addPattern}>
+                                                +
+                                            </div>
+                                        </div>
                                         <div className='patterns'>
                                             {this.state.curQuestion.patterns.map((pat, index) => {
                                                 return (
@@ -751,20 +768,20 @@ export class QuestionsBox extends React.Component {
                                                     delete={this.deletePattern} 
                                                 />)
                                             })}
-                                            <div className='plus' onClick={this.addPattern}>
-                                            +
-                                            </div>
+                                            
                                         </div>
                                     </div>
                                     
                                 </div>
                                 <div id='contacts-and-forms'>
                                     <div id='question-follow-up-box'>
-                                        <h2>Follow Up Question</h2>
-                                        <div className='follow-ups field-box'>
+                                        <label id='follow-up-label' htmlFor='follow-up-field'>
+                                            Follow Up Question
+                                        </label>
+                                        <div id='follow-up-field' className='follow-up field-box'>
                                             <Select  
                                             className='follow-up field' 
-                                            id='follow-up-1'
+                                            id='follow-up'
                                             value={this.populateFollowUpValue()}
                                             options={makeFollowUpOptions(
                                                 this.state.questions.filter(
@@ -773,34 +790,11 @@ export class QuestionsBox extends React.Component {
                                             />
                                         </div>
                                     </div>
-                                    {/* <div id='question-links-box'>
-                                        <h2 id='question-link-header'>
-                                            Attached Links
-                                        </h2>
-                                        <div id='question-link-content'>
-                                            <div className='links field-box'>
-                                                {this.state.curQuestion.links === undefined ? '' : 
-                                                this.state.curQuestion.links.map((link, index)=> {
-                                                    return (
-                                                        <Link
-                                                        num={index}
-                                                        link={link._id === '' ? '': {value:link._id, label:this.refLink(link._id).name}}
-                                                        options={makeOptions(this.state.links, false)}
-                                                        change={this.changeLink}
-                                                        delete={this.deleteLink}
-                                                        />
-                                                    )
-                                                })
-                                                } 
-                                            </div>
-                                            <div className='plus' onClick={this.addLink}>
-                                            +
-                                            </div>
-                                        </div>
-                                    </div> */}
                                     <div id='question-contacts-box'>
-                                        <h2>Contact</h2>
-                                        <div className='contacts field-box'>
+                                        <label id='question-contact-label' htmlFor='question-contact'>
+                                            Contact
+                                        </label>
+                                        <div id='question-contact' className='contacts field-box'>
                                             <Select 
                                             className='contact field' 
                                             id='contact-1' 
@@ -813,11 +807,10 @@ export class QuestionsBox extends React.Component {
                                     <div id='question-delete'>
                                         {this.state.curQuestion._id !== '' ? 
                                             <div id='question-delete-button' className='button delete-button' onClick={this.handleDelete}>
-                                                Delete Question
+                                                {this.state.deletingQuestion ? 'Deleting...' : 'Delete Question'}
                                             </div>
                                             :''
                                         }
-                                        {this.state.deletingQuestion ? 'Deleting, please wait' : ''}
                                     </div>
                                 </div>
                             </div>

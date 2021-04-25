@@ -3,6 +3,7 @@ import { ContentBox } from './ContentBox/ContentBox';
 import {sections, retrain, check_needs_training, update_needs_training, logOut} from './home'
 import {confirmAlert} from 'react-confirm-alert';
 import './homebox.css';
+import knugHeader from './images/KnugBot_Logo_White.png';
 
 export class HomeBox extends React.Component {
 
@@ -121,27 +122,41 @@ export class HomeBox extends React.Component {
                 <div id='sidebox'>
                     <div id='navbar'>
                         <div id='nav-header'>
-                        </div>
-                        {sections.map(section=>
-                            <NavBox 
-                                sectionName={section} 
-                                selected={this.state.selection === ('navbox-'+(section.toLowerCase()))}
-                                clicked={this.handleSelected}
+                            <img 
+                            id='knug-header'
+                            src={knugHeader} 
+                            alt='Pegasus logo with the text: \"KnugBot CS/IT Advising Chatbot\"' 
                             />
-                        )}
+                        </div>
+                        <div id='navboxes'>
+                            {sections.map(section=>
+                                <NavBox 
+                                    sectionName={section} 
+                                    selected={this.state.selection === ('navbox-'+(section.toLowerCase()))}
+                                    clicked={this.handleSelected}
+                                />
+                            )}
+                        </div>
                     </div>
-                    <div 
+                    <div id='train-button-wrapper'>
+                        <div 
+                        id='train-button'
                         className={'button train-button ' + ({
                             'Needs Training': 'need-training',
                             'Training Now': 'training',
                             'Fully Trained': 'trained'
                         }[this.state.needsTraining])}
                         onClick={this.handleRetrain}
-                    >
-                        {this.state.needsTraining}
+                        >
+                        {this.state.needsTraining === 'Needs Training' ?
+                         'Click to Train' : this.state.needsTraining === 'Training Now' ?
+                        'Training...' : this.state.needsTraining}
+                        </div>
                     </div>
-                    <div id='log-out' className='button log-out-button' onClick={this.handleLogout}>
-                        Log Out
+                    <div id='log-out-wrapper'>
+                        <div id='log-out' className='button log-out-button' onClick={this.handleLogout}>
+                            Log Out
+                        </div>
                     </div>
                 </div>
                 <ContentBox ref={this.contentRef} selection={this.state.selection} updateTrain={this.handleUpdateTrain}/>

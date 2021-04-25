@@ -250,6 +250,38 @@ export class TagsBox extends React.Component {
                                 window.sessionStorage.setItem('previous_question', JSON.stringify(question));
                             }
                         }
+
+                        if (newTag.type === 'department') {
+                            let cfs = window.sessionStorage.getItem('contacts')
+                            let previousCFS = window.sessionStorage.getItem('previous_contact')
+                            if (cfs !== null) {
+                                let contacts = JSON.parse(cfs);
+                                contacts.forEach(contact => {
+                                    if (contact.departments !== undefined) {
+                                        let check = contact.departments.findIndex(dep=> {
+                                            return dep._id === newTag._id;
+                                        });
+                                        if (check !== -1) {
+                                            contact.departments[check].name = newTag.name;
+                                        }
+                                    }
+                                });
+                                window.sessionStorage.setItem('contacts', JSON.stringify(contacts));
+                            }
+
+                            if (previousCFS !== null) {
+                                let contact = JSON.parse(previousCFS);
+                                if (contact.departments !== undefined) {
+                                    let check = contact.departments.findIndex(dep=> {
+                                        return dep._id === newTag._id;
+                                    });
+                                    if (check !== -1) {
+                                        contact.departments[check].name = newTag.name;
+                                        window.sessionStorage.setItem('previous_contact', JSON.stringify(contact));
+                                    }
+                                }
+                            }
+                        }
                         
                         tagTypeList[tagTypeList.indexOf(check)] = newTag;
                         tags[newTag.type] = tagTypeList;
@@ -348,6 +380,46 @@ export class TagsBox extends React.Component {
                                                 tag._id !== this.state.curTag._id
                                             );
                                             tags[this.state.curTag.type] = remaining;
+
+                                            if (this.state.curTag.type === 'department') {
+                                                let cfs = window.sessionStorage.getItem('contacts');
+                                                let previousCFS = window.sessionStorage.getItem('previous_contact');
+
+                                                if (cfs !== null) {
+                                                    let contacts = JSON.parse(cfs);
+                                                    contacts.forEach(contact=> {
+                                                        if (contact.departments !== undefined) {
+                                                            let check = contact.departments.findIndex(dep=> {
+                                                                return dep._id === this.state.curTag._id;
+                                                            });
+                                                            if (check !== -1) {
+                                                                contact.departments.splice(check, 1);
+                                                                if (contact.departments.length === 0) {
+                                                                    delete contact.departments;
+                                                                }
+                                                            } 
+                                                        }
+                                                    });
+                                                    window.sessionStorage.setItem('contacts', JSON.stringify(contacts));
+                                                }
+
+                                                if (previousCFS !== null) {
+                                                    let contact = JSON.parse(previousCFS);
+                                                    if (contact.departments !== undefined) {
+                                                        let check = contact.departments.findIndex(dep=> {
+                                                            return dep._id === this.state.curTag._id;
+                                                        });
+                                                        if (check !== -1) {
+                                                            contact.departments.splice(check, 1);
+                                                            if (contact.departments.length === 0) {
+                                                                delete contact.departments;
+                                                            }
+                                                            window.sessionStorage.setItem('previous_contact', JSON.stringify(contact));
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            
                                             this.setState({tags:tags, curTag:cloneDeep(defaultTag)}, ()=> {
                                                 this.updateDisplayedTags();
                                                 window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
