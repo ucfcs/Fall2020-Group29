@@ -2,6 +2,7 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sn
 import torch
 import torch.nn as nn
 from sklearn.metrics import confusion_matrix, f1_score
@@ -329,6 +330,15 @@ def evaluate(verbose=False, graphic=False):
     if verbose:
         print("\nEpochs for each model updated.")
         print("New Epochs:", num_epochs_list)
+
+    if graphic:
+
+        # Plot the confusion matrices.
+        for i in range(len(val_conf_matrix_list)):
+            df_cm = pd.DataFrame(val_conf_matrix_list[i])
+            plt.figure(figsize = (10,7))
+            sn.heatmap(df_cm, annot=True)
+            plt.show()
 
     return total_avg_val_acc, total_avg_val_loss, total_avg_f1_score
 
