@@ -59,8 +59,18 @@ def count_in_collection(Collection = 'form_responses'):
   count = mongo.db[Collection].count_documents({})
   return count
 
+# removes chars/substrings that could be problamatic
+def sanitize_input(str):
+  sus_inputs = {'{', '}', '$set', '$unset', '$addToSet', '$where', '$all', '$exists', '$pull', '$push', '$merge', '$out', '$function', '$eq', '$expr', '$addFields', '$project', '${', 'db.', '.db'}
+  
+  for i in sus_inputs:
+    str = str.replace(i, '')
+  
+  return str
+
 ### questions collection ### 
 # add 
+# TODO: sanatize dollar signs and curly brackets
 @app.route('/add_question', methods=['POST']) # add a question to the database with Name, Responses, and Tags, returns this new document. pls check if it exists first.
 def add_question( name = 'testo',  patterns = ['swoop', 'yoop doop', 'hopla?'], tags = ['beep boop', 'noop', 'yoop', 'ploop'], response = 'this is an test'):
   new_question = {'name': name, 'patterns': patterns, 'tags':[x.lower() for x in tags], 'response': response} # we make sure all tags are lower case
@@ -322,10 +332,12 @@ def put_staff_link(contact_id = '600bb398d59727f52ed1de3c', link = 'beepBoop.ucf
 
 
 ## tags collection ##
-
+#TODO: sanitize tags as well since we perform operations on these as well
 # create - tag name & tag type
 @app.route('/add_tag', methods=['POST']) # add a tag to the database with name, and type, returns this new document. pls check if it exists first.
 def add_tag( name = 'testo',  type = 'cat'):
+  name = sanitize_input(name)
+  type = sanitize_input(type)
   new_tag = {'name': name, 'type': type} # we make sure all tags are lower case
   
   InsertOneResult_Obj = mongo.db.tags.insert_one(new_tag) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
@@ -400,10 +412,10 @@ def replace_all_with_tag( tag = 'ploop', type = 'info', replace = 'presto' ):
 
   found = mongo.db.questions.update_many(
     {
-      'tags.'+str(element):tag
+      'tags.'+str(element):tag.lower()
     },
     {
-      '$set': { 'tags.'+str(element):replace }
+      '$set': { 'tags.'+str(element):replace.lower() }
     },
     upsert=False, # upsert = if thing does not exist, make it exist
     )
@@ -647,7 +659,7 @@ def add_response(answered = True, rating=4, simplicity=5):
   return jsonify(new_stat)
 
 # read
-@app.route('/get_response', methods=['GET']) 
+@app.route('/get_response', methods=['GET'])
 def get_response(id):
   found = mongo.db.form_responses.find_one({'_id': ObjectId(id)}) 
 
@@ -800,7 +812,6 @@ def get_num_times_referred_to_advisor( ):
   
   return jsonify({find['statistic']:find['count']})
 
-# TODO: edit incremet APIs to also add a document that only has a date to a new collection named the same as the statistic 
 # update
 # Increments the count value of the statistic Number of User Sessions
 @app.route('/increment_num_user_sessions', methods=['POST','PUT'])
@@ -959,12 +970,15 @@ def clear_stats(start_date = launch_date, end_date = 'now'):
 # TODO:
 # a script that runs once a day (probably @ midnight) that collects this number, stores it in a new collection and resets the current day
 # current day -> scoop -> date+number 
+# ^ Ignore we decided to have collections store these things
 
 
 ## unanswered questions collection ##
-# create
+#  TODO: sanatize curly brackets and dolar signs
+# create 
 @app.route('/add_unanswered', methods=['POST'])
-def add_unanswered(question = 'what is knugget\'s favorite food?'):
+def add_unanswered(question = 'what is knugget\'s favorite food? and how many $ does it {cost}}? .db? $set, $unset, $addToSet, $where, $all, $exists, $ pull, $push, $merge, $out, $function $eq, $expr, $addFields'):
+  question = sanitize_input(question)
   # date and resolution are set automatically. the date is just when this API was called, and resolved is automatically false and since this question is just being added, it has naturally not been resolved yet
   new_question = {'question':question, 'date/time added': datetime.utcnow(), 'resolved': False, 'date/time resolved' : 'N/A'} 
   
