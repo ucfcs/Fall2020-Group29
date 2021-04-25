@@ -13,12 +13,10 @@ DEV = True
 if DEV:
     from dataset import fetch_data, preprocess
     from model import NeuralNet
-    from utils import bag_of_words, lemmatize, stem, tokenize
     
 else:
     from .dataset import fetch_data, preprocess
-    from .model import NeuralNet
-    from .utils import bag_of_words, lemmatize, stem, tokenize
+    from .model import NeuralNet 
 
 
 def fit(data, params, modifier, verbose=False, graphic=False):
@@ -124,34 +122,13 @@ def fit(data, params, modifier, verbose=False, graphic=False):
     torch.save(data, FILE)
 
     if verbose:
+
         # Report the final metrics.
         print("\nTraining complete. File saved to {}.".format(FILE))
         print("Final Training Accuracy: {:.2f}".format(final_train_acc))
         print("Final Training Loss: {:.4f}".format(final_train_loss))
-        
-    if graphic and num_epochs >= 10:
 
-        # Plot the training loss.
-        fig = plt.figure()
-        ax = plt.axes()
-        x = np.arange(1, num_epochs + 1, 1)
-        plt.title('Training Loss Per Epoch')
-        ax.set_xlabel('Epoch')
-        ax.set_ylabel('Loss')
-        ax.plot(x, train_loss_list)
-        plt.show()
-
-        # Plot the training accuracy.
-        fig = plt.figure()
-        ax = plt.axes()
-        x = np.arange(1, num_epochs + 1, 1)
-        plt.title('Training Accuracy Per Epoch')
-        ax.set_xlabel('Epoch')
-        ax.set_ylabel('Accuracy')
-        ax.plot(x, train_acc_list)
-        plt.show()
-
-    return final_train_acc, final_train_loss
+    return final_train_acc, final_train_loss, train_acc_list, train_loss_list
 
 
 def train(kind='manual', db=None, verbose=False, graphic=False):
@@ -181,6 +158,8 @@ def train(kind='manual', db=None, verbose=False, graphic=False):
 
     train_acc_list = []
     train_loss_list = []
+    all_train_acc_list = []
+    all_train_loss_list = []
 
     if FLAGS['ints'] == 0 and FLAGS['dept'] == 0 and FLAGS['cat'] == 0 and FLAGS['info'] == 0:
 
@@ -198,11 +177,13 @@ def train(kind='manual', db=None, verbose=False, graphic=False):
             print("\nTraining Intents")
         
         # Train the model.
-        final_train_acc, final_train_loss = fit(data, params, modifier, verbose, graphic)
+        final_train_acc, final_train_loss, all_train_acc, all_train_loss = fit(data, params, modifier, verbose, graphic)
 
         # Save the performance metrics.
         train_acc_list.append(final_train_acc)
         train_loss_list.append(final_train_loss)
+        all_train_acc_list.append(all_train_acc)
+        all_train_loss_list.append(all_train_loss)
 
     if FLAGS["dept"] == 1:
 
@@ -214,11 +195,13 @@ def train(kind='manual', db=None, verbose=False, graphic=False):
             print("\nTraining Entities: Departments")
         
         # Train the model.
-        final_train_acc, final_train_loss = fit(data, params, modifier, verbose, graphic)
+        final_train_acc, final_train_loss, all_train_acc, all_train_loss = fit(data, params, modifier, verbose, graphic)
 
         # Save the performance metrics.
         train_acc_list.append(final_train_acc)
         train_loss_list.append(final_train_loss)
+        all_train_acc_list.append(all_train_acc)
+        all_train_loss_list.append(all_train_loss)
 
     if FLAGS["cat"] == 1:
 
@@ -230,11 +213,13 @@ def train(kind='manual', db=None, verbose=False, graphic=False):
             print("\nTraining Entities: Categories")
 
         # Train the model.
-        final_train_acc, final_train_loss = fit(data, params, modifier, verbose, graphic)
+        final_train_acc, final_train_loss, all_train_acc, all_train_loss = fit(data, params, modifier, verbose, graphic)
 
         # Save the performance metrics.
         train_acc_list.append(final_train_acc)
         train_loss_list.append(final_train_loss)
+        all_train_acc_list.append(all_train_acc)
+        all_train_loss_list.append(all_train_loss)
 
     if FLAGS["info"] == 1:
 
@@ -246,11 +231,13 @@ def train(kind='manual', db=None, verbose=False, graphic=False):
             print("\nTraining Entities: Information")
 
         # Train the model.
-        final_train_acc, final_train_loss = fit(data, params, modifier, verbose, graphic)
+        final_train_acc, final_train_loss, all_train_acc, all_train_loss = fit(data, params, modifier, verbose, graphic)
 
         # Save the performance metrics.
         train_acc_list.append(final_train_acc)
         train_loss_list.append(final_train_loss)
+        all_train_acc_list.append(all_train_acc)
+        all_train_loss_list.append(all_train_loss)
 
     # Calculate the average metrics.
     avg_train_acc = np.mean(train_acc_list)
@@ -259,6 +246,38 @@ def train(kind='manual', db=None, verbose=False, graphic=False):
     if verbose:
         print("\nAverage Training Accuracy: {:.2f}".format(avg_train_acc))
         print("Average Training Loss: {:.4f}".format(avg_train_loss))
+
+    if graphic:
+
+        epochs_list = []
+        epochs_list.append(params['num_epochs_ints'])
+        epochs_list.append(params['num_epochs_dept'])
+        epochs_list.append(params['num_epochs_cat'])
+        epochs_list.append(params['num_epochs_info'])
+
+        for i in range(len(all_train_acc_list)):
+
+            # Plot the training accuracy.
+            fig = plt.figure()
+            ax = plt.axes()
+            x = np.arange(1, epochs_list[i] + 1, 1)
+            plt.title('Training Accuracy Per Epoch')
+            ax.set_xlabel('Epoch')
+            ax.set_ylabel('Accuracy')
+            ax.plot(x, all_train_acc_list[i], color='blue')
+            plt.show()
+
+        for i in range(len(all_train_loss_list)):
+
+            # Plot the training loss.
+            fig = plt.figure()
+            ax = plt.axes()
+            x = np.arange(1, epochs_list[i] + 1, 1)
+            plt.title('Training Loss Per Epoch')
+            ax.set_xlabel('Epoch')
+            ax.set_ylabel('Loss')
+            ax.plot(x, all_train_loss_list[i], color='red')
+            plt.show()
 
     return avg_train_acc, avg_train_loss, train_acc_list, train_loss_list
 
