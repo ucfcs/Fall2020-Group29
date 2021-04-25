@@ -15,6 +15,15 @@ else:
 
 
 def predict_tags(device, file_name, trained_model, utterance, num_predictions):
+    """
+    Predict the tags of the given utterance with the specified model.
+
+    :device: specification of CPU or GPU.
+    "file_name": file with the dataset.
+    :trained_model: the trained model used for the predictions.
+    :utterance: the utterance used for the predictions.
+    :num_predictions: the number of predictions made with the utterance.
+    """
 
     # Read the data.
     data = pd.read_csv(file_name)
@@ -63,7 +72,12 @@ def predict_tags(device, file_name, trained_model, utterance, num_predictions):
 
 
 def predict(utterance):
+    """
+    Predict the tags for the given utterance. Calls predict_tags().
 
+    :utterance: the utterance to be understood.
+    """
+    
     # Load the configuration.
     params_file = "params.json"
     with open(params_file) as f:
