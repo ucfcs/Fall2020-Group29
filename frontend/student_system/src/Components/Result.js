@@ -30,25 +30,18 @@ class Result extends Component {
     }
     const { steps } = this.props;
     const lookup = steps.userInput.value;
-    let options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: lookup }),
-    };
+    const input = { name: lookup };
     try {
-      let api_response = await fetch(route + "get-user-response", options);
-      let result = await api_response.json();
+      const api_response = await axios.post(route + "get-user-response", input);
       this.setState({
         loading: false,
-        result: result.data.answer,
-        threshold: result.data.probability,
+        result: api_response.data.answer,
+        threshold: api_response.data.probability,
         counter: counter,
         questionAsked: lookup,
       });
     } catch (err) {
-      alert("try failed for getting user response");
+      alert("Failed to retrieve questions.");
       console.log("error occurred", err);
     }
   }
