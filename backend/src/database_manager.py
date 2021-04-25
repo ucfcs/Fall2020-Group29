@@ -259,10 +259,26 @@ def set_needs_update(mongo, value='Needs Training'):
 
 
 def form_response(mongo, answered, rating, simplicity):
-  new_form_response = {'answered': answered, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.today().strftime(date_time_format) }
+  if answered = "yes":
+    new_form_response = {'answered': True, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.today().strftime(date_time_format) }
+  else:  
+    new_form_response = {'answered': False, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.today().strftime(date_time_format) }
   
   InsertOneResult_Obj = mongo.db.form_responses.insert_one(new_form_response) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
   
   new_form_response.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_stat with the ObjectID (as a string) so that we can actually return something that resembles a document :/
  
   return new_form_response,''
+
+def add_unseen(mongo, question):
+  new_question = {'question':question, 'date/time added': datetime.today().strftime(date_time_format), 'resolved': False, "date/time resolved": None}
+  result = mongo.db.unanswered.find_one({
+    "question": question
+  })
+  if result is None:
+    InsertOneResult_Obj = mongo.db.unanswered.insert_one(new_question) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
+    new_question.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_question with the ObjectID (as a string) so that we can actually return something that resembles a document :/
+    return "question was added"
+  else:
+    return "question already exists"
+ 

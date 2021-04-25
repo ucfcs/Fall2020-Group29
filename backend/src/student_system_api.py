@@ -4,7 +4,7 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo import ReturnDocument
 import traceback
-from database_manager import form_response
+from database_manager import form_response, add_unseen
 
 
 # from ...ai import chatbot
@@ -29,9 +29,13 @@ def home():
 
 
 # POST request to add 1 to count in "Number of questions asked" stat
-@app.route("/api/questions-asked", methods = ["POST"])
-def update_count():
-    return "count"
+@app.route("/api/save-question-asked", methods = ["POST"])
+def add_question():
+    question = request.get_json()
+    question_confirmation = add_unseen(mongo, question)
+    if question_confirmation != None:
+        return jsonify({"confirmation": question_confirmation})
+    return "sorry question confirmation is empty"
 
 # POST request to store form responses
 @app.route("/api/submit-feedback", methods=["POST"])
@@ -68,6 +72,7 @@ def create_response():
         found = mongo.db.questions.find_one({"tags": {"$all": Entities}})
         if found is None:  # if there is no match
             return jsonify({"answer": "no match", "probability": float(probability)})
+            
         fickleID = found.pop(
             "_id"
         )  # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
@@ -83,8 +88,7 @@ def create_response():
                 "category": category,
                 "information": info,
                 "answer": response,
-                "probability": float(probability)
-                # "intent": intent,
+                "probability": float(probability),
             }
         )
     except:

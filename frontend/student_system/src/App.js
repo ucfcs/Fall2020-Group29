@@ -8,6 +8,7 @@ import ThankYou from "./Components/ThankYou";
 
 function App(props) {
   sessionStorage.setItem("counter", 0);
+
   const config = {
     width: "300px",
     height: "400px",
@@ -53,6 +54,7 @@ function App(props) {
       message: "Let me find that out for you!",
       trigger: "7",
     },
+
     {
       id: "7",
       component: <Result />,
