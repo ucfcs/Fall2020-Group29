@@ -260,9 +260,9 @@ def set_needs_update(mongo, value='Needs Training'):
 
 def form_response(mongo, answered, rating, simplicity):
   if answered == "yes":
-    new_form_response = {'answered': True, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.today().strftime(date_time_format) }
+    new_form_response = {'answered': True, 'rating': int(rating), 'simplicity': int(simplicity), 'date/time added': datetime.today().strftime(date_time_format) }
   else:  
-    new_form_response = {'answered': False, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.today().strftime(date_time_format) }
+    new_form_response = {'answered': False, 'rating': int(rating), 'simplicity': int(simplicity), 'date/time added': datetime.today().strftime(date_time_format) }
   
   InsertOneResult_Obj = mongo.db.form_responses.insert_one(new_form_response) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
   

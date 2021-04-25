@@ -72,11 +72,9 @@ class Result extends Component {
   }
 
   resetWithString() {
-    if (this.state.counter > 0) {
-      sessionStorage.setItem("counter", 0);
-      this.saveUnasweredQuestion();
-    }
-    return "sorry here's a contact";
+    this.saveUnasweredQuestion();
+    sessionStorage.setItem("counter", 0);
+    return "Sorry I don't have the knug wisdom to answer your question but here's a contact that could answer your question";
   }
 
   triggerGreeting() {
@@ -85,12 +83,9 @@ class Result extends Component {
     });
   }
 
-  triggerMoreHelp(callback) {
+  triggerMoreHelp() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "More Help" });
-      if (callback !== undefined) {
-        callback();
-      }
     });
   }
 
@@ -120,7 +115,7 @@ class Result extends Component {
 
   render() {
     const { trigger, loading, result, threshold } = this.state;
-
+    console.log("this is state value of counter: " + this.state.counter);
     if (this.state.counter >= 2) {
       if (result !== "no match") {
         if (threshold >= 0.99) {
@@ -215,6 +210,40 @@ class Result extends Component {
         return (
           <div className={styles.body}>
             {loading ? <Loading /> : this.resetWithString()}
+            {!loading && (
+              <div
+                style={{
+                  textAlign: "center",
+                  margin: 20,
+                }}
+              >
+                Is there something else I can help you with?
+                <div>
+                  {!trigger && (
+                    <button
+                      className={styles.button}
+                      onClick={() => {
+                        this.triggerMoreHelp();
+                        // this.reset();
+                      }}
+                    >
+                      Yes
+                    </button>
+                  )}
+                  {!trigger && (
+                    <button
+                      onClick={() => {
+                        this.triggerThankYou();
+                        this.reset();
+                      }}
+                      className={styles.button}
+                    >
+                      No
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         );
       }
@@ -371,7 +400,8 @@ class Result extends Component {
                   {!trigger && (
                     <button
                       onClick={() => {
-                        this.triggerMoreHelp(this.increment);
+                        this.triggerMoreHelp();
+                        this.increment();
                       }}
                       className={styles.button}
                     >

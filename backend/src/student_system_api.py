@@ -44,7 +44,7 @@ def store_response():
     answered = feedback["answer"]
     rating = feedback["enjoyment"]
     simplicity = feedback["ease"]
-    
+
     feedback_confirmation = form_response(mongo, answered, rating, simplicity)
     if(feedback != None):
         return jsonify({"feedback": feedback_confirmation})
