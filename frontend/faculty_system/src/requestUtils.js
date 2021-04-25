@@ -16,4 +16,4 @@ export function getToken() {
 // export const route = "http://127.0.0.1:5000/";
 
 // Production Route, comment out when connecting to local Flask server.
-export const route = "http://10.171.204.196/faculty/api";
+export const route = "http://10.171.204.196/api/faculty";

@@ -107,5 +107,5 @@ export function update_needs_training(value, callback) {
 
 export function logOut() {
   window.sessionStorage.clear();
-  window.location.href = '/faculty';
+  window.location.href = '/';
 }
