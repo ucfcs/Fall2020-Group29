@@ -72,7 +72,6 @@ function App(props) {
       message: "Is there something else I can assist you with?",
       trigger: "help options",
     },
-
     {
       id: "help options",
       options: [
@@ -91,7 +90,6 @@ function App(props) {
         "I am sorry, I wish I could be of more help. Would you mind answering the next few questions so I can improve my knugskills to serve you better?",
       trigger: "feedback",
     },
-    // Reagans code from simpleform.js
     {
       id: "feedback",
       message: "Was your question answered to your satisfaction?",
@@ -136,11 +134,7 @@ function App(props) {
     },
     {
       id: "thanks-feedback",
-      // instead call a component here and end the chatbot
-      // store all the inputs in the component and make the api
-      // requests in that component and call it thankYou!
       component: <ThankYou />,
-      // message: "Thanks! Your data was submitted successfully!",
       end: true,
     },
   ];

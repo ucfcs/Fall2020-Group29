@@ -10,7 +10,6 @@ class Result extends Component {
   constructor(props) {
     super(props);
 
-    // sets initial states
     this.state = {
       loading: true,
       result: "",
@@ -18,7 +17,6 @@ class Result extends Component {
       trigger: false,
       counter: 0,
       questionAsked: "",
-      // wholeResponse: "",
     };
 
     this.resetWithString = this.resetWithString.bind(this);
@@ -33,27 +31,27 @@ class Result extends Component {
     const { steps } = this.props;
     const lookup = steps.userInput.value;
     const input = { name: lookup };
-    // stores returned data in api_response
-    const api_response = await axios.post(route + "get-user-response", input);
-    // set the state to the relevant data it needs to hold
-    this.setState({
-      loading: false,
-      result: api_response.data.answer,
-      threshold: api_response.data.probability,
-      counter: counter,
-      questionAsked: lookup,
-      // wholeResponse: api_response.data,
-    });
+    try {
+      const api_response = await axios.post(route + "get-user-response", input);
+      this.setState({
+        loading: false,
+        result: api_response.data.answer,
+        threshold: api_response.data.probability,
+        counter: counter,
+        questionAsked: lookup,
+      });
+    } catch (err) {
+      alert("Failed to retrieve questions.");
+      console.log("error occurred", err);
+    }
   }
 
-  // increments the counter and stores it back into local storage
   increment = () => {
     let count = this.state.counter;
     count++;
     sessionStorage.setItem("counter", count);
   };
 
-  // resets the counter to 0 and stores it back to local storage
   reset = () => {
     sessionStorage.setItem("counter", 0);
   };
@@ -72,26 +70,21 @@ class Result extends Component {
     let result = await response.json();
     console.log(result);
   }
-  // reset the counter to 0 and returns a string to display on the UI
+
   resetWithString() {
     if (this.state.counter > 0) {
       sessionStorage.setItem("counter", 0);
       this.saveUnasweredQuestion();
     }
-    // save the question to the database here
-    // you can call another function that handles
-    // that or just do it all in here
     return "sorry here's a contact";
   }
 
-  // Triggers the next entity in the steps (from react-simple-chatbot)
   triggerGreeting() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "Greeting" });
     });
   }
 
-  // Step 2 from conversation design
   triggerMoreHelp(callback) {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "More Help" });
@@ -101,44 +94,35 @@ class Result extends Component {
     });
   }
 
-  // triggers thank you
   triggerThankYou() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "Thank you" });
     });
   }
 
-  // triggers Even More Help
   triggerEvenMoreHelp() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "Even More Help" });
     });
   }
 
-  // triggers Sorry Thank you
   triggerSorryThankYou() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "Sorry Thank you" });
     });
   }
 
-  // triggers ask again differently
   triggerAskAgainDifferently() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "ask again differently" });
     });
   }
 
-  // Renders the answer display box in the chatbot
   render() {
-    // the constants that are passed in the render (state values)
     const { trigger, loading, result, threshold } = this.state;
-    // console.log(wholeResponse);
 
-    // if result if no match then ask again
     if (this.state.counter >= 2) {
       if (result !== "no match") {
-        // Threshold 2 within else (if counter >= 2)
         if (threshold >= 0.99) {
           return (
             <div className={styles.body}>
@@ -181,7 +165,6 @@ class Result extends Component {
           );
         }
 
-        // Threshold  1 and 2 (.50 - .90)
         if (threshold < 0.99 && threshold > 0.5) {
           return (
             <div className={styles.body}>
@@ -221,7 +204,6 @@ class Result extends Component {
           );
         }
 
-        // Threshold 1 within else (if counter >= 2)
         if (threshold <= 0.5) {
           return (
             <div className={styles.body}>
@@ -229,9 +211,7 @@ class Result extends Component {
             </div>
           );
         }
-      }
-      // else if result === no match
-      else {
+      } else {
         return (
           <div className={styles.body}>
             {loading ? <Loading /> : this.resetWithString()}
@@ -240,7 +220,6 @@ class Result extends Component {
       }
     } else {
       if (result !== "no match") {
-        // Threshold 2 within counter < 2
         if (threshold >= 0.99) {
           return (
             <div className={styles.body}>
@@ -287,7 +266,6 @@ class Result extends Component {
           );
         }
 
-        // Threshold  1 and 2 (.50 - .90) within counter < 2
         if (threshold < 0.99 && threshold > 0.5) {
           return (
             <div className={styles.body}>
@@ -330,7 +308,6 @@ class Result extends Component {
           );
         }
 
-        // Threshold 1 within counter < 2
         if (threshold < 0.5) {
           return (
             <div className={styles.body}>
@@ -375,9 +352,7 @@ class Result extends Component {
             </div>
           );
         }
-      }
-      // if result === no match
-      else {
+      } else {
         return (
           <div className={styles.body}>
             {loading ? (
@@ -397,7 +372,6 @@ class Result extends Component {
                     <button
                       onClick={() => {
                         this.triggerMoreHelp(this.increment);
-                        // this.increment();
                       }}
                       className={styles.button}
                     >
