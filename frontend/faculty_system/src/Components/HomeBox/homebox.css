@@ -2,6 +2,13 @@ p {
     margin:0px;
 }
 
+#knugget {
+    max-width: 100px;
+    margin-left:35%;
+    margin-right:auto;
+    margin-bottom:-1%;
+}
+
 #home-box {
     display:flex;
     height:100%;

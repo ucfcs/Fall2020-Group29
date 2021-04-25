@@ -4,6 +4,7 @@ import {sections, retrain, check_needs_training, update_needs_training, logOut} 
 import {confirmAlert} from 'react-confirm-alert';
 import './homebox.css';
 import knugHeader from './images/KnugBot_Logo_White.png';
+import knugget from './images/Knugget_flip.png'
 
 export class HomeBox extends React.Component {
 
@@ -138,6 +139,7 @@ export class HomeBox extends React.Component {
                             )}
                         </div>
                     </div>
+                    <img id='knugget' src={knugget} />
                     <div id='train-button-wrapper'>
                         <div 
                         id='train-button'
