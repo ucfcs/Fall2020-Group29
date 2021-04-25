@@ -1,26 +1,23 @@
-from torch.utils.data import Dataset
-# Make relative when done.
-# from .database_manager import return_all
-import json
-import pandas as pd
 from flask import jsonify
-from utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
+import json
 import numpy as np
+import pandas as pd
 
-class ChatDataset(Dataset):
+DEV = True
 
-    def __init__(self, X_train, y_train):
-        self.n_samples = len(X_train)
-        self.x_data = X_train
-        self.y_data = y_train
+if DEV:
+    from utils import bag_of_words, lemmatize, stem, tokenize
+    
+else:
+    from .utils import bag_of_words, lemmatize, stem, tokenize
 
-    def __getitem__(self, index):
-        return self.x_data[index], self.y_data[index]
-
-    def __len__(self):
-        return self.n_samples
 
 def preprocess(data):
+    """
+    Preprocess the given data. Perform tokenization and stemming.
+
+    :data: the dataset to be preprocessed.
+    """
 
     all_words = []
     tags = []
@@ -64,12 +61,16 @@ def preprocess(data):
     X = np.array(X)
     y = np.array(y)
 
-    # Normalize the training data.
-    # X = normalize(X, norm="l2")
-
     return X, y, num_classes, all_words, tags
 
+
 def fetch_data(db, params):
+    """
+    Fetch the datasets from the given database.
+
+    :db: the database.
+    :params: the set of parameters for the model.
+    """
     
     # Fetch the data from the database.
     raw_data = jsonify(return_all(db))
