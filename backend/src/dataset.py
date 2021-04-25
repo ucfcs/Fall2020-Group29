@@ -1,7 +1,7 @@
-from torch.utils.data import Dataset
-import json
-import pandas as pd
 from flask import jsonify
+import json
+import numpy as np
+import pandas as pd
 
 with open("config.json") as f:
     config = json.load(f)
@@ -10,23 +10,70 @@ DEV = config["dev_mode"]
 
 if DEV:
     from .database_manager import return_all
+    from .utils import bag_of_words, lemmatize, stem, tokenize
 else:
     from database_manager import return_all
+    from utils import bag_of_words, lemmatize, stem, tokenize
 
-class ChatDataset(Dataset):
+def preprocess(data):
+    """
+    Preprocess the given data. Perform tokenization and stemming.
 
-    def __init__(self, X_train, y_train):
-        self.n_samples = len(X_train)
-        self.x_data = X_train
-        self.y_data = y_train
+    :data: the dataset to be preprocessed.
+    """
 
-    def __getitem__(self, index):
-        return self.x_data[index], self.y_data[index]
+    all_words = []
+    tags = []
+    xy = []
 
-    def __len__(self):
-        return self.n_samples
+    for index, row in data.iterrows():
+
+        # Extract the tags.
+        tag = row["tag"]
+        tags.append(tag)
+
+        # Tokenize the tags.
+        w = tokenize(row["pattern"])
+        all_words.extend(w)
+
+        # Include the pattern and label in the dataset.
+        xy.append((w, tag))
+
+    # Set the ignore words, perform stemming, and sort.
+    ignore_words = ["?", ".", "!"]
+    all_words = [stem(w) for w in all_words if w not in ignore_words]
+    all_words = sorted(set(all_words))
+    tags = sorted(set(tags))
+
+    X = []
+    y = []
+
+    for (pattern, tag) in xy:
+
+        # Set the bag of words for each pattern.
+        bag = bag_of_words(pattern, all_words)
+        X.append(bag)
+
+        # Set the class labels.
+        label = tags.index(tag)
+        y.append(label)
+
+    num_classes = len(tags)
+
+    # Set the training data.
+    X = np.array(X)
+    y = np.array(y)
+
+    return X, y, num_classes, all_words, tags
+
 
 def fetch_data(db, params):
+    """
+    Fetch the datasets from the given database.
+
+    :db: the database.
+    :params: the set of parameters for the model.
+    """
     
     # Fetch the data from the database.
     raw_data = jsonify(return_all(db))
