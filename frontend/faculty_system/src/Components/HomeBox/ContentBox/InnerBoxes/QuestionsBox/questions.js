@@ -1,3 +1,5 @@
+import {route, getToken} from '../../../../../requestUtils';
+
 export const defaultQuestion = {
   '_id': '',
   'name': '',
@@ -46,11 +48,10 @@ export function getQuestions(callback) {
     let options = {
         method: 'GET',
         headers: {
-            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
             'Content-Type': 'application/json'
         }
     };
-    fetch('http://127.0.0.1:5000/api/faculty/get_questions', options)
+    fetch(route + 'get_questions', options)
       .then((res)=> {
           if (res.status === 401) {
             alert('User not Authorized');
@@ -103,12 +104,12 @@ export function saveQuestion(question, callback) {
     method: method,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization':'Bearer ' + window.sessionStorage.getItem('token'),
+        'Authorization':'Bearer ' + getToken()
     },
     body: JSON.stringify({'question': question, 'retrain': false})
   };
 
-  fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
+  fetch(route + call, options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -168,12 +169,12 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
     method: method,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+        'Authorization': 'Bearer ' + getToken()
     },
     body: JSON.stringify({'question': question})
   };
 
-  fetch('http://127.0.0.1:5000/api/faculty/' + call, options)
+  fetch(route + call, options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -200,11 +201,11 @@ export function saveQuestionAndTrain(question, updateText, updateSetting,  callb
                   method: 'GET',
                   headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+                    'Authorization': 'Bearer ' + getToken()
                   }
                 };
         
-                fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+                fetch(route + 'retrain_model', options)
                   .then((res)=> {
                     if (res.status === 401) {
                       callback({
@@ -256,12 +257,12 @@ export function deleteQuestion(question, callback) {
     method: 'DELETE',
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+        'Authorization': 'Bearer ' + getToken()
     },
     body: JSON.stringify({'question': question})
   }
 
-  fetch('http://127.0.0.1:5000/api/faculty/delete_question', options)
+  fetch(route + 'delete_question', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -300,12 +301,12 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
     method: 'DELETE',
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+        'Authorization': 'Bearer ' + getToken()
     },
     body: JSON.stringify({'question': question})
   }
 
-  fetch('http://127.0.0.1:5000/api/faculty/delete_question', options)
+  fetch(route + 'delete_question', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -326,11 +327,11 @@ export function deleteQuestionAndRetrain(question, updateText, updateSetting, ca
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+                  'Authorization': 'Bearer ' + getToken()
                 }
               };
       
-              fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+              fetch(route + 'retrain_model', options)
                 .then((res)=> {
                   if (res.status === 401) {
                     callback({

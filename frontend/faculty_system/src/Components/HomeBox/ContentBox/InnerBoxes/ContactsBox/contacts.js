@@ -1,16 +1,17 @@
+import {route} from '../../../../../requestUtils';
+
 export function getContacts(callback) {
     let cfs = window.sessionStorage.getItem('contacts');
     if (cfs === null) {
       let options = {
           method: 'GET',
           headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
+              'Content-Type': 'application/json'
           },
   
       };
   
-      fetch('http://127.0.0.1:5000/api/faculty/get_contacts', options)
+      fetch(route + 'get_contacts', options)
         .then((res)=> {
             if (res.status === 401) {
               res.json().then((res)=> alert(res['message']));

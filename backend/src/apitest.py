@@ -17,9 +17,10 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo import ReturnDocument # so that we can return the updated version of the document after updating it
 from bson.objectid import ObjectId # so that we can actually make objects of type ObjectID
-from datetime import datetime # so that we can add a date that a statistic was added
-date_time_format = '%Y-%m-%d %H:%M:%S' # we format datetime as YYYY-MM-DD HH:MM:SS
+import json
+from datetime import date, datetime # so that we can add a date that a statistic was added
 
+launch_date = datetime(2020, 4, 21) # for setting the defult earliest date to check when we are checking dates
 
 app = Flask(__name__)
 app.config['MONGO_DBNAME'] =  'group29' #'ourDB' <-- local connection
@@ -47,14 +48,19 @@ def return_all( Collection = 'questions' ):
 
   list = []
   for i in found: # itterate over curor 
-    fickleID = i.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+    fickleID = i.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
     i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
     list.append(i)
 
   return jsonify(list) #return result as json
 
+# counts how many documents are in a specified collecton
+def count_in_collection(Collection = 'form_responses'):
+  count = mongo.db[Collection].count_documents({})
+  return count
 
-### questions collection ### delete
+
+### questions collection ### 
 # add 
 @app.route('/add_question', methods=['POST']) # add a question to the database with Name, Responses, and Tags, returns this new document. pls check if it exists first.
 def add_question( name = 'testo',  patterns = ['swoop', 'yoop doop', 'hopla?'], tags = ['beep boop', 'noop', 'yoop', 'ploop'], response = 'this is an test'):
@@ -74,7 +80,7 @@ def get_question( tags = ['Advising', 'Cecs-Csit', 'Major-CS', 'Credit-Hours'] )
   if (found is None): # if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = found.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(found) #return result as json
@@ -95,7 +101,7 @@ def update_question(question_ID = '6065f38bac9dc35cb433ea88', update = {'name' :
   if (updated is None): # if there is no match
     return jsonify({'result':'no match'})
   
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(updated)
@@ -118,7 +124,7 @@ def delete_question(question_ID = '6065f38bac9dc35cb433ea88' ):#tags = ['beep bo
   else:
     list = []
     for i in found2: # itterate over curor 
-      fickleID = i.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+      fickleID = i.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
       i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
       list.append(i)
     return jsonify(list)
@@ -144,7 +150,7 @@ def put_contact(id = '607dd47a337d993c65964852', contact_id = '600bb398d59727f52
     if (updated is None): #if there is no match
       return jsonify({'result':'no match'})
 
-    fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+    fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
     updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
     return jsonify(updated)
@@ -169,7 +175,7 @@ def put_related_question(id = '607db3807d8d43d7bc1335df', related_question_ID = 
     if (updated is None): # if there is no match
       return jsonify({'result':'no match'})
 
-    fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+    fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
     updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
     return jsonify(updated) #return result as json
@@ -190,7 +196,7 @@ def put_link(id = '607db3807d8d43d7bc1335df', link = 'https://www.faqtest.com/ex
   if (updated is None): # if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(updated) #return result as json
@@ -201,7 +207,7 @@ def remove_one_field(id_of_question_with_field = '607db3807d8d43d7bc1335df', fie
   found = mongo.db.questions.find_one_and_update( 
     {
       '$and': [
-        {'_id':ObjectId(id_of_question_with_field)},#{'tags': { '$all': [x.lower() for x in tags] }},
+        {'_id':ObjectId(id_of_question_with_field)},
         {field: {'$exists': True} }
       ]
     }, 
@@ -213,7 +219,7 @@ def remove_one_field(id_of_question_with_field = '607db3807d8d43d7bc1335df', fie
   if (found is None): # if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = found.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(found) #return result as json
@@ -236,7 +242,7 @@ def remove_one_element(id_of_question_with_array = '607db3807d8d43d7bc1335df', i
   if not found[array_name]: # delete the whole links field if the deletion makes it empty
     remove_one_field(id_of_question_with_array, array_name)
 
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = found.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(found) #return result as json
@@ -249,10 +255,11 @@ def get_question_via_ID( _id = '6065f38bac9dc35cb433ea88' ):
   if (found is None): # if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = found.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
   
   return jsonify(found) #return result as json
+
 
 ### contacts collection ###
 #contacts should have dept and maybe grad/undergrad
@@ -284,7 +291,7 @@ def update_contact(name = 'Mark Heinrich', title = 'CS Advisor', itemToUpdate = 
   if (updated is None): #if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(updated)
@@ -309,7 +316,7 @@ def put_staff_link(contact_id = '600bb398d59727f52ed1de3c', link = 'beepBoop.ucf
     if (updated is None): # if there is no match
       return jsonify({'result':'no match'})
 
-    fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+    fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
     updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
     return jsonify(updated) #return result as json
@@ -344,7 +351,7 @@ def get_tag( name = 'testo', type = 'cat' ):
   if (found is None): # if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = found.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(found) #return result as json
@@ -364,7 +371,7 @@ def update_tag(old_dict = {'_id':'606e229c6770b2683d9d44ad', 'name':'testo', 'ty
   if (updated is None): #if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
   # update all questions which use this tag
@@ -379,7 +386,6 @@ def update_tag(old_dict = {'_id':'606e229c6770b2683d9d44ad', 'name':'testo', 'ty
 # 4. Information (info)
 
 # update all questions in the database with this tag
-#@app.route('/replace_all_with_tag', methods=['PUT']) 
 def replace_all_with_tag( tag = 'ploop', type = 'info', replace = 'presto' ):
   element = -1
   if (type == 'intents'):
@@ -441,7 +447,7 @@ def delete_tag(name = 'ploop', type = 'info'):
   else:
     list = []
     for i in found: # itterate over curor 
-      fickleID = i.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+      fickleID = i.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
       i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
       list.append(i)
 
@@ -468,7 +474,7 @@ def get_link( id = '607dc267b3c05a398fe29f12' ):
   if (found is None): # if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = found.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(found) #return result as json
@@ -488,7 +494,7 @@ def update_link(id= '607dc267b3c05a398fe29f12', update = {'name':'testo file', '
   if (updated is None): #if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(updated)
@@ -535,7 +541,7 @@ def get_user( NID = 'ma770070' ):
   if (found is None): # if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = found.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(found) #return result as json
@@ -555,7 +561,7 @@ def update_user(NID = 'ma770070', itemToUpdate = 'name', newContents = 'Maya2'):
   if (updated is None): #if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(updated)
@@ -614,43 +620,55 @@ def set_needs_update(set = 'Fully Trained'):
   if (updated is None): #if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(updated)
 
 
-#TODO IGNORE FOR NOW: list of ids of questions that have been recently added need to be retrained. 
-# # When the 'delete question' is called, check to see if this array is size 0 and then if it is, change the 'needs training' variable to 'fully trained'. 
-# # When the system is trained, clear this list. 
-# # If user adds a question, add to this list.
+## form_responses ##
+@app.route('/test_responses', methods=['POST'])
+def test_responses():  
+  mongo.db.form_responses.insert_one({'answered':True, 'rating':2, 'simplicity':3, 'date/time added':datetime(2022,10,5) })
+  mongo.db.form_responses.insert_one({'answered':True, 'rating':5, 'simplicity':5, 'date/time added':datetime(2019,1,1) })
+  mongo.db.form_responses.insert_one({'answered':False, 'rating':2, 'simplicity':3, 'date/time added':datetime(2021,4,21) })
+  mongo.db.form_responses.insert_one({'answered':True, 'rating':4, 'simplicity':4, 'date/time added':datetime(2021,4,22) })
+  return jsonify({'okey':'doki'})
 
-
-## statisctics collection ## 
-# did you get an answer to your question? (Y/N) did you enjoy knugbot feed him carrots (1-5)?, how easy was your interaction with knugbot? [very simple]-[simple]-[complicated]-[very complicated]?
 # create
-@app.route('/add_stat', methods=['POST'])
-def add_stat(answered = 'yes', rating=4, simplicity=5):
-  new_stat = {'answered': answered, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.today().strftime(date_time_format) }
+# did you get an answer to your question? (Y/N) did you enjoy knugbot feed him carrots (1-5)?, how easy was your interaction with knugbot? (1-5)?
+@app.route('/add_response', methods=['POST'])
+def add_response(answered = True, rating=4, simplicity=5):
+  new_stat = {'answered': answered, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.utcnow()}
   
-  InsertOneResult_Obj = mongo.db.statistics.insert_one(new_stat) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
+  InsertOneResult_Obj = mongo.db.form_responses.insert_one(new_stat) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
   
   new_stat.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_stat with the ObjectID (as a string) so that we can actually return something that resembles a document :/
  
   return jsonify(new_stat)
 
 # read
-# use return_all(statistics)
+@app.route('/get_response', methods=['GET']) 
+def get_response(id):
+  found = mongo.db.form_responses.find_one({'_id': ObjectId(id)}) 
+
+  if (found is None): # if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = found.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
+  found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(found) #return result as json
 
 # update
 # no need to update these
 
 # delete
-@app.route('/delete_stat', methods=['DELETE']) 
-def delete_stat(id):
-  to_delete = mongo.db.statistics.delete_one(
+@app.route('/delete_response', methods=['DELETE']) 
+def delete_response(id ):
+  to_delete = mongo.db.form_responses.delete_one(
     {
-      '_id':id
+      '_id':ObjectId(id)
     }
     )
   if (to_delete.deleted_count == 0): #if there is no match
@@ -658,14 +676,238 @@ def delete_stat(id):
   
   return jsonify({'result':'deleted'})
 
-# TODO: Test if this even works, please
-@app.route('/clear_stats', methods=['DELETE'])
-def clear_stats(before_date = '2021-04-18 00:00:00'):
-  before_date_time_obj = datetime.datetime.strptime(before_date, date_time_format)
-
-  to_delete = mongo.db.statistics.date(
+# clear between dates, Be careful calling this, the default paramaters clears everything  
+@app.route('/clear_responses', methods=['DELETE'])
+def clear_responses(start_date = launch_date, end_date = 'now'):
+  if (end_date == 'now'):
+    end_date = datetime.utcnow()
+  
+  to_delete = mongo.db.form_responses.delete_many(
     {
-    '$lte' : before_date_time_obj
+      'date/time added' : {'$gte': start_date, '$lte': end_date}
+    }
+  )
+  if (to_delete.deleted_count == 0): #if there is no match
+    return jsonify({'result':'no match'})
+  
+  return jsonify({'result':'deleted'})
+
+# number of users that gave feedback
+@app.route('/get_feedback_count', methods=['GET'])
+def get_feedback_count():
+  return jsonify({'result':count_in_collection('form_responses')})
+  
+# goal completion rate (calculation) = # of people that answered yes / # of people that repsonded to the form
+@app.route('/get_GCR', methods=['GET']) 
+def get_GCR( ):
+  total_feedbacks = count_in_collection('form_responses')
+  answered_yes = mongo.db.form_responses.count_documents(
+    {
+      'answered' : True
+    }
+    )
+  
+  if (total_feedbacks == 0): # if it comes back empty
+    return jsonify({'result':'no feedbacks'})
+
+  return jsonify({'GCR':(answered_yes / total_feedbacks)})
+
+# avereage user enjoyment = Sum of all User Enjoyment Responses / Number of Users that Gave Feedback
+@app.route('/get_avg_user_enjoyment', methods = ['GET'])
+def get_avg_user_enjoyment():
+  total_feedbacks = count_in_collection('form_responses')
+
+  found = mongo.db.form_responses.find({})
+  
+  if (found.count() == 0): # if it comes back empty
+    return jsonify({'result':'no results'})
+
+  count = 0
+  for i in found: # itterate over curor 
+    rating = i.pop('rating') 
+    count  = count + rating
+
+  return jsonify({'average user enjoyment' : count/total_feedbacks}) 
+
+# avereage user enjoyment = Sum of all User Enjoyment Responses / Number of Users that Gave Feedback
+@app.route('/get_avg_ease_of_use', methods = ['GET'])
+def get_avg_ease_of_use():
+  total_feedbacks = count_in_collection('form_responses')
+
+  found = mongo.db.form_responses.find({})
+  
+  if (found.count() == 0): # if it comes back empty
+    return jsonify({'result':'no results'})
+
+  count = 0
+  for i in found: # itterate over curor 
+    simplicity = i.pop('simplicity') 
+    count  = count + simplicity
+
+  return jsonify({'average ease of use' : count/total_feedbacks}) 
+
+
+## statisctics collection ## 
+@app.route('/test_stats', methods=['POST'])
+def test_stat():  
+  mongo.db.statistics.insert_one({'statistic':'number of user sessions', 'count':0, 'date':datetime.utcnow() })
+  mongo.db.statistics.insert_one({'statistic':'number of questions asked', 'count':0, 'date':datetime.utcnow() })
+  mongo.db.statistics.insert_one({'statistic':'number of questions answered correctly', 'count':0, 'date':datetime.utcnow() })
+  mongo.db.statistics.insert_one({'statistic':'number of times referred to advisor', 'count':0, 'date':datetime.utcnow() })
+  return jsonify({'okey':'doki'})
+
+# read
+# get for user sesstions
+@app.route('/get_num_user_sessions', methods=['GET']) 
+def get_num_user_sessions( ):
+  find = mongo.db.statistics.find_one(
+    {
+      'statistic':'number of user sessions'
+    }
+    )
+  
+  return jsonify({find['statistic']:find['count']})
+
+# get for questions asked
+@app.route('/get_num_questions_asked', methods=['GET']) 
+def get_num_questions_asked( ):
+  find = mongo.db.statistics.find_one(
+    {
+      'statistic':'number of questions asked'
+    }
+    )
+  
+  return jsonify({find['statistic']:find['count']})
+
+# get for questions asked
+@app.route('/get_num_questions_answered_correctly', methods=['GET']) 
+def get_num_questions_answered_correctly( ):
+  find = mongo.db.statistics.find_one(
+    {
+      'statistic':'number of questions answered correctly'
+    }
+    )
+  
+  return jsonify({find['statistic']:find['count']})
+
+# get for questions asked
+@app.route('/get_num_times_referred_to_advisor', methods=['GET']) 
+def get_num_times_referred_to_advisor( ):
+  find = mongo.db.statistics.find_one(
+    {
+      'statistic':'number of times referred to advisor'
+    }
+    )
+  
+  return jsonify({find['statistic']:find['count']})
+  
+# update
+# Increments the count value of the statistic Number of User Sessions
+@app.route('/increment_num_user_sessions', methods=['PUT'])
+def inc_num_user_sessions():
+  updated = mongo.db.statistics.find_one_and_update(
+    {
+      'statistic':'number of user sessions'
+    }, 
+    {
+      '$inc': { 'count': 1 } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
+  
+# Increments the count value of the statistic Number of Questions Asked 
+@app.route('/increment_num_questions_asked', methods=['PUT'])
+def inc_num_questions_asked():
+  updated = mongo.db.statistics.find_one_and_update(
+    {
+      'statistic':'number of questions asked'
+    }, 
+    {
+      '$inc': { 'count': 1 } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
+
+# Increments the count value of the statistic Number of Questions Answered Correctly 
+@app.route('/increment_num_questions_answered_correctly', methods=['PUT'])
+def inc_num_questions_answered_correctly():
+  updated = mongo.db.statistics.find_one_and_update(
+    {
+      'statistic':'number of questions answered correctly'
+    }, 
+    {
+      '$inc': { 'count': 1 } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
+
+# Increments the count value of the statistic Number of Times Referred To Advisor 
+@app.route('/increment_num_times_referred_to_advisor', methods=['PUT'])
+def inc_num_times_referred_to_advisor():
+  updated = mongo.db.statistics.find_one_and_update(
+    {
+      'statistic':'number of times referred to advisor'
+    }, 
+    {
+      '$inc': { 'count': 1 } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
+
+# delete
+@app.route('/delete_stat', methods=['DELETE']) 
+def delete_stat(id):
+  to_delete = mongo.db.statistics.delete_one(
+    {
+      '_id':ObjectId(id)
+    }
+    )
+  if (to_delete.deleted_count == 0): #if there is no match
+    return jsonify({'result':'no match'})
+  
+  return jsonify({'result':'deleted'})
+
+# clear between dates. Be careful calling this, the default paramaters clears everything 
+@app.route('/clear_stats', methods=['DELETE'])
+def clear_stats(start_date = launch_date, end_date = 'now'):
+  if (end_date == 'now'):
+   end_date = datetime.utcnow() # we have to call this here instead of in the default parameters or else it will not update with every api call
+
+  to_delete = mongo.db.statistics.delete_many(
+    {
+      'date' : {'$gte': start_date, '$lte': end_date}
     }
   )
   if (to_delete.deleted_count == 0): #if there is no match
@@ -674,47 +916,115 @@ def clear_stats(before_date = '2021-04-18 00:00:00'):
   return jsonify({'result':'deleted'})
 
 
-## unseen questions collection ##
+# TODO:
+# a script that runs once a day (probably @ midnight) that collects this number, stores it in a new collection and resets the current day
+# current day -> scoop -> date+number 
+
+
+## unanswered questions collection ##
 # create
-@app.route('/add_unseen', methods=['POST'])
-def add_unseen(question = 'what is knugget\'s favorite food?'):
-  new_question = {'question':question, 'date/time added': datetime.datetime.now() }
+@app.route('/add_unanswered', methods=['POST'])
+def add_unanswered(question = 'what is knugget\'s favorite food?'):
+  # date and resolution are set automatically. the date is just when this API was called, and resolved is automatically false and since this question is just being added, it has naturally not been resolved yet
+  new_question = {'question':question, 'date/time added': datetime.utcnow(), 'resolved': False, 'date/time resolved' : 'N/A'} 
   
-  InsertOneResult_Obj = mongo.db.unseen.insert_one(new_question) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
+  InsertOneResult_Obj = mongo.db.unanswered.insert_one(new_question) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
   
   new_question.update({'_id':str(InsertOneResult_Obj.inserted_id)}) # append new_question with the ObjectID (as a string) so that we can actually return something that resembles a document :/
  
   return jsonify(new_question)
 
-# read
-@app.route('/get_unseen', methods=['GET'])
-def get_unseen(id):
-  found = mongo.db.unseen.find_one({'_id': id}) #finds the entry with the exact set of Tags
+# read 
+@app.route('/get_unanswered', methods=['GET'])
+def get_unanswered(id):
+  found = mongo.db.unanswered.find_one({'_id': ObjectId(id)})
 
   if (found is None): # if there is no match
     return jsonify({'result':'no match'})
 
-  fickleID = found.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = found.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   found.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(found) #return result as json
 
-# update
-# we don't need to update these
-
-# delete
-@app.route('/delete_stat', methods=['DELETE']) 
-def delete_unseen(id ):
-  to_delete = mongo.db.unseen.delete_one(
+# read returns all documents marked as not resolved that are also between two dates
+@app.route('/return_all_unresolved', methods=['GET'])
+def return_all_unresolved(start_date = launch_date, end_date = 'now' ):
+  if (end_date == 'now'):
+    end_date = datetime.utcnow()
+  
+  found = mongo.db.unanswered.find(
     {
-      '_id':id
+     '$and': [
+        {'resolved':False},
+        {'date/time added' : {'$gte': start_date, '$lte': end_date}}
+      ]
+    }
+  )
+  
+  if (found.count() == 0): # if it comes back empty
+    return jsonify({'result':'no match'})
+
+  list = []
+  for i in found: # itterate over curor 
+    fickleID = i.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
+    i.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
+    list.append(i)
+
+  return jsonify(list) #return result as json
+
+
+# number of unanswered questions that are still unresolved
+@app.route('/get_unanswered_count', methods=['GET'])
+def get_unanswered_count():
+  still_unresolved = mongo.db.unanswered.count_documents(
+  {
+    'resolved' : False
+  }
+  )
+  return jsonify({'result':still_unresolved})
+
+# total count of collection, counts everything even if 'resolved' is set to true
+@app.route('/get_total_unanswered_count', methods=['GET'])
+def get_total_unanswered_count():
+  return jsonify({'result':count_in_collection('unanswered')})
+
+# update / "deleting" is actually setting 'resolved' to True'
+@app.route('/set_resolved', methods=['PUT']) 
+def set_resolved(id = '608389ed1716527fb9af48a3' ):
+  updated = mongo.db.unanswered.find_one_and_update(
+    {
+      '_id': ObjectId(id)
+    }, 
+    {
+      '$set': { 
+        'resolved': True, 
+        'date/time resolved':datetime.utcnow() 
+      } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
+
+# delete, I know we said "deleteing" will just be stting resolved to "true", but just in case
+@app.route('/delete_unanswered', methods=['DELETE']) 
+def delete_unanswered(id):
+  to_delete = mongo.db.unanswered.delete_one(
+    {
+      '_id':ObjectId(id)
     }
     )
   if (to_delete.deleted_count == 0): #if there is no match
     return jsonify({'result':'no match'})
   
   return jsonify({'result':'deleted'})
-
 
 
 if __name__ == '__main__':

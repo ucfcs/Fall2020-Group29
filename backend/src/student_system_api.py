@@ -75,7 +75,7 @@ def create_response():
             
         fickleID = found.pop(
             "_id"
-        )  # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+        )  # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
         found.update(
             {"_id": str(fickleID)}
         )  # put _id back in but as a regular string now

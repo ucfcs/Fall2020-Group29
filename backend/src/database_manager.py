@@ -62,7 +62,7 @@ def update_question(mongo, id, update_dict):
   if (updated is None): # if there is no match
     return None, ''
   
-  fickleID = updated.pop('_id') # jsonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = updated.pop('_id') # jsonify() doesn't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id': str(fickleID)}) # put _id back in but as a regular string now
 
   return updated, ''
@@ -121,7 +121,7 @@ def update_tag(mongo, old_dict, update):
   if (updated is None): #if there is no match
     return None
 
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
   return_all_with_tag(mongo, old_dict['name'], old_dict['type'], update['name'])
@@ -183,7 +183,7 @@ def update_user(mongo, id, NID, name, email, IsAdmin):
   if (updated is None): #if there is no match
     return None
 
-  fickleID = updated.pop('_id') # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
   return updated

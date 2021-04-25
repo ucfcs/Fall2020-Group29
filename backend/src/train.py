@@ -4,14 +4,23 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from .dataset import ChatDataset
-from .dataset import fetch_data
-from .evaluate import evaluate
-from .model import NeuralNet
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import normalize
 from torch.utils.data import DataLoader
-from .utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
+
+
+DEV = False
+
+if DEV:
+    from .dataset import ChatDataset, fetch_data
+    from .utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
+    from .evaluate import evaluate
+    from .model import NeuralNet
+else:
+    from dataset import ChatDataset, fetch_data
+    from utils import bag_of_words, lemmatize, stem, tf_idf, tokenize
+    from evaluate import evaluate
+    from model import NeuralNet
 
 
 def preprocess(data):

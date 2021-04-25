@@ -1,8 +1,14 @@
 from torch.utils.data import Dataset
-from .database_manager import return_all
 import json
 import pandas as pd
 from flask import jsonify
+
+DEV = False
+
+if DEV:
+    from .database_manager import return_all
+else:
+    from database_manager import return_all
 
 class ChatDataset(Dataset):
 
