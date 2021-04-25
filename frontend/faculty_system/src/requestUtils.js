@@ -22,6 +22,6 @@ export const headers = DEV_MODE ? {
 }
 
 // APIs route to dev server if DEV_MODE true, otherwise they route to the production server.
-export const route = DEV_MODE ? "http://127.0.0.1:5000/faculty/" : "http://10.171.204.196/api/faculty/";
+export const route = DEV_MODE ? "http://127.0.0.1:5000/" : "http://10.171.204.196/api/faculty/";
 
 

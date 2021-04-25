@@ -15,11 +15,11 @@ import {
 import {update_needs_training} from '../../../home';
 import {getTags} from '../TagsBox/tags';
 import {getContacts} from '../ContactsBox/contacts';
-// import {getLinks} from '../LinksBox/links';
 import Select from 'react-select';
 import {confirmAlert} from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import {cloneDeep, isEqual} from 'lodash';
+
 
 export class QuestionsBox extends React.Component {
 
@@ -609,7 +609,6 @@ export class QuestionsBox extends React.Component {
             <>
                 <div id='content-wrapper'>
                     <div id='question-selection'>
-                    
                         <div className='section-title'>
                             Questions
                         </div>
@@ -629,8 +628,9 @@ export class QuestionsBox extends React.Component {
                                 curItem={this.state.curQuestion}
                             />
                             <div id='add-question-button' onClick={(e)=>this.selectItem(e, defaultQuestion)}>
-                            +
+                                +
                             </div>
+                            
                         </div>   
                     </div>
                     <div id='question-content-body'>

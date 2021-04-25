@@ -419,7 +419,7 @@ export class TagsBox extends React.Component {
                                                     }
                                                 }
                                             }
-                                            
+
                                             this.setState({tags:tags, curTag:cloneDeep(defaultTag)}, ()=> {
                                                 this.updateDisplayedTags();
                                                 window.sessionStorage.setItem('tags', JSON.stringify(this.state.tags));
@@ -452,8 +452,8 @@ export class TagsBox extends React.Component {
                 <div id="content-wrapper">
                     <div id='tag-and-type-selection'>
                         <div id='type-selection'>
-                            <div className='section-title'>
-                                Tag Type
+                            <div className='type-section-title'>
+                                Types
                             </div>
                             <div className='selection-wrapper'>
                                 <SelectionBox 
@@ -472,6 +472,7 @@ export class TagsBox extends React.Component {
                                         name:this.state.curType
                                     }}
                                 />
+                                
                             </div>
                         </div>
                         <div id='tag-selection'>
@@ -480,14 +481,6 @@ export class TagsBox extends React.Component {
                             </div>
                             <div id='search-bar-wrapper'>
                                 <input id='search-bar' type='text' placeholder='Search' onChange={this.filterSearch}/>
-                            </div>
-                            <div id='new-item-selection'>
-                                    <p className='new-tag-text'>
-                                        Add New Tag
-                                    </p>
-                                    <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultTag)}>
-                                        +
-                                    </div>
                             </div>
                             <div className='selection-wrapper'>
                                 <SelectionBox 
@@ -500,6 +493,9 @@ export class TagsBox extends React.Component {
                                     update={this.selectItem}
                                     curItem={this.state.curTag}
                                 />
+                                <div id='add-tag-button' onClick={(e)=>this.selectItem(e, defaultTag)}>
+                                    +
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -524,20 +520,13 @@ export class TagsBox extends React.Component {
                             </div>
                             <div id='tag-save'>
                                 <div 
+                                    id='tag-save-button'
                                     className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
                                     onClick={this.handleSave}
                                 >
                                     Save Changes
                                 </div>
                                 {this.state.savingTag ? 'Saving Tag, please wait' : ''}
-                            </div>
-                            <div id='tag-delete'>
-                                {this.state.curTag._id !== '' ? 
-                                    <div id='tag-delete-button' className='button delete-button' onClick={this.handleDelete}>
-                                        Delete Tag
-                                    </div>:''
-                                }
-                                {this.state.deletingTag ? 'Deleting Tag, please wait' : ''}
                             </div>
                         </div>
                         <div id='tag-content'>
@@ -557,6 +546,14 @@ export class TagsBox extends React.Component {
                                 }))}
                                 onChange={this.handleSelectType}
                                 />
+                            </div>
+                            <div id='tag-delete'>
+                                {this.state.curTag._id !== '' ? 
+                                    <div id='tag-delete-button' className='button delete-button' onClick={this.handleDelete}>
+                                        Delete Tag
+                                    </div>:''
+                                }
+                                {this.state.deletingTag ? 'Deleting Tag, please wait' : ''}
                             </div>
                         </div>
                     </div>
