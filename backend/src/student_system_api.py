@@ -93,7 +93,7 @@ def create_response():
         )
     except:
         print(traceback.print_exc())
-        return ("we've reached except")
+        return "we've reached except"
 
 
 # GET to send a response
