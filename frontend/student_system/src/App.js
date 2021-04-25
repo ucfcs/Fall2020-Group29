@@ -136,11 +136,7 @@ function App(props) {
     },
     {
       id: "thanks-feedback",
-      // instead call a component here and end the chatbot
-      // store all the inputs in the component and make the api
-      // requests in that component and call it thankYou!
       component: <ThankYou />,
-      // message: "Thanks! Your data was submitted successfully!",
       end: true,
     },
   ];
