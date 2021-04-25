@@ -199,14 +199,6 @@ export class UsersBox extends React.Component {
                         <div id='search-bar-wrapper'>
                             <input id='search-bar' type='text' placeholder='Search' onChange={this.handleChangeSearch}/>
                         </div>
-                        <div id='new-item-selection'>
-                            <p className='new-user-text'>
-                                Add New User
-                            </p>
-                            <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultUser)}>
-                                +
-                            </div>
-                        </div>
                         <div className='selection-wrapper'>
                             <SelectionBox 
                                 name='users' 
@@ -218,6 +210,9 @@ export class UsersBox extends React.Component {
                                 update={this.selectItem}
                                 curItem={this.state.curUser}
                             />
+                            <div id='add-user-button' onClick={(e)=>this.selectItem(e, defaultUser)}>
+                                +
+                            </div>
                         </div>
                     </div>
                     <div id='user-content-body'>
