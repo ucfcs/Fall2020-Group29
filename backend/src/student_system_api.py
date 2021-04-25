@@ -29,7 +29,7 @@ def home():
 
 
 # POST request to add 1 to count in "Number of questions asked" stat
-@app.route("/api/save-question-asked", methods = ["POST"])
+@app.route("/save-question-asked", methods = ["POST"])
 def add_question():
     question = request.get_json()
     question_confirmation = add_unseen(mongo, question)
@@ -38,7 +38,7 @@ def add_question():
     return "sorry question confirmation is empty"
 
 # POST request to store form responses
-@app.route("/api/submit-feedback", methods=["POST"])
+@app.route("/submit-feedback", methods=["POST"])
 def store_response():
     feedback = request.get_json()
     answered = feedback["answer"]
@@ -51,7 +51,7 @@ def store_response():
     return "sorry feedback is empty"
 
 # POST to recieve an input
-@app.route("/api/get-user-response", methods=["POST", "GET"])
+@app.route("/get-user-response", methods=["POST", "GET"])
 def create_response():
     try:
         # Saves the json in the user_response variable.
@@ -97,7 +97,7 @@ def create_response():
 
 # GET to send a response
 # /chatbot-response
-@app.route("/api/knugget-response", methods=["GET"])
+@app.route("/knugget-response", methods=["GET"])
 def get_response():
     return jsonify({"name": new_response})
 

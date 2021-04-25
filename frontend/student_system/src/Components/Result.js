@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import Chatbot, { Loading } from "react-simple-chatbot";
 import styles from "./Result.module.css";
 import Linkify from "react-linkify";
+import { route } from "../Constants/constants";
 
 class Result extends Component {
   constructor(props) {
@@ -33,10 +34,7 @@ class Result extends Component {
     const lookup = steps.userInput.value;
     const input = { name: lookup };
     // stores returned data in api_response
-    const api_response = await axios.post(
-      "http://127.0.0.1:5000/api/get-user-response",
-      input
-    );
+    const api_response = await axios.post(route + "get-user-response", input);
     // set the state to the relevant data it needs to hold
     this.setState({
       loading: false,
@@ -70,10 +68,7 @@ class Result extends Component {
       },
       body: JSON.stringify(lookup),
     };
-    let response = await fetch(
-      "http://127.0.0.1:5000/api/save-question-asked",
-      options
-    );
+    let response = await fetch(route + "save-question-asked", options);
     let result = await response.json();
     console.log(result);
   }

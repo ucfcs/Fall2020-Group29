@@ -259,7 +259,7 @@ def set_needs_update(mongo, value='Needs Training'):
 
 
 def form_response(mongo, answered, rating, simplicity):
-  if answered = "yes":
+  if answered == "yes":
     new_form_response = {'answered': True, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.today().strftime(date_time_format) }
   else:  
     new_form_response = {'answered': False, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.today().strftime(date_time_format) }

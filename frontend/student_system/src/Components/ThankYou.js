@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import styles from "./ThankYou.module.css";
+import { route } from "../Constants/constants";
 
 class ThankYou extends Component {
   constructor(props) {
@@ -20,10 +21,7 @@ class ThankYou extends Component {
     const answer = steps.answer.value;
     const enjoyment = steps.enjoyment.value;
     const input = { answer: answer, enjoyment: enjoyment, ease: ease };
-    const response = await axios.post(
-      "http://127.0.0.1:5000/api/submit-feedback",
-      input
-    );
+    const response = await axios.post(route + "submit-feedback", input);
     this.setState({ feedbackConf: response });
   }
 
