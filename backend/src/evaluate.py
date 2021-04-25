@@ -8,15 +8,17 @@ import torch.nn as nn
 from sklearn.metrics import confusion_matrix, f1_score
 from sklearn.model_selection import KFold
 
-DEV = False
+with open("config.json") as f:
+    config = json.load(f)
+
+DEV = config["dev_mode"]
 
 if DEV:
-    from dataset import preprocess
-    from model import NeuralNet
-    
-else:
     from .dataset import preprocess
     from .model import NeuralNet
+else:
+    from dataset import preprocess
+    from model import NeuralNet
 
 
 def early_stop(params, loss_list, epoch):
@@ -92,9 +94,9 @@ def k_fold_cross_validation(data, params, modifier, verbose=False, graphic=False
 
         # Set up the k-fold cross validation sets.
         X_train_fold = torch.from_numpy(X[train_index])
-        y_train_fold = torch.from_numpy(y[train_index])
+        y_train_fold = torch.from_numpy(y[train_index]).type(torch.LongTensor)
         X_test_fold = torch.from_numpy(X[test_index])
-        y_test_fold = torch.from_numpy(y[test_index])
+        y_test_fold = torch.from_numpy(y[test_index]).type(torch.LongTensor)
 
         # Set up the datasets and dataloaders.
         train = torch.utils.data.TensorDataset(X_train_fold, y_train_fold)

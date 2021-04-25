@@ -76,7 +76,7 @@ def fit(data, params, modifier, verbose=False, graphic=False):
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
     X = torch.from_numpy(X)
-    y = torch.from_numpy(y)
+    y = torch.from_numpy(y).type(torch.LongTensor)
 
     dataset = torch.utils.data.TensorDataset(X, y)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
