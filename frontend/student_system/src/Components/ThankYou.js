@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-// import ChatBot, { Loading } from "react-simple-chatbot";
-// import { ThemeProvider } from "styled-components";
 import axios from "axios";
 import PropTypes from "prop-types";
 import styles from "./ThankYou.module.css";
