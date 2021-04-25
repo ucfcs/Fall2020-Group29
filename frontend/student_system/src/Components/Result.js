@@ -35,7 +35,7 @@ class Result extends Component {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(lookup),
+      body: JSON.stringify({ name: lookup }),
     };
     try {
       let api_response = await fetch(route + "get-user-response", options);
