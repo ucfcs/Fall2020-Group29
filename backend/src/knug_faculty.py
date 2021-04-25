@@ -39,7 +39,7 @@ mongo = PyMongo(app)
 
 
 #Faculty_System_API
-@app.route("/faculty/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     req = request.get_json()
     username = req["username"]
@@ -70,13 +70,13 @@ def login():
 
 ######################################################## Get Data #####################################################
 
-@app.route("/faculty/get_questions", methods=["GET"])
+@app.route("/get_questions", methods=["GET"])
 def get_questions():
 
     questions = return_all(mongo, "questions")
     return jsonify(questions=questions)
 
-@app.route("/faculty/get_tags", methods=["GET"])
+@app.route("/get_tags", methods=["GET"])
 def get_tags():
 
     tags = return_all(mongo, "tags")
@@ -113,13 +113,13 @@ def get_tags():
         "information": information
     })
 
-@app.route("/faculty/get_contacts", methods=["GET"])
+@app.route("/get_contacts", methods=["GET"])
 def get_contacts():
 
     contacts = return_all(mongo, "contacts")
     return jsonify(contacts=contacts)
 
-@app.route("/faculty/get_documents", methods=["GET"])
+@app.route("/get_documents", methods=["GET"])
 def get_documents():
     files = return_all(mongo, "files")
     documents = []
@@ -132,7 +132,7 @@ def get_documents():
         })
     return jsonify(documents=documents)
 
-@app.route("/faculty/get_users", methods=["GET"])
+@app.route("/get_users", methods=["GET"])
 def get_users():
 
     users = return_all(mongo, "users")
@@ -140,7 +140,7 @@ def get_users():
 
 ######################################################## Add/Update Data ##############################################
 
-@app.route("/faculty/add_question", methods=["POST"])
+@app.route("/add_question", methods=["POST"])
 @jwt_required(optional=DEV)
 def add_q():
     req = request.get_json()
@@ -154,7 +154,7 @@ def add_q():
     else:
         return jsonify(message="Question successfully added.", question=added)
 
-@app.route("/faculty/update_question", methods=["PUT"])
+@app.route("/update_question", methods=["PUT"])
 @jwt_required(optional=DEV)
 def update_q():
     req = request.get_json()
@@ -172,13 +172,13 @@ def update_q():
     else:
         return jsonify(message="Question successfully updated.", question=updated)
 
-@app.route("/faculty/retrain_model", methods=["GET"])
+@app.route("/retrain_model", methods=["GET"])
 @jwt_required(optional=DEV)
 def retrain_model():
     train(db=mongo)
     return jsonify(message="Model successfully retrained")
 
-@app.route("/faculty/add_tag", methods=["POST"])
+@app.route("/add_tag", methods=["POST"])
 @jwt_required(optional=DEV)
 def add_t():
     req = request.get_json()
@@ -199,7 +199,7 @@ def add_t():
     else:
         return jsonify(message="Tag already exists in database."), 500
 
-@app.route("/faculty/update_tag", methods=["PUT"])
+@app.route("/update_tag", methods=["PUT"])
 @jwt_required(optional=DEV)
 def update_t():
     req = request.get_json()
@@ -234,7 +234,8 @@ def update_t():
         return jsonify(tag=updated)
 
 
-@app.route("/faculty/add_user", methods=["POST"])
+
+@app.route("/add_user", methods=["POST"])
 @jwt_required(optional=DEV)
 def add_u():
     req = request.get_json()
@@ -247,7 +248,7 @@ def add_u():
     return jsonify(user=new_user)
 
 
-@app.route("/faculty/update_user", methods=["PUT"])
+@app.route("/update_user", methods=["PUT"])
 @jwt_required(optional=DEV)
 def update_u():
     req = request.get_json()
@@ -261,7 +262,7 @@ def update_u():
         return jsonify(user=updated)
 
 
-@app.route("/faculty/add_contact", methods=["POST"])
+@app.route("/add_contact", methods=["POST"])
 @jwt_required(optional=DEV)
 def add_c():
     req = request.get_json()
@@ -274,7 +275,7 @@ def add_c():
     return jsonify(contact=new_contact)
 
 
-@app.route("/faculty/update_contact", methods=["PUT"])
+@app.route("/update_contact", methods=["PUT"])
 @jwt_required(optional=DEV)
 def update_c():
     req = request.get_json()
@@ -290,7 +291,7 @@ def update_c():
 
 ####################################################### Delete Data ###################################################
 
-@app.route("/faculty/delete_question", methods=["DELETE"])
+@app.route("/delete_question", methods=["DELETE"])
 @jwt_required(optional=DEV)
 def delete_q():
     req = request.get_json()
@@ -302,7 +303,7 @@ def delete_q():
     else:
         return jsonify(message=message), 500
 
-@app.route("/faculty/delete_tag", methods=["DELETE"])
+@app.route("/delete_tag", methods=["DELETE"])
 @jwt_required(optional=DEV)
 def delete_t():
     req = request.get_json()
@@ -314,7 +315,7 @@ def delete_t():
         return jsonify(message=message), 500
 
 
-@app.route("/faculty/delete_contact", methods=["DELETE"])
+@app.route("/delete_contact", methods=["DELETE"])
 @jwt_required(optional=DEV)
 def delete_c():
     req = request.get_json()
@@ -340,7 +341,7 @@ def delete_c():
 #         return jsonify(message=message), 404
 
 
-@app.route("/faculty/delete_user", methods=["DELETE"])
+@app.route("/delete_user", methods=["DELETE"])
 @jwt_required(optional=DEV)
 def delete_u():
     req = request.get_json()
@@ -354,8 +355,7 @@ def delete_u():
 
 ####################################################### Settings Access ###############################################
 
-
-@app.route("/faculty/check_needs_training", methods=["GET"])
+@app.route("/check_needs_training", methods=["GET"])
 @jwt_required(optional=DEV)
 def check_needs_training():
     trained = needs_update_check(mongo)
@@ -364,7 +364,7 @@ def check_needs_training():
     else:
         return jsonify(success=False, message="Could not access training settings"), 500
 
-@app.route("/faculty/update_needs_training", methods=["PUT"])
+@app.route("/update_needs_training", methods=["PUT"])
 @jwt_required(optional=DEV)
 def update_needs_training():
     req = request.get_json()
@@ -379,7 +379,7 @@ def update_needs_training():
 
 
 # Routes for retrieving Dummy Data for testing purposes
-@app.route("/faculty/get_dummy_questions", methods=["GET"])
+@app.route("/get_dummy_questions", methods=["GET"])
 def get_dummy_questions():
     return jsonify(questions=[
             {
@@ -410,7 +410,7 @@ def get_dummy_questions():
         ])
 
 
-@app.route("/faculty/get_dummy_tags", methods=["GET"])
+@app.route("/get_dummy_tags", methods=["GET"])
 def get_dummy_tags():
     return jsonify(tags={
         "intent":[
@@ -465,7 +465,7 @@ def get_dummy_tags():
     })
 
 
-@app.route("/faculty/get_dummy_contacts", methods=["GET"])
+@app.route("/get_dummy_contacts", methods=["GET"])
 def get_dummy_contacts():
     return jsonify(contacts=[
         {
@@ -481,7 +481,7 @@ def get_dummy_contacts():
     ])
 
 
-@app.route("/faculty/get_dummy_documents", methods=["GET"])
+@app.route("/get_dummy_documents", methods=["GET"])
 def get_dummy_documents():
     return jsonify(documents=[
         {
