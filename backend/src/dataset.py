@@ -3,7 +3,7 @@ import json
 import numpy as np
 import pandas as pd
 
-DEV = True
+DEV = False
 
 if DEV:
     from utils import bag_of_words, lemmatize, stem, tokenize

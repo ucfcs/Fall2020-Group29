@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-DEV = True
+DEV = False
 
 if DEV:
     from model import NeuralNet
@@ -77,7 +77,7 @@ def predict(utterance):
 
     :utterance: the utterance to be understood.
     """
-    
+
     # Load the configuration.
     params_file = "params.json"
     with open(params_file) as f:

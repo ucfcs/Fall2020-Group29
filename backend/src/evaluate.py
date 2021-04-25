@@ -8,7 +8,7 @@ import torch.nn as nn
 from sklearn.metrics import confusion_matrix, f1_score
 from sklearn.model_selection import KFold
 
-DEV = True
+DEV = False
 
 if DEV:
     from dataset import preprocess

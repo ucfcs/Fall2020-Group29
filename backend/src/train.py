@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split, KFold
 from sklearn.preprocessing import normalize
 from torch.utils.data import DataLoader
 
-DEV = True
+DEV = False
 
 if DEV:
     from dataset import fetch_data, preprocess
