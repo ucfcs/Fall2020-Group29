@@ -51,7 +51,7 @@ def store_response():
     return "sorry feedback is empty"
 
 # POST to recieve an input
-@app.route("/get-user-response", methods=["POST", "GET"])
+@app.route("/get-user-response", methods=["POST"])
 def create_response():
     try:
         # Saves the json in the user_response variable.
@@ -93,6 +93,7 @@ def create_response():
         )
     except:
         print(traceback.print_exc())
+        return ("we've reached except")
 
 
 # GET to send a response
