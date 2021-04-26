@@ -1,5 +1,4 @@
 # KnugBot: CS/IT Advising Chatbot
-### Group #29
 
 ## Overview
 
@@ -28,12 +27,12 @@ The project is divided into the following main subsystems:
 
 ## Accessing the Chatbot and Faculty Systems
 
-To access the systems, you need to be behind the UCF firewall. To do this, you need to either be logged in to UCF's wi-fi network on campus, or use the UCF VPN. You can find instructions about how to log in remotely through the VPN here.
+To access the systems, you need to be behind the UCF firewall. To do this, you need to either be logged in to UCF's wi-fi network on campus, or use the UCF VPN. You can find instructions about how to log in remotely through the VPN [here](https://ucf.service-now.com/ucfit?id=kb_article&sys_id=ff89f4764f45e200be64f0318110c763).
 
 Once you are behind the firewall, simply log in to each system with the following links:
 
-* Chatbot
-* Faculty System
+* [Chatbot](10.171.204.196)
+* [Faculty System](10.171.204.196/faculty/)
 
 ## Tools Used
 
