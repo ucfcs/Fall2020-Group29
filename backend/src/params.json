@@ -3,23 +3,22 @@
     "file_dept": "/var/www/ucf-ai-advising-chatbot/backend/src/data/entities_dept.csv",
     "file_cat": "/var/www/ucf-ai-advising-chatbot/backend/src/data/entities_cat.csv",
     "file_info": "/var/www/ucf-ai-advising-chatbot/backend/src/data/entities_info.csv",
-
     "num_predictions": 1,
-
-    "FLAGS":
-        {
-            "ints": 1,
-            "dept": 1,
-            "cat": 1,
-            "info": 1
-        },
-        
-    "num_epochs_ints": 1,
-    "num_epochs_dept": 250,
-    "num_epochs_cat": 750,
-    "num_epochs_info": 1250,
-    
+    "FLAGS": {
+        "ints": 1,
+        "dept": 1,
+        "cat": 1,
+        "info": 1
+    },
+    "max_epochs": 1500,
+    "num_epochs_ints": 5,
+    "num_epochs_dept": 294,
+    "num_epochs_cat": 312,
+    "num_epochs_info": 112,
     "batch_size": 8,
-    "learning_rate": 3e-4,
-    "hidden_size": 12
+    "learning_rate": 0.0003,
+    "hidden_size": 64,
+    "num_folds": 10,
+    "early_stop_patience": 10,
+    "early_stop_delta": 0.0001
 }

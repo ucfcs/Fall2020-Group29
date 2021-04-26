@@ -1,7 +1,7 @@
 import {route} from '../../requestUtils';
 
-export function login(nID, pass) {
-	console.log(nID);
+export function login(nID, pass, callback) {
+
     let options = {
         method: 'POST',
         headers: {
@@ -14,20 +14,27 @@ export function login(nID, pass) {
     };
     fetch(route + 'login', options)
       .then((res) => {
-        if (res.status === 401) {
-          res.json().then((res)=> alert(res['message']));
-        } else if (res.status === 200) {
+        if (res.status === 200) {
           res.json().then((res)=> {
-			window.sessionStorage.setItem('token', JSON.stringify(res['token'])); 
-			window.location.href = ('./home');
-		});
+            callback({
+              success:true,
+              token:res['token']
+            });
+          });
         } else {
-          alert('Login Failed');
-          console.log(res.status);
+          res.json().then((res)=> {
+            callback({
+              success:false,
+              message:res.message,
+              error:res.message
+            });
+          });
         }
-      })
-      .catch((err) => {
-        alert('Login Failed');
-        console.log('error occurred', err);
+      }).catch((err) => {
+        callback({
+          success:false,
+          message:'Login Failed',
+          error:('error occurred', err)
+        });
       });
 }  
