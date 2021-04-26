@@ -120,8 +120,10 @@ def predict(utterance):
                   tags_cat.get(0).get("prob"),
                   tags_info.get(0).get("prob") ]
     
-    total_prob = np.mean(all_probs)
+    # total_prob = np.mean(all_probs)
+    all_probs = np.array(all_probs)
+    lowest_prob = all_probs.min()
 
-    predicted_tags["total_prob"] = total_prob
+    predicted_tags["lowest_prob"] = lowest_prob
 
     return predicted_tags

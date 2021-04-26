@@ -17,9 +17,8 @@ class Result extends Component {
       trigger: false,
       counter: 0,
       questionAsked: "",
+      followUp: "",
     };
-
-    this.resetWithString = this.resetWithString.bind(this);
   }
 
   async componentDidMount() {
@@ -33,15 +32,30 @@ class Result extends Component {
     const input = { name: lookup };
     try {
       const api_response = await axios.post(route + "get-user-response", input);
-      this.setState({
-        loading: false,
-        result: api_response.data.answer,
-        threshold: api_response.data.probability,
-        counter: counter,
-        questionAsked: lookup,
-      });
+      this.setState(
+        {
+          loading: false,
+          result: api_response.data.answer,
+          threshold: api_response.data.probability,
+          counter: counter,
+          questionAsked: lookup,
+          followUp: await api_response.data.followUp,
+        },
+        () => {
+          if (
+            this.state.counter >= 2 &&
+            (this.state.result === "no match" || this.state.threshold <= 0.75)
+          ) {
+            this.saveUnasweredQuestion();
+          }
+          this.incNumOfQuestionsAsked();
+          if (this.state.result !== "no match" && this.state.threshold >= 0.9) {
+            this.incNumOfQuestionsAnsweredCorrectly();
+          }
+        }
+      );
     } catch (err) {
-      alert("Failed to retrieve questions.");
+      alert("Request Failed");
       console.log("error occurred", err);
     }
   }
@@ -55,6 +69,45 @@ class Result extends Component {
   reset = () => {
     sessionStorage.setItem("counter", 0);
   };
+
+  async incReferredToAdvisor() {
+    let options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: "test string",
+    };
+    let response = await fetch(route + "increment-metric-4", options);
+    let result = await response.json();
+    console.log(result);
+  }
+
+  async incNumOfQuestionsAsked() {
+    let options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: "test string",
+    };
+    let response = await fetch(route + "increment-metric-2", options);
+    let result = await response.json();
+    console.log(result);
+  }
+
+  async incNumOfQuestionsAnsweredCorrectly() {
+    let options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: "test string",
+    };
+    let response = await fetch(route + "increment-metric-3", options);
+    let result = await response.json();
+    console.log(result);
+  }
 
   async saveUnasweredQuestion() {
     const { steps } = this.props;
@@ -71,26 +124,15 @@ class Result extends Component {
     console.log(result);
   }
 
-  resetWithString() {
-    if (this.state.counter > 0) {
-      sessionStorage.setItem("counter", 0);
-      this.saveUnasweredQuestion();
-    }
-    return "sorry here's a contact";
-  }
-
   triggerGreeting() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "Greeting" });
     });
   }
 
-  triggerMoreHelp(callback) {
+  triggerMoreHelp() {
     this.setState({ trigger: true }, () => {
       this.props.triggerNextStep({ trigger: "More Help" });
-      if (callback !== undefined) {
-        callback();
-      }
     });
   }
 
@@ -118,15 +160,33 @@ class Result extends Component {
     });
   }
 
-  render() {
-    const { trigger, loading, result, threshold } = this.state;
+  // async handleFollowUp() {
+  //   let followUp = this.state.followUp;
+  //   console.log(followUp);
+  //   let options = {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({ name: followUp }),
+  //   };
+  //   const response = await fetch(route + "get-user-response", options);
+  //   const result = await response.json();
+  //   console.log(result);
+  // }
 
+  render() {
+    const { trigger, loading, result, threshold, followUp } = this.state;
     if (this.state.counter >= 2) {
       if (result !== "no match") {
-        if (threshold >= 0.99) {
+        if (threshold >= 0.9) {
           return (
             <div className={styles.body}>
-              {loading ? <Loading /> : <Linkify>{result}</Linkify>}
+              {loading ? (
+                <Loading />
+              ) : (
+                <Linkify properties={{ target: "_blank" }}>{result}</Linkify>
+              )}
               {!loading && (
                 <div
                   style={{
@@ -163,12 +223,14 @@ class Result extends Component {
               )}
             </div>
           );
-        }
-
-        if (threshold < 0.99 && threshold > 0.5) {
+        } else if (threshold < 0.9 && threshold > 0.75) {
           return (
             <div className={styles.body}>
-              {loading ? <Loading /> : <Linkify>{result}</Linkify>}
+              {loading ? (
+                <Loading />
+              ) : (
+                <Linkify properties={{ target: "_blank" }}>{result}</Linkify>
+              )}
               {!loading && (
                 <div
                   style={{
@@ -183,6 +245,7 @@ class Result extends Component {
                         onClick={() => {
                           this.triggerEvenMoreHelp();
                           this.reset();
+                          this.incNumOfQuestionsAnsweredCorrectly();
                         }}
                         className={styles.button}
                       >
@@ -202,31 +265,19 @@ class Result extends Component {
               )}
             </div>
           );
-        }
-
-        if (threshold <= 0.5) {
-          return (
-            <div className={styles.body}>
-              {loading ? <Loading /> : this.resetWithString()}
-            </div>
-          );
-        }
-      } else {
-        return (
-          <div className={styles.body}>
-            {loading ? <Loading /> : this.resetWithString()}
-          </div>
-        );
-      }
-    } else {
-      if (result !== "no match") {
-        if (threshold >= 0.99) {
+        } else {
           return (
             <div className={styles.body}>
               {loading ? (
                 <Loading />
               ) : (
-                <Linkify className={styles.linkify}>{result}</Linkify>
+                <Linkify>
+                  Sorry I don't have the knug wisdom to answer your question.
+                  For questions related to CS undergraduate advising, please
+                  contact Jenny Shen at Jenny.Shen@ucf.edu, for IT undergraduate
+                  advising contact Sean Donovan at Sean.Donovan@ucf.edu.
+                  Otherwise please contact the appropriate department.
+                </Linkify>
               )}
               {!loading && (
                 <div
@@ -265,11 +316,113 @@ class Result extends Component {
             </div>
           );
         }
-
-        if (threshold < 0.99 && threshold > 0.5) {
+      } else {
+        return (
+          <div className={styles.body}>
+            {loading ? (
+              <Loading />
+            ) : (
+              <Linkify>
+                Sorry I don't have the knug wisdom to answer your question. For
+                questions related to CS undergraduate advising, please contact
+                Jenny Shen at Jenny.Shen@ucf.edu, for IT undergraduate advising
+                contact Sean Donovan at Sean.Donovan@ucf.edu. Otherwise please
+                contact the appropriate department.
+              </Linkify>
+            )}
+            {!loading && (
+              <div
+                style={{
+                  textAlign: "center",
+                  margin: 20,
+                }}
+              >
+                Is there something else I can help you with?
+                <div>
+                  {!trigger && (
+                    <button
+                      className={styles.button}
+                      onClick={() => {
+                        this.triggerMoreHelp();
+                        this.reset();
+                      }}
+                    >
+                      Yes
+                    </button>
+                  )}
+                  {!trigger && (
+                    <button
+                      onClick={() => {
+                        this.triggerThankYou();
+                        this.reset();
+                      }}
+                      className={styles.button}
+                    >
+                      No
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+    } else if (this.state.counter < 2) {
+      if (result !== "no match") {
+        if (threshold >= 0.9) {
           return (
             <div className={styles.body}>
-              {loading ? <Loading /> : <Linkify>{result}</Linkify>}
+              {loading ? (
+                <Loading />
+              ) : (
+                <Linkify target="_blank" className={styles.linkify}>
+                  {result}
+                </Linkify>
+              )}
+              {!loading && (
+                <div
+                  style={{
+                    textAlign: "center",
+                    margin: 20,
+                  }}
+                >
+                  Is there something else I can help you with?
+                  <div>
+                    {!trigger && (
+                      <button
+                        className={styles.button}
+                        onClick={() => {
+                          this.triggerMoreHelp();
+                          this.reset();
+                        }}
+                      >
+                        Yes
+                      </button>
+                    )}
+                    {!trigger && (
+                      <button
+                        onClick={() => {
+                          this.triggerThankYou();
+                          this.reset();
+                        }}
+                        className={styles.button}
+                      >
+                        No
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        } else if (threshold < 0.9 && threshold > 0.75) {
+          return (
+            <div className={styles.body}>
+              {loading ? (
+                <Loading />
+              ) : (
+                <Linkify properties={{ target: "_blank" }}>{result}</Linkify>
+              )}
               {!loading && (
                 <div
                   style={{
@@ -284,6 +437,7 @@ class Result extends Component {
                         onClick={() => {
                           this.triggerEvenMoreHelp();
                           this.reset();
+                          this.incNumOfQuestionsAnsweredCorrectly();
                         }}
                         className={styles.button}
                       >
@@ -306,9 +460,7 @@ class Result extends Component {
               )}
             </div>
           );
-        }
-
-        if (threshold < 0.5) {
+        } else if (threshold <= 0.75) {
           return (
             <div className={styles.body}>
               {loading ? (
@@ -351,6 +503,49 @@ class Result extends Component {
               )}
             </div>
           );
+        } else {
+          return (
+            <div className={styles.body}>
+              {loading ? (
+                <Loading />
+              ) : (
+                "Couldn't find what you were looking for. Would you like to try again?"
+              )}
+              {!loading && (
+                <div
+                  style={{
+                    textAlign: "center",
+                    margin: 20,
+                  }}
+                >
+                  <div>
+                    {!trigger && (
+                      <button
+                        onClick={() => {
+                          this.triggerMoreHelp();
+                          this.increment();
+                        }}
+                        className={styles.button}
+                      >
+                        Yes
+                      </button>
+                    )}
+                    {!trigger && (
+                      <button
+                        onClick={() => {
+                          this.triggerSorryThankYou();
+                          this.reset();
+                        }}
+                        className={styles.button}
+                      >
+                        No
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
         }
       } else {
         return (
@@ -371,7 +566,8 @@ class Result extends Component {
                   {!trigger && (
                     <button
                       onClick={() => {
-                        this.triggerMoreHelp(this.increment);
+                        this.triggerMoreHelp();
+                        this.increment();
                       }}
                       className={styles.button}
                     >

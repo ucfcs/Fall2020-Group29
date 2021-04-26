@@ -433,9 +433,9 @@ def set_needs_update(mongo, value='Needs Training'):
 
 def form_response(mongo, answered, rating, simplicity):
   if answered == "yes":
-    new_form_response = {'answered': True, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.today().strftime(date_time_format) }
+    new_form_response = {'answered': True, 'rating': int(rating), 'simplicity': int(simplicity), 'date/time added': datetime.utcnow() }
   else:  
-    new_form_response = {'answered': False, 'rating': rating, 'simplicity': simplicity, 'date/time added': datetime.today().strftime(date_time_format) }
+    new_form_response = {'answered': False, 'rating': int(rating), 'simplicity': int(simplicity), 'date/time added': datetime.utcnow() }
   
   InsertOneResult_Obj = mongo.db.form_responses.insert_one(new_form_response) # insert_one() doesn't return a document, it returns a result that contains the ObjectID
   
@@ -444,7 +444,7 @@ def form_response(mongo, answered, rating, simplicity):
   return new_form_response,''
 
 def add_unseen(mongo, question):
-  new_question = {'question':question, 'date/time added': datetime.today().strftime(date_time_format), 'resolved': False, "date/time resolved": None}
+  new_question = {'question':question, 'date/time added': datetime.utcnow(), 'resolved': False, "date/time resolved": None}
   result = mongo.db.unanswered.find_one({
     "question": question
   })
@@ -455,3 +455,68 @@ def add_unseen(mongo, question):
   else:
     return "question already exists"
  
+def inc_num_of_questions_asked(mongo):
+  updated = mongo.db.statistics.find_one_and_update(
+    {
+    'statistic':'number of questions asked'
+    }, 
+    {
+    '$inc': { 'count': 1 } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
+
+def inc_num_questions_answered_correctly(mongo):
+  updated = mongo.db.statistics.find_one_and_update(
+    {
+      'statistic':'number of questions answered correctly'
+    }, 
+    {
+      '$inc': { 'count': 1 } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
+
+def inc_num_times_referred_to_advisor():
+  updated = mongo.db.statistics.find_one_and_update(
+    {
+      'statistic':'number of times referred to advisor'
+    }, 
+    {
+      '$inc': { 'count': 1 } 
+    },
+    upsert=False, # upsert = if thing does not exist, make it exist
+    return_document=ReturnDocument.AFTER # need this or else it returns the document from before the update
+    )
+  if (updated is None): #if there is no match
+    return jsonify({'result':'no match'})
+
+  fickleID = updated.pop('_id') # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
+  updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
+
+  return jsonify(updated)
+
+def get_contact(mongo):
+  contact = mongo.db.contacts.find_one({"title": "Undergraduate Coordinator"})
+  if contact is None:
+    return jsonify({"result": "no match"})
+  
+  fickleID = contact.pop('_id') 
+  contact.update({'_id':str(fickleID)})
+  return jsonify(contact)
