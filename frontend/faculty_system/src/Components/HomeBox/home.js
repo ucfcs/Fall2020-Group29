@@ -1,21 +1,18 @@
-import {route, getToken} from '../../requestUtils'
+import {route, headers} from '../../requestUtils'
 
 export const sections = [
   'Questions',
   'Tags',
-  'Users'
-  // 'Contacts',
-  // 'Documents',
+  'Contacts',
+  // 'Attached-Links',
+  'Users' 
   // 'Statistics'
 ]
 
 export function retrain(callback) {
     let options = {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + getToken()
-        }
+        headers: headers
       };
   
       fetch(route + 'retrain_model', options)
@@ -38,16 +35,18 @@ export function retrain(callback) {
               trained: false
             });
         }
+      }).catch((err)=> {
+        callback({
+          success:false,
+          message: err
+        });
       });
 }
 
 export function check_needs_training(callback) {
   let options = {
     method: 'GET',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + getToken()
-    }
+    headers: headers
   };
   fetch(route + 'check_needs_training', options)
     .then((res)=> {
@@ -71,16 +70,18 @@ export function check_needs_training(callback) {
           });
         });
       }
-    })
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
+    });
 }
 
 export function update_needs_training(value, callback) {
   let options = {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + getToken()
-    },
+    headers: headers,
     body: JSON.stringify({'value': value})
   };
   fetch(route + 'update_needs_training', options)
@@ -102,10 +103,15 @@ export function update_needs_training(value, callback) {
           })
         })
       } 
-    })
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
+    });
 }
 
 export function logOut() {
   window.sessionStorage.clear();
-  window.location.href = '/';
+  window.location.href = window.location.href.replace('home', '');
 }

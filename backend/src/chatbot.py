@@ -1,11 +1,12 @@
 import json
-import torch
 import numpy as np
 import pandas as pd
+import torch
 
+with open("config.json") as f:
+    config = json.load(f)
 
-DEV = False
-
+DEV = config["dev_mode"]
 
 if DEV:
     from .model import NeuralNet
@@ -16,6 +17,15 @@ else:
 
 
 def predict_tags(device, file_name, trained_model, utterance, num_predictions):
+    """
+    Predict the tags of the given utterance with the specified model.
+
+    :device: specification of CPU or GPU.
+    "file_name": file with the dataset.
+    :trained_model: the trained model used for the predictions.
+    :utterance: the utterance used for the predictions.
+    :num_predictions: the number of predictions made with the utterance.
+    """
 
     # Read the data.
     data = pd.read_csv(file_name)
@@ -64,9 +74,14 @@ def predict_tags(device, file_name, trained_model, utterance, num_predictions):
 
 
 def predict(utterance):
+    """
+    Predict the tags for the given utterance. Calls predict_tags().
+
+    :utterance: the utterance to be understood.
+    """
 
     # Load the configuration.
-    params_file = "params.json"
+    params_file = "/var/www/ucf-ai-advising-chatbot/backend/src/params.json"
     with open(params_file) as f:
         params = json.load(f)
 
@@ -83,16 +98,16 @@ def predict(utterance):
     num_predictions = params["num_predictions"]
 
     tags_ints = predict_tags(
-        device, file_ints, "models/trained_model_ints.pth", utterance, num_predictions
+        device, file_ints, "/var/www/ucf-ai-advising-chatbot/backend/src/models/trained_model_ints.pth", utterance, num_predictions
     )
     tags_dept = predict_tags(
-        device, file_dept, "models/trained_model_dept.pth", utterance, num_predictions
+        device, file_dept, "/var/www/ucf-ai-advising-chatbot/backend/src/models/trained_model_dept.pth", utterance, num_predictions
     )
     tags_cat = predict_tags(
-        device, file_cat, "models/trained_model_cat.pth", utterance, num_predictions
+        device, file_cat, "/var/www/ucf-ai-advising-chatbot/backend/src/models/trained_model_cat.pth", utterance, num_predictions
     )
     tags_info = predict_tags(
-        device, file_info, "models/trained_model_info.pth", utterance, num_predictions
+        device, file_info, "/var/www/ucf-ai-advising-chatbot/backend/src/models/trained_model_info.pth", utterance, num_predictions
     )
 
     predicted_tags["ints"] = tags_ints

@@ -7,28 +7,28 @@ from ldap3.utils.dn import escape_rdn
 from ldap3.core.exceptions import LDAPSocketOpenError, LDAPBindError
 import json
 
-# Set to true when running development server, false before pushing to main
-DEV = False
-
-if DEV:
-    from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag,
-     delete_tag, check_valid_user, needs_update_check, set_needs_update, add_user, update_user, delete_user)
-    from .train import train
-else:
-    from database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag,
-     delete_tag, check_valid_user, needs_update_check, set_needs_update, add_user, update_user, delete_user)
-    from train import train
-
-
-
 ######################################################## Server Initialization ########################################
+
 
 app = Flask(__name__)
 with app.open_resource("config.json") as f:
     config = json.load(f)
-for key in config:
-    app.config[key] = config[key]
 
+for key in config["server_settings"]:
+    app.config[key] = config["server_settings"][key]
+
+DEV = config["dev_mode"]
+
+if DEV:
+    from .database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag,
+     delete_tag, check_valid_user, needs_update_check, set_needs_update, add_contact, update_contact, delete_contact,
+      add_user, update_user, delete_user)
+    from .train import train
+else:
+    from database_manager import (return_all, update_question, add_question, delete_question, add_tag, update_tag,
+     delete_tag, check_valid_user, needs_update_check, set_needs_update, add_contact, update_contact, delete_contact,
+      add_user, update_user, delete_user)
+    from train import train
 
 CORS(app)
 jwt = JWTManager(app)
@@ -36,10 +36,6 @@ jwt = JWTManager(app)
 mongo = PyMongo(app)
 
 ######################################################### Login #######################################################
-
-@app.route("/", methods=["GET"])
-def test():
-    return jsonify(message="This has been a test!")
 
 
 #Faculty_System_API
@@ -145,7 +141,7 @@ def get_users():
 ######################################################## Add/Update Data ##############################################
 
 @app.route("/add_question", methods=["POST"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def add_q():
     req = request.get_json()
     question = req["question"]
@@ -159,7 +155,7 @@ def add_q():
         return jsonify(message="Question successfully added.", question=added)
 
 @app.route("/update_question", methods=["PUT"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def update_q():
     req = request.get_json()
     question = req["question"]
@@ -177,13 +173,13 @@ def update_q():
         return jsonify(message="Question successfully updated.", question=updated)
 
 @app.route("/retrain_model", methods=["GET"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def retrain_model():
     train(db=mongo)
     return jsonify(message="Model successfully retrained")
 
 @app.route("/add_tag", methods=["POST"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def add_t():
     req = request.get_json()
     tag = req["tag"]
@@ -204,7 +200,7 @@ def add_t():
         return jsonify(message="Tag already exists in database."), 500
 
 @app.route("/update_tag", methods=["PUT"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def update_t():
     req = request.get_json()
     old_tag = req["old_tag"]
@@ -222,7 +218,6 @@ def update_t():
         new_tag["type"] = "info"
 
     updated = update_tag(mongo, old_tag, new_tag)
-
     
     if updated == None:
         return jsonify(message="Tag not found."), 404
@@ -241,7 +236,7 @@ def update_t():
 
 
 @app.route("/add_user", methods=["POST"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def add_u():
     req = request.get_json()
     user = req["user"]
@@ -254,11 +249,10 @@ def add_u():
 
 
 @app.route("/update_user", methods=["PUT"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def update_u():
     req = request.get_json()
     user = req["user"]
-    id = user["_id"]
 
     updated = update_user(mongo, user["_id"], user["NID"], user["name"], user["email"], user["IsAdmin"])
 
@@ -268,10 +262,37 @@ def update_u():
         return jsonify(user=updated)
 
 
+@app.route("/add_contact", methods=["POST"])
+@jwt_required(optional=DEV)
+def add_c():
+    req = request.get_json()
+    contact = req["contact"]
+    contact.pop("_id")
+    new_contact = add_contact(mongo, contact)
+    
+    if new_contact is None:
+        return jsonify(message="Could not add new contact"), 500
+    return jsonify(contact=new_contact)
+
+
+@app.route("/update_contact", methods=["PUT"])
+@jwt_required(optional=DEV)
+def update_c():
+    req = request.get_json()
+    contact = req["contact"]
+    id = contact.pop("_id")
+
+    updated = update_contact(mongo, id, contact)
+
+    if updated is None:
+        return jsonify(message="Could not update contact"), 500
+    return jsonify(contact=updated)
+
+
 ####################################################### Delete Data ###################################################
 
 @app.route("/delete_question", methods=["DELETE"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def delete_q():
     req = request.get_json()
     question = req["question"]
@@ -283,7 +304,7 @@ def delete_q():
         return jsonify(message=message), 500
 
 @app.route("/delete_tag", methods=["DELETE"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def delete_t():
     req = request.get_json()
     tag = req["tag"]
@@ -294,8 +315,34 @@ def delete_t():
         return jsonify(message=message), 500
 
 
+@app.route("/delete_contact", methods=["DELETE"])
+@jwt_required(optional=DEV)
+def delete_c():
+    req = request.get_json()
+    contact = req["contact"]
+
+    deleted, message = delete_contact(mongo, contact["_id"])
+    if (deleted):
+        return jsonify(message=message)
+    else:
+        return jsonify(message=message), 404
+
+
+# @app.route("/faculty/delete_link", methods=["DELETE"])
+# #@jwt_required()
+# def delete_l():
+#     req = request.get_json()
+#     link = req["link"]
+
+#     deleted, message = delete_link(mongo, link["_id"])
+#     if (deleted):
+#         return jsonify(message=message)
+#     else:
+#         return jsonify(message=message), 404
+
+
 @app.route("/delete_user", methods=["DELETE"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def delete_u():
     req = request.get_json()
     user = req["user"]
@@ -309,7 +356,7 @@ def delete_u():
 ####################################################### Settings Access ###############################################
 
 @app.route("/check_needs_training", methods=["GET"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def check_needs_training():
     trained = needs_update_check(mongo)
     if (trained != None):
@@ -318,7 +365,7 @@ def check_needs_training():
         return jsonify(success=False, message="Could not access training settings"), 500
 
 @app.route("/update_needs_training", methods=["PUT"])
-@jwt_required()
+@jwt_required(optional=DEV)
 def update_needs_training():
     req = request.get_json()
     value = req["value"]

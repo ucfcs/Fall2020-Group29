@@ -1,9 +1,11 @@
-
+// Constant used to set whether we should run the system in development mode or production mode.
+// Should always be set to false before merging to main or building frontend.
+const DEV_MODE = true;
 
 // Function used to grab the JSON Web Token from session storage.
 // Used by any api calls for Authorization.
 // If there is no token, will return the empty string, which will result in a 401 Unauthorized error getting thrown.
-export function getToken() {
+function getToken() {
     let token = window.sessionStorage.getItem('token');
     if (token === null) {
         return '';
@@ -12,8 +14,14 @@ export function getToken() {
     }
 }
 
-// Development Route, comment out before building for production.
-// export const route = "http://127.0.0.1:5000/";
+export const headers = DEV_MODE ? {
+    'Content-Type': 'application/json'
+} : {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + getToken()
+}
 
-// Production Route, comment out when connecting to local Flask server.
-export const route = "http://10.171.204.196/api/faculty";
+// APIs route to dev server if DEV_MODE true, otherwise they route to the production server.
+export const route = DEV_MODE ? "http://127.0.0.1:5000/" : "http://10.171.204.196/api/faculty/";
+
+
