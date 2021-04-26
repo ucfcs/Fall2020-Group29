@@ -66,7 +66,7 @@ def predict_tags(device, file_name, trained_model, utterance, num_predictions):
 def predict(utterance):
 
     # Load the configuration.
-    params_file = "params.json"
+    params_file = "/var/www/ucf-ai-advising-chatbot/backend/src/params.json"
     with open(params_file) as f:
         params = json.load(f)
 
@@ -83,16 +83,16 @@ def predict(utterance):
     num_predictions = params["num_predictions"]
 
     tags_ints = predict_tags(
-        device, file_ints, "models/trained_model_ints.pth", utterance, num_predictions
+        device, file_ints, "/var/www/ucf-ai-advising-chatbot/backend/src/models/trained_model_ints.pth", utterance, num_predictions
     )
     tags_dept = predict_tags(
-        device, file_dept, "models/trained_model_dept.pth", utterance, num_predictions
+        device, file_dept, "/var/www/ucf-ai-advising-chatbot/backend/src/models/trained_model_dept.pth", utterance, num_predictions
     )
     tags_cat = predict_tags(
-        device, file_cat, "models/trained_model_cat.pth", utterance, num_predictions
+        device, file_cat, "/var/www/ucf-ai-advising-chatbot/backend/src/models/trained_model_cat.pth", utterance, num_predictions
     )
     tags_info = predict_tags(
-        device, file_info, "models/trained_model_info.pth", utterance, num_predictions
+        device, file_info, "/var/www/ucf-ai-advising-chatbot/backend/src/models/trained_model_info.pth", utterance, num_predictions
     )
 
     predicted_tags["ints"] = tags_ints

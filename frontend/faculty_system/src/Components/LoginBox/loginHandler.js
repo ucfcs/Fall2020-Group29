@@ -1,7 +1,7 @@
 import {route} from '../../requestUtils';
 
 export function login(nID, pass) {
-
+	console.log(nID);
     let options = {
         method: 'POST',
         headers: {
@@ -17,7 +17,10 @@ export function login(nID, pass) {
         if (res.status === 401) {
           res.json().then((res)=> alert(res['message']));
         } else if (res.status === 200) {
-          res.json().then((res)=> {window.sessionStorage.setItem('token', res['token']); window.location.href = (window.location + 'home');});
+          res.json().then((res)=> {
+			window.sessionStorage.setItem('token', JSON.stringify(res['token'])); 
+			window.location.href = ('./home');
+		});
         } else {
           alert('Login Failed');
           console.log(res.status);
