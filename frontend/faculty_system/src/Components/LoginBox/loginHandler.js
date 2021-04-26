@@ -34,7 +34,7 @@ export function login(nID, pass, callback) {
         callback({
           success:false,
           message:'Login Failed',
-          error:('error occurred', err)
+          error:'error occurred'+ err
         });
       });
 }  
