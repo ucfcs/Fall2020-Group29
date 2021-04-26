@@ -1,5 +1,7 @@
 # KnugBot: CS/IT Advising Chatbot
 
+![KnugBot Logo](https://github.com/ucfcs/ucf-ai-advising-chatbot/blob/main/knugbot_logo.png)
+
 ## Overview
 
 * **Year:** 2021
