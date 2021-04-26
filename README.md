@@ -4,7 +4,7 @@
 
 * **Year:** 2021
 * **Sponsor:** Dr. Mark Heinrich, CS/IT Undergraduate Coordinator
-* **Group**: Group #29
+* **Group:** Group #29
 
 ## Team
 
@@ -29,10 +29,10 @@ The project is divided into the following main subsystems:
 
 To access the systems, you need to be behind the UCF firewall. To do this, you need to either be logged in to UCF's wi-fi network on campus, or use the UCF VPN. You can find instructions about how to log in remotely through the VPN [here](https://ucf.service-now.com/ucfit?id=kb_article&sys_id=ff89f4764f45e200be64f0318110c763).
 
-Once you are behind the firewall, simply log in to each system with the following links:
+Once you are behind the firewall, simply log in to each system with the following IP addresses:
 
-* [Chatbot](10.171.204.196)
-* [Faculty System](10.171.204.196/faculty/)
+* **Chatbot:** 10.171.204.196
+* **Faculty System:** 10.171.204.196/faculty/
 
 ## Tools Used
 
