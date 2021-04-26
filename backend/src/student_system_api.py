@@ -14,10 +14,10 @@ app = Flask(__name__)
 CORS(app)
 
 # connecting to the database
-app.config["MONGO_DBNAME"] = "group29"  #'ourDB' <-- local connection
+app.config["MONGO_DBNAME"] = "knugdb"  #'ourDB' <-- local connection
 app.config[
     "MONGO_URI"
-] = "mongodb+srv://m_user:spell3@clusterg29.pfoak.mongodb.net/group29?retryWrites=true&w=majority"  #'mongodb://localhost:27017/ourDB' <-- local connection
+] = "mongodb://localhost:27017/knugdb"  #'mongodb://localhost:27017/ourDB' <-- local connection
 # The "dnspython" module must be installed to use mongodb+srv:
 mongo = PyMongo(app)
 new_response = "Hello"
