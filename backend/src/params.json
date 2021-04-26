@@ -1,8 +1,8 @@
 {
-    "file_ints": "data/intents.csv",
-    "file_dept": "data/entities_dept.csv",
-    "file_cat": "data/entities_cat.csv",
-    "file_info": "data/entities_info.csv",
+    "file_ints": "/var/www/ucf-ai-advising-chatbot/backend/src/data/intents.csv",
+    "file_dept": "/var/www/ucf-ai-advising-chatbot/backend/src/data/entities_dept.csv",
+    "file_cat": "/var/www/ucf-ai-advising-chatbot/backend/src/data/entities_cat.csv",
+    "file_info": "/var/www/ucf-ai-advising-chatbot/backend/src/data/entities_info.csv",
     "num_predictions": 1,
     "FLAGS": {
         "ints": 1,

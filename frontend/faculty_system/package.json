@@ -17,6 +17,7 @@
     "react-select": "^4.2.1",
     "web-vitals": "^0.2.4"
   },
+  "homepage": "/faculty/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
