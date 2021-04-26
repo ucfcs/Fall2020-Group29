@@ -18,8 +18,6 @@ class Result extends Component {
       counter: 0,
       questionAsked: "",
     };
-
-    this.resetWithString = this.resetWithString.bind(this);
   }
 
   async componentDidMount() {
@@ -33,15 +31,29 @@ class Result extends Component {
     const input = { name: lookup };
     try {
       const api_response = await axios.post(route + "get-user-response", input);
-      this.setState({
-        loading: false,
-        result: api_response.data.answer,
-        threshold: api_response.data.probability,
-        counter: counter,
-        questionAsked: lookup,
-      });
+      this.setState(
+        {
+          loading: false,
+          result: api_response.data.answer,
+          threshold: api_response.data.probability,
+          counter: counter,
+          questionAsked: lookup,
+        },
+        () => {
+          if (
+            this.state.counter >= 2 &&
+            (this.state.result === "no match" || this.state.threshold <= 0.75)
+          ) {
+            this.saveUnasweredQuestion();
+          }
+          this.incNumOfQuestionsAsked();
+          if (this.state.result !== "no match" && this.state.threshold >= 0.9) {
+            this.incNumOfQuestionsAnsweredCorrectly();
+          }
+        }
+      );
     } catch (err) {
-      alert("Failed to retrieve questions.");
+      alert("Request Failed");
       console.log("error occurred", err);
     }
   }
@@ -56,6 +68,45 @@ class Result extends Component {
     sessionStorage.setItem("counter", 0);
   };
 
+  async incReferredToAdvisor() {
+    let options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: "test string",
+    };
+    let response = await fetch(route + "increment-metric-4", options);
+    let result = await response.json();
+    console.log(result);
+  }
+
+  async incNumOfQuestionsAsked() {
+    let options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: "test string",
+    };
+    let response = await fetch(route + "increment-metric-2", options);
+    let result = await response.json();
+    console.log(result);
+  }
+
+  async incNumOfQuestionsAnsweredCorrectly() {
+    let options = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: "test string",
+    };
+    let response = await fetch(route + "increment-metric-3", options);
+    let result = await response.json();
+    console.log(result);
+  }
+
   async saveUnasweredQuestion() {
     const { steps } = this.props;
     const lookup = steps.userInput.value;
@@ -69,12 +120,6 @@ class Result extends Component {
     let response = await fetch(route + "save-question-asked", options);
     let result = await response.json();
     console.log(result);
-  }
-
-  resetWithString() {
-    this.saveUnasweredQuestion();
-    sessionStorage.setItem("counter", 0);
-    return "Sorry I don't have the knug wisdom to answer your question but here's a contact that could answer your question";
   }
 
   triggerGreeting() {
@@ -115,10 +160,9 @@ class Result extends Component {
 
   render() {
     const { trigger, loading, result, threshold } = this.state;
-    console.log("this is state value of counter: " + this.state.counter);
     if (this.state.counter >= 2) {
       if (result !== "no match") {
-        if (threshold >= 0.99) {
+        if (threshold >= 0.9) {
           return (
             <div className={styles.body}>
               {loading ? <Loading /> : <Linkify>{result}</Linkify>}
@@ -160,7 +204,7 @@ class Result extends Component {
           );
         }
 
-        if (threshold < 0.99 && threshold > 0.5) {
+        if (threshold < 0.9 && threshold > 0.75) {
           return (
             <div className={styles.body}>
               {loading ? <Loading /> : <Linkify>{result}</Linkify>}
@@ -178,6 +222,7 @@ class Result extends Component {
                         onClick={() => {
                           this.triggerEvenMoreHelp();
                           this.reset();
+                          this.incNumOfQuestionsAnsweredCorrectly();
                         }}
                         className={styles.button}
                       >
@@ -199,17 +244,25 @@ class Result extends Component {
           );
         }
 
-        if (threshold <= 0.5) {
+        if (threshold <= 0.75) {
           return (
             <div className={styles.body}>
-              {loading ? <Loading /> : this.resetWithString()}
+              {loading ? (
+                <Loading />
+              ) : (
+                "Sorry I don't have the knug wisdom to answer your question but here's a contact that could answer your question"
+              )}
             </div>
           );
         }
       } else {
         return (
           <div className={styles.body}>
-            {loading ? <Loading /> : this.resetWithString()}
+            {loading ? (
+              <Loading />
+            ) : (
+              "Sorry I don't have the knug wisdom to answer your question but here's a contact that could answer your question"
+            )}
             {!loading && (
               <div
                 style={{
@@ -224,7 +277,7 @@ class Result extends Component {
                       className={styles.button}
                       onClick={() => {
                         this.triggerMoreHelp();
-                        // this.reset();
+                        this.reset();
                       }}
                     >
                       Yes
@@ -249,7 +302,7 @@ class Result extends Component {
       }
     } else {
       if (result !== "no match") {
-        if (threshold >= 0.99) {
+        if (threshold >= 0.9) {
           return (
             <div className={styles.body}>
               {loading ? (
@@ -295,7 +348,7 @@ class Result extends Component {
           );
         }
 
-        if (threshold < 0.99 && threshold > 0.5) {
+        if (threshold < 0.9 && threshold > 0.75) {
           return (
             <div className={styles.body}>
               {loading ? <Loading /> : <Linkify>{result}</Linkify>}
@@ -313,6 +366,7 @@ class Result extends Component {
                         onClick={() => {
                           this.triggerEvenMoreHelp();
                           this.reset();
+                          this.incNumOfQuestionsAnsweredCorrectly();
                         }}
                         className={styles.button}
                       >
@@ -337,7 +391,7 @@ class Result extends Component {
           );
         }
 
-        if (threshold < 0.5) {
+        if (threshold <= 0.75) {
           return (
             <div className={styles.body}>
               {loading ? (

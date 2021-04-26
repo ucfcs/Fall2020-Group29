@@ -4,7 +4,7 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo import ReturnDocument
 import traceback
-from database_manager import form_response, add_unseen
+from database_manager import form_response, add_unseen, inc_num_of_questions_asked, inc_num_questions_answered_correctly, inc_num_times_referred_to_advisor
 
 
 # from ...ai import chatbot
@@ -27,6 +27,25 @@ new_response = "Hello"
 def home():
     return "Home Page"
 
+
+#POST request to add 1 to metric 4
+@app.route("/increment-metric-4", methods =["PUT"])
+def add_metric_4():
+    result = inc_num_times_referred_to_advisor(mongo)
+    return jsonify("count updated for metric 4")
+
+#POST request to add 1 to metric 3
+@app.route("/increment-metric-3", methods =["PUT"])
+def add_metric_3():
+    result = inc_num_questions_answered_correctly(mongo)
+    return jsonify("count updated for metric 3")
+
+
+#POST request to add 1 to metric 2
+@app.route("/increment-metric-2", methods =["PUT"])
+def add_metric_2():
+    result = inc_num_of_questions_asked(mongo)
+    return jsonify("count updated for metric 2")
 
 # POST request to add 1 to count in "Number of questions asked" stat
 @app.route("/save-question-asked", methods = ["POST"])
@@ -64,7 +83,7 @@ def create_response():
         category = result["cat"][0]["tag"]
         info = result["info"][0]["tag"]
         intent = result["ints"][0]["tag"]
-        probability = result["total_prob"]
+        probability = result["lowest_prob"]
 
         Entities = [intent, dept, category, info]
         # res = get_question(Entities)
@@ -88,7 +107,8 @@ def create_response():
                 "category": category,
                 "information": info,
                 "answer": response,
-                "probability": float(probability),
+                "probability": float(probability)
+                
             }
         )
     except:
