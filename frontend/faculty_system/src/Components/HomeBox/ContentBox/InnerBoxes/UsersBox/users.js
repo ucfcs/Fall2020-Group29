@@ -1,3 +1,5 @@
+import {route, headers} from '../../../../../requestUtils';
+
 
 export const defaultUser = {
     _id:'',
@@ -12,13 +14,10 @@ export function getUsers(callback) {
     if (ufs === null) {
         let options = {
             method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
-                'Content-Type': 'application/json'
-            }
+            headers: headers
         };
 
-        fetch('http://127.0.0.1:5000/api/faculty/get_users', options)
+        fetch(route + 'get_users', options)
           .then((res)=> {
             if (res.status === 401) {
                 alert('User not Authorized');
@@ -33,6 +32,9 @@ export function getUsers(callback) {
                   alert('Could not retrieve users.')
                   callback([]);
               }
+          }).catch((err)=> {
+              alert('Could not retrieve users, ', err)
+              callback([]);
           });
     } else {
         callback(JSON.parse(ufs));
@@ -42,16 +44,13 @@ export function getUsers(callback) {
 export function saveUser(user, callback) {
     let options = {
         method: user._id !== '' ? 'PUT' : 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
-            'Content-Type': 'application/json'
-        },
+        headers: headers,
         body: JSON.stringify({user:user})
     }
     let call = user._id !== '' ? 'update' : 'add';
     let succMessage = 'User successfully ' + (user._id !== '' ? 'updated' : 'added');
 
-    fetch('http://127.0.0.1:5000/api/faculty/'+call+'_user', options)
+    fetch(route + call + '_user', options)
         .then((res)=> {
             if (res.status === 401) {
                 callback({
@@ -72,20 +71,22 @@ export function saveUser(user, callback) {
                     message:'Failed to '+call+' user'
                 });
             }
-        })
+        }).catch((err)=> {
+            callback({
+                success:false,
+                message: err
+            });
+        });
 }
 
 export function deleteUser(user, callback) {
     let options = {
         method: 'DELETE',
-        headers: {
-            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
-            'Content-Type': 'application/json'
-        },
+        headers: headers,
         body: JSON.stringify({user:user})
     };
 
-    fetch('http://127.0.0.1:5000/api/faculty/delete_user', options)
+    fetch(route + 'delete_user', options)
         .then((res)=> {
             if (res.status === 401) {
                 callback({
@@ -105,5 +106,10 @@ export function deleteUser(user, callback) {
                     message: 'Unable to delete user.'
                 })
             }
-        })
+        }).catch((err)=> {
+            callback({
+                success:false,
+                message: err
+            });
+        });
 }

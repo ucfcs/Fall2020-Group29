@@ -1,23 +1,23 @@
+import {route, headers} from '../../requestUtils'
+
 export const sections = [
   'Questions',
   'Tags',
+  'Contacts',
   'Users',
   'Statistics'
-  // 'Contacts',
-  // 'Documents',
+
+
 
 ]
 
 export function retrain(callback) {
     let options = {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
-        }
+        headers: headers
       };
   
-      fetch('http://127.0.0.1:5000/api/faculty/retrain_model', options)
+      fetch(route + 'retrain_model', options)
       .then((res)=> {
         if (res.status === 401) {
           callback({
@@ -37,18 +37,20 @@ export function retrain(callback) {
               trained: false
             });
         }
+      }).catch((err)=> {
+        callback({
+          success:false,
+          message: err
+        });
       });
 }
 
 export function check_needs_training(callback) {
   let options = {
     method: 'GET',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
-    }
+    headers: headers
   };
-  fetch('http://127.0.0.1:5000/api/faculty/check_needs_training', options)
+  fetch(route + 'check_needs_training', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -70,19 +72,21 @@ export function check_needs_training(callback) {
           });
         });
       }
-    })
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
+    });
 }
 
 export function update_needs_training(value, callback) {
   let options = {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
-    },
+    headers: headers,
     body: JSON.stringify({'value': value})
   };
-  fetch('http://127.0.0.1:5000/api/faculty/update_needs_training', options)
+  fetch(route + 'update_needs_training', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -101,10 +105,15 @@ export function update_needs_training(value, callback) {
           })
         })
       } 
-    })
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
+    });
 }
 
 export function logOut() {
   window.sessionStorage.clear();
-  window.location.href = '/';
+  window.location.href = window.location.href.replace('home', '');
 }

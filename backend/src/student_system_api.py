@@ -4,7 +4,7 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo import ReturnDocument
 import traceback
-from apitest import get_question
+from database_manager import form_response, add_unseen
 
 
 # from ...ai import chatbot
@@ -28,8 +28,30 @@ def home():
     return "Home Page"
 
 
+# POST request to add 1 to count in "Number of questions asked" stat
+@app.route("/save-question-asked", methods = ["POST"])
+def add_question():
+    question = request.get_json()
+    question_confirmation = add_unseen(mongo, question)
+    if question_confirmation != None:
+        return jsonify({"confirmation": question_confirmation})
+    return "sorry question confirmation is empty"
+
+# POST request to store form responses
+@app.route("/submit-feedback", methods=["POST"])
+def store_response():
+    feedback = request.get_json()
+    answered = feedback["answer"]
+    rating = feedback["enjoyment"]
+    simplicity = feedback["ease"]
+    
+    feedback_confirmation = form_response(mongo, answered, rating, simplicity)
+    if(feedback != None):
+        return jsonify({"feedback": feedback_confirmation})
+    return "sorry feedback is empty"
+
 # POST to recieve an input
-@app.route("/api/user-response", methods=["POST", "GET"])
+@app.route("/get-user-response", methods=["POST"])
 def create_response():
     try:
         # Saves the json in the user_response variable.
@@ -50,9 +72,10 @@ def create_response():
         found = mongo.db.questions.find_one({"tags": {"$all": Entities}})
         if found is None:  # if there is no match
             return jsonify({"answer": "no match", "probability": float(probability)})
+            
         fickleID = found.pop(
             "_id"
-        )  # jasonify() doens't know how to handle objects of type ObjectID, so we remove it
+        )  # jasonify() doesn't know how to handle objects of type ObjectID, so we remove it
         found.update(
             {"_id": str(fickleID)}
         )  # put _id back in but as a regular string now
@@ -65,17 +88,17 @@ def create_response():
                 "category": category,
                 "information": info,
                 "answer": response,
-                "probability": float(probability)
-                # "intent": intent,
+                "probability": float(probability),
             }
         )
     except:
         print(traceback.print_exc())
+        return "we've reached except"
 
 
 # GET to send a response
 # /chatbot-response
-@app.route("/api/knugget-response", methods=["GET"])
+@app.route("/knugget-response", methods=["GET"])
 def get_response():
     return jsonify({"name": new_response})
 

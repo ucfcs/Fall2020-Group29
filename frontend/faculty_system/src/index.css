@@ -1,17 +1,27 @@
-html {
-  height: 100%;
+@font-face {
+  font-family: 'Montserrat';
+  src: local('Monstserrat'), url('./fonts/Montserrat/Montserrat-Medium.ttf') format('truetype');
+}
+
+html,
+body {
+  margin:0;
+  padding:0;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: Montserrat;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  height: 98%;
+  height: 100vh;
+  width: 100vw;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+#root {
+  height: 100%;
 }

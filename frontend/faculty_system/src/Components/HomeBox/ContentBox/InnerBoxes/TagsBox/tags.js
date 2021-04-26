@@ -1,4 +1,5 @@
 import {getQuestions} from '../QuestionsBox/questions';
+import {route, headers} from '../../../../../requestUtils';
 
 export const defaultTag = {
   _id:'',
@@ -6,9 +7,9 @@ export const defaultTag = {
   type: ''
 }
 
-export const tagTypes = ['intent', 'department', 'category', 'information']
+export const tagTypes = ['intent', 'department', 'category', 'information'];
 
-export const tagFields = ['name', 'type']
+export const tagFields = ['name', 'type'];
 
 export function hasAllFields(tag) {
   let hasFields = true;
@@ -27,20 +28,16 @@ export function hasAllFields(tag) {
 }
 
 
-
 export function getTags(callback) {
   let tfs = window.sessionStorage.getItem('tags');
   if (tfs === null) {
     let options = {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
-        },
+        headers: headers
 
     };
 
-    fetch('http://127.0.0.1:5000/api/faculty/get_tags', options)
+    fetch(route + 'get_tags', options)
       .then((res)=> {
           if (res.status === 401) {
             alert('User not authorized');
@@ -51,8 +48,7 @@ export function getTags(callback) {
               callback(res['tags']);
             });
           }
-      })
-      .catch((err) => {
+      }).catch((err) => {
         alert('Failed to retrieve entities.');
         console.log('error occurred', err);
         callback({});
@@ -99,15 +95,13 @@ export function checkDependents(tag, callback) {
 }
 
 export function updateTag(tags, callback) {
+
   let options = {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token'),
-    },
+    headers: headers,
     body: JSON.stringify({'new_tag': tags.newTag, 'old_tag': tags.oldTag})
   };
-  fetch('http://127.0.0.1:5000/api/faculty/update_tag', options)
+  fetch(route + 'update_tag', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -130,20 +124,22 @@ export function updateTag(tags, callback) {
           });
         });
       }
+  }).catch((err)=> {
+    callback({
+      success:false,
+      message: err
+    });
   });
 }
 
 export function addTag(tag, callback) {
   let options = {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
-    },
+    headers: headers,
     body: JSON.stringify({'tag': tag})
   };
 
-  fetch('http://127.0.0.1:5000/api/faculty/add_tag', options)
+  fetch(route + 'add_tag', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -166,20 +162,22 @@ export function addTag(tag, callback) {
           });
         });
       }
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
     });
 }
 
 export function deleteTag(tag, callback) {
   let options = {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
-    },
+    headers: headers,
     body: JSON.stringify({'tag': tag})
   };
 
-  fetch('http://127.0.0.1:5000/api/faculty/delete_tag', options)
+  fetch(route + 'delete_tag', options)
     .then((res)=> {
       if (res.status === 401) {
         callback({
@@ -201,5 +199,10 @@ export function deleteTag(tag, callback) {
           });
         });
       }
+    }).catch((err)=> {
+      callback({
+        success:false,
+        message: err
+      });
     });
 }

@@ -1,22 +1,14 @@
 import "./App.css";
 import Knugget from "./Knugget.jpg";
-import React, { useState, useEffect, Component } from "react";
+import React from "react";
 import ChatBot from "react-simple-chatbot";
 import { ThemeProvider } from "styled-components";
-import axios from "axios";
-import PropTypes from "prop-types";
 import Result from "./Components/Result";
+import ThankYou from "./Components/ThankYou";
 
 function App(props) {
-  // const [count, setCount] = useState(0);
+  sessionStorage.setItem("counter", 0);
 
-  // Dummy Function to return some data to the chatbot
-  const dummy = (value) => {
-    return "Let me see what I can do to help with " + value;
-  };
-
-  let nextResponse = "Understandable, have a nice day!";
-  // setCount(34);
   const config = {
     width: "300px",
     height: "400px",
@@ -48,7 +40,7 @@ function App(props) {
     },
     {
       id: "4",
-      message: nextResponse,
+      message: "Understandable, have a nice day!",
       end: true,
     },
 
@@ -59,27 +51,29 @@ function App(props) {
     },
     {
       id: "6",
-      // this will send a string to the dummy function instead of an object.
-      // message: ,
-      message: ({ previousValue }) => dummy(previousValue),
+      message: "Let me find that out for you!",
       trigger: "7",
     },
+
     {
       id: "7",
       component: <Result />,
       waitAction: true,
       trigger: "More Help",
     },
-
+    {
+      id: "ask again differently",
+      message:
+        "Sorry, I do not understand your question. Could you try asking it slightly differently?",
+      trigger: "userInput",
+    },
     {
       id: "Even More Help",
       message: "Is there something else I can assist you with?",
       trigger: "help options",
     },
-
     {
       id: "help options",
-      // message: "Heloooo",
       options: [
         { value: 1, label: "Yes", trigger: "More Help" },
         { value: 2, label: "No", trigger: "Thank you" },
@@ -92,10 +86,10 @@ function App(props) {
     },
     {
       id: "Sorry Thank you",
-      message: "I am Sorry, I wish I could be of more help.",
-      end: true,
+      message:
+        "I am sorry, I wish I could be of more help. Would you mind answering the next few questions so I can improve my knugskills to serve you better?",
+      trigger: "feedback",
     },
-    // Reagans code from simpleform.js
     {
       id: "feedback",
       message: "Was your question answered to your satisfaction?",
@@ -140,7 +134,7 @@ function App(props) {
     },
     {
       id: "thanks-feedback",
-      message: "Thanks! Your data was submitted successfully!",
+      component: <ThankYou />,
       end: true,
     },
   ];

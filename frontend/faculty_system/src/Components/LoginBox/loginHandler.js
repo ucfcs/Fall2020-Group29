@@ -1,28 +1,40 @@
-export function login(nID, pass) {
+import {route} from '../../requestUtils';
+
+export function login(nID, pass, callback) {
 
     let options = {
-        method: "POST",
+        method: 'POST',
         headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             username: nID,
             password: pass,
         })
     };
-    fetch("http://127.0.0.1:5000/api/faculty/login", options)
+    fetch(route + 'login', options)
       .then((res) => {
-        if (res.status === 401) {
-          res.json().then((res)=> alert(res['message']));
-        } else if (res.status === 200) {
-          res.json().then((res)=> {window.sessionStorage.setItem('token', res['token']); window.location.href = (window.location + "home");});
+        if (res.status === 200) {
+          res.json().then((res)=> {
+            callback({
+              success:true,
+              token:res['token']
+            });
+          });
         } else {
-          alert("Login Failed");
-          console.log(res.status);
+          res.json().then((res)=> {
+            callback({
+              success:false,
+              message:res.message,
+              error:res.message
+            });
+          });
         }
-      })
-      .catch((err) => {
-        alert("Login Failed");
-        console.log("error occurred", err);
+      }).catch((err) => {
+        callback({
+          success:false,
+          message:'Login Failed',
+          error:'error occurred'+ err
+        });
       });
 }  
