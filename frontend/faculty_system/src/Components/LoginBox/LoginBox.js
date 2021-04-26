@@ -1,6 +1,8 @@
 import React from 'react';
 import {login} from './loginHandler';
 import './login.css';
+import knugHeader from '../images/KnugBot_Faculty_System_Logo.png';
+
 
 export class LoginBox extends React.Component {
 
@@ -56,13 +58,11 @@ export class LoginBox extends React.Component {
 
   render() {
     return (
-      <div>
-        <h1>
-        KnugBot Faculty Login
-        </h1>
+      <div id='login-screen'>
+        <img id='login-header-img' src={knugHeader} />
         <div className='login-box'>
-          <div className='login-form'>
-            <form onSubmit={this.handleLogin}>
+
+            <form className='login-form' onSubmit={this.handleLogin}>
               <div className='input-group'>
                 <label htmlFor='nID'>Account</label>
                 <input className='login-text' id='nID' type='text' placeholder='Username: NID' onChange={this.handleChangeNID}/>
@@ -73,7 +73,7 @@ export class LoginBox extends React.Component {
               </div>
               <input className='btn' type='submit' value={this.state.loading ? 'Logging In, Please Wait...' : 'Sign On'}/>
             </form>
-          </div>
+
         </div>
       </div>
     )

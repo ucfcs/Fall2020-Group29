@@ -249,14 +249,6 @@ export class ContactsBox extends React.Component {
                         <div id='search-bar-wrapper'>
                             <input id='search-bar' type='text' placeholder='Search' onChange={this.handleChangeSearch}/>
                         </div>
-                        <div id='new-item-selection'>
-                            <p className='new-contact-text'>
-                                Add New Contact
-                            </p>
-                            <div className='plus-select' onClick={(e)=>this.selectItem(e, defaultContact)}>
-                                +
-                            </div>
-                        </div>
                         <div className='selection-wrapper'>
                             <SelectionBox 
                                 name='contacts' 
@@ -268,6 +260,9 @@ export class ContactsBox extends React.Component {
                                 update={this.selectItem}
                                 curItem={this.state.curContact}
                             />
+                            <div id='add-contact-button' onClick={(e)=>this.selectItem(e, defaultContact)}>
+                                +
+                            </div>
                         </div>
                     </div>
                     <div id='contact-content-body'>
@@ -278,7 +273,7 @@ export class ContactsBox extends React.Component {
                                 </label>
                                 <input 
                                 type='text' 
-                                className='contact-title' 
+                                className='contact-title text-box' 
                                 id='contact-title' 
                                 value={this.state.curContact.title} 
                                 onChange={(e)=>{
@@ -293,7 +288,7 @@ export class ContactsBox extends React.Component {
                                 </label>
                                 <input 
                                 type='text' 
-                                className='contact-name' 
+                                className='contact-name text-box' 
                                 id='contact-name' 
                                 value={this.state.curContact.name} 
                                 onChange={(e)=>{
@@ -308,7 +303,7 @@ export class ContactsBox extends React.Component {
                                 </label>
                                 <input 
                                 type='text' 
-                                className='contact-email' 
+                                className='contact-email text-box' 
                                 id='contact-email' 
                                 value={this.state.curContact.email} 
                                 onChange={(e)=>{
@@ -318,12 +313,16 @@ export class ContactsBox extends React.Component {
                                     this.setState({curContact:contact});
                                  }}
                                  />
-                                <label id='contact-departments-label' htmlFor='contact-departments-box'>
-                                    Display Contact for Departments:
-                                </label>
+                                <div id='contact-departments-header'>
+                                    <label id='contact-departments-label' htmlFor='contact-departments-box'>
+                                        Departments Associated with Contact
+                                    </label>
+                                    <div id='contact-add-department' className='plus' onClick={this.addDepartment}>
+                                        +
+                                    </div>
+                                </div>
                                 <div id='contact-departments-wrapper'>
                                     <div id='contact-departments-box'>
-                                    
                                         {this.state.curContact.departments === undefined ? '' :
                                             this.state.curContact.departments.map((dept, index)=> {
                                                 return <Department 
@@ -340,28 +339,27 @@ export class ContactsBox extends React.Component {
                                         }
                                     
                                     </div>
-                                    <div className='plus contact-plus' onClick={this.addDepartment}>
-                                        +
-                                    </div>
+                                    
                                 </div>
                             </div>
                             <div id='contact-buttons'>
                                 <div id='contact-save'>
-                                    <div 
-                                        className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
-                                        onClick={this.handleSave}
+                                    {this.canSave() || this.state.savingContact ? <div 
+                                    id='contact-save-button'
+                                    className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
+                                    onClick={this.handleSave}
                                     >
-                                        Save Changes
-                                    </div>
-                                    {this.state.savingContact ? 'Saving Contact, please wait' : ''}
+                                        {this.state.savingContact ? 'Saving...' : 
+                                        this.state.curContact._id === '' ? 'Save Contact' : 'Save Changes'}
+                                    </div> : ''
+                                    }
                                 </div>
                                 <div id='contact-delete'>
                                     {this.state.curContact._id !== '' ? 
                                         <div id='contact-delete-button' className='button delete-button' onClick={this.handleDelete}>
-                                            Delete Contact
-                                        </div>:''
+                                            {this.state.deletingContact ? 'Deleting...' : 'Delete Contact'}
+                                        </div> : ''
                                     }
-                                    {this.state.deletingContact ? 'Deleting Contact, please wait' : ''}
                                 </div>
                             </div>
                         </div>
@@ -379,6 +377,7 @@ function Department(props) {
         <div className='contact-department'>
             <Select
             className='contact-department-select'
+            classNamePrefix='contact-department-selection'
             value={props.value}
             options={props.options}
             onChange={(event)=>props.change(event, props.num)} 

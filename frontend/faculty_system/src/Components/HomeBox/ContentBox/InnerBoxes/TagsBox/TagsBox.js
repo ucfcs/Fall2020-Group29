@@ -507,7 +507,7 @@ export class TagsBox extends React.Component {
                                 </label>
                                 <input 
                                 type='text' 
-                                className={'tag-name' + (this.hasValidChanges() ? '' : ' invalid')} 
+                                className={'tag-name text-box' + (this.hasValidChanges() ? '' : ' invalid')} 
                                 id='tag-name' 
                                 value={this.state.curTag.name} 
                                 onChange={(e)=>{
@@ -519,14 +519,16 @@ export class TagsBox extends React.Component {
                                 />
                             </div>
                             <div id='tag-save'>
-                                <div 
+                                {this.canSave() || this.state.savingTag ? <div 
                                     id='tag-save-button'
                                     className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
                                     onClick={this.handleSave}
                                 >
-                                    Save Changes
-                                </div>
-                                {this.state.savingTag ? 'Saving Tag, please wait' : ''}
+                                    {this.state.savingTag ? 'Saving...' :
+                                    this.state.curTag._id === '' ? 'Save Tag' : 'Save Changes'}
+                                </div> : ''
+                                }
+                                
                             </div>
                         </div>
                         <div id='tag-content'>
@@ -550,10 +552,10 @@ export class TagsBox extends React.Component {
                             <div id='tag-delete'>
                                 {this.state.curTag._id !== '' ? 
                                     <div id='tag-delete-button' className='button delete-button' onClick={this.handleDelete}>
-                                        Delete Tag
+                                        {this.state.deletingTag ? 'Deleting...' : 'Delete Tag'}
                                     </div>:''
                                 }
-                                {this.state.deletingTag ? 'Deleting Tag, please wait' : ''}
+                                
                             </div>
                         </div>
                     </div>

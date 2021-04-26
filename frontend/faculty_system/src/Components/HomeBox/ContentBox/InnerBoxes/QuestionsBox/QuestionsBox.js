@@ -42,10 +42,6 @@ export class QuestionsBox extends React.Component {
         this.handleSelectContact = this.handleSelectContact.bind(this);
         this.populateFollowUpValue = this.populateFollowUpValue.bind(this);
         this.populateContactValue = this.populateContactValue.bind(this);
-        // this.refLink = this.refLink.bind(this);
-        // this.addLink = this.addLink.bind(this);
-        // this.deleteLink = this.deleteLink.bind(this);
-        // this.changeLink = this.changeLink.bind(this);
         this.hasValidTags = this.hasValidTags.bind(this);
         this.canSave = this.canSave.bind(this);
         this.saveAndTrain = this.saveAndTrain.bind(this);
@@ -321,51 +317,6 @@ export class QuestionsBox extends React.Component {
         };
                                               
     }
-
-    // refLink(id) {
-    //     let links = this.state.links;
-    //     let link = links.filter(l=>
-    //         l._id === id)[0];
-    //     if (link !== undefined) {
-    //         return link;
-    //     } else {
-    //         return '';
-    //     }
-    // }
-
-    // addLink(event) {
-    //     event.preventDefault();
-    //     let question = this.state.curQuestion;
-    //     if (question.links === undefined) {
-    //         question.links = [];
-    //     }
-    //     question.links.push({_id:'', url:''});
-    //     this.setState({curQuestion:question});
-    // }
-
-    // deleteLink(e, num) {
-    //     e.preventDefault();
-    //     let question = this.state.curQuestion;
-    //     let qLinks = question.links;
-    //     if (qLinks !== undefined) {
-    //         qLinks.splice(num, 1);
-    //         question.links = qLinks;
-    //         this.setState({curQuestion:question});
-    //     }
-    // }
-
-    // changeLink(e, num) {
-    //     let question = this.state.curQuestion;
-    //     let qLinks = question.links;
-    //     if (qLinks !== undefined) {
-    //         let link = this.refLink(e.value);
-    //         if (link !== '') {
-    //             qLinks[num] = {_id:link._id, url:link.url};
-    //             question.links = qLinks;
-    //             this.setState({curQuestion:question});
-    //         }
-    //     }
-    // }
 
     hasValidTags() {
         let check = this.state.questions.filter(q=> {
@@ -660,7 +611,8 @@ export class QuestionsBox extends React.Component {
                                     onClick={this.handleSave}
                                     id='question-save-button'
                                 >
-                                    {this.state.savingQuestion ? 'Saving...' : 'Save Changes'}
+                                    {this.state.savingQuestion ? 'Saving...' : 
+                                    this.state.curQuestion._id === '' ? 'Save Question' : 'Save Changes'}
                                 </div>
                                 }    
                             </div>

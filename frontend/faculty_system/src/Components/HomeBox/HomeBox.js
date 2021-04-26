@@ -3,8 +3,8 @@ import { ContentBox } from './ContentBox/ContentBox';
 import {sections, retrain, check_needs_training, update_needs_training, logOut} from './home'
 import {confirmAlert} from 'react-confirm-alert';
 import './homebox.css';
-import knugHeader from './images/KnugBot_Logo_White.png';
-import knugget from './images/Knugget_flip.png'
+import knugHeader from '../images/KnugBot_Logo_White.png';
+import knugget from '../images/Knugget_flip.png'
 
 export class HomeBox extends React.Component {
 

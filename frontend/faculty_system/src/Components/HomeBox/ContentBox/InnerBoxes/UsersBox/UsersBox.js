@@ -104,7 +104,7 @@ export class UsersBox extends React.Component {
 
     handleChangeAdmin(event) {
         let user = this.state.curUser;
-        user.IsAdmin = event.target.value === 'True'
+        user.IsAdmin = !user.IsAdmin;
         this.setState({curUser:user});
     }
 
@@ -218,12 +218,12 @@ export class UsersBox extends React.Component {
                     <div id='user-content-body'>
                         <div id='user-selection-header'>
                             <div id='user-title'>
-                                <label id='user-label' htmlFor='user-name'>
+                                <label className='user-label' id='user-label' htmlFor='user-name'>
                                     User Name
                                 </label>
                                 <input 
                                 type='text' 
-                                className='user-name' 
+                                className='user-name text-box' 
                                 id='user-name' 
                                 value={this.state.curUser.name} 
                                 onChange={(e)=>{
@@ -233,12 +233,12 @@ export class UsersBox extends React.Component {
                                     this.setState({curUser:user});
                                  }}
                                  />
-                                 <label id='user-email-label' htmlFor='user-email'>
+                                 <label className='user-label' id='user-email-label' htmlFor='user-email'>
                                     User Email
                                 </label>
                                 <input 
                                 type='text' 
-                                className='user-email' 
+                                className='user-email text-box' 
                                 id='user-email' 
                                 value={this.state.curUser.email} 
                                 onChange={(e)=>{
@@ -248,12 +248,12 @@ export class UsersBox extends React.Component {
                                     this.setState({curUser:user});
                                  }}
                                  />
-                                <label id='user-nid-label' htmlFor='user-nid'>
+                                <label className='user-label' id='user-nid-label' htmlFor='user-nid'>
                                     User NID
                                 </label>
                                 <input 
                                 type='text' 
-                                className='user-nid' 
+                                className='user-nid text-box' 
                                 id='user-nid' 
                                 value={this.state.curUser.NID} 
                                 onChange={(e)=>{
@@ -263,46 +263,62 @@ export class UsersBox extends React.Component {
                                     this.setState({curUser:user});
                                  }}
                                  />
-                                <label id='user-admin-label' htmlFor='user-admin'>
-                                    User Is Admin
-                                </label>
-                                <div id='user-admin' onChange={this.handleChangeAdmin}>
-                                    True <input 
-                                    type='radio'
-                                    name='user-admin'
-                                    value='True'
-                                    checked={this.state.curUser.IsAdmin}
-                                    />
-                                    <input 
-                                    type='radio'
-                                    name='user-admin'
-                                    value='False'
-                                    checked={!this.state.curUser.IsAdmin}
-                                    /> False
+                                <div id='user-admin-select-box'>
+                                    <label id='user-admin-label' htmlFor='user-admin'>
+                                        User Is Admin
+                                    </label>
+                                    <div id='user-admin' onChange={this.handleChangeAdmin}>
+                                        <div className='user-admin-select'>
+                                            <label className='user-admin-select-label'
+                                              id='user-admin-true-label' htmlFor='user-admin-true-select'>
+                                                True
+                                            </label>
+                                            <input
+                                            className='user-admin-select-option'
+                                            id='user-admin-true-select'
+                                            type='radio'
+                                            name='user-admin-true-select'
+                                            value='True'
+                                            checked={this.state.curUser.IsAdmin}
+                                            />
+                                        </div>
+                                        <div className='user-admin-select'>
+                                            <label className='user-admin-select-label' 
+                                              id='user-admin-false-label' htmlFor='user-admin-false-select'>
+                                                False
+                                            </label>
+                                            <input
+                                            className='user-admin-select-option'
+                                            id='user-admin-false-select'
+                                            type='radio'
+                                            name='user-admin-false-select'
+                                            value='False'
+                                            checked={!this.state.curUser.IsAdmin}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div id='user-buttons'>
                                 <div id='user-save'>
-                                    <div 
+                                    {this.canSave() || this.state.savingUser ? <div 
+                                        id='user-save-button'
                                         className={'button save-button ' + (this.canSave() ? "selectable" : "non-selectable")}
                                         onClick={this.handleSave}
                                     >
-                                        Save Changes
-                                    </div>
-                                    {this.state.savingUser ? 'Saving User, please wait' : ''}
+                                        {this.state.savingUser ? 'Saving...' : 
+                                        this.state.curUser._id === '' ? 'Save User' : 'Save Changes'}
+                                    </div> : ''
+                                    }
                                 </div>
                                 <div id='user-delete'>
                                     {this.state.curUser._id !== '' ? 
                                         <div id='user-delete-button' className='button delete-button' onClick={this.handleDelete}>
-                                            Delete User
+                                            {this.state.deletingUser ? 'Deleting...' : 'Delete User'}
                                         </div>:''
-                                    }
-                                    {this.state.deletingUser ? 'Deleting User, please wait' : ''}
+                                    } 
                                 </div>
                             </div>
-                        </div>
-                        <div id='user-content'>
-
                         </div>
                     </div>
                 </div>

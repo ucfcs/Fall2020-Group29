@@ -80,6 +80,7 @@
     align-content: right;
     justify-content: flex-end;
     margin-left: 2%;
+    
 }
 
 #question-delete {
@@ -93,7 +94,7 @@
 #question-save-button {
     align-self: flex-end;
     padding-left:15%;
-    padding-right:15%;
+    padding-right:15%;    
 }
 
 #question-delete-button {
