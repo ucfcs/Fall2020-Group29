@@ -4,7 +4,7 @@ from flask_pymongo import PyMongo
 from pymongo import MongoClient
 from pymongo import ReturnDocument
 import traceback
-from database_manager import form_response, add_unseen, inc_num_of_questions_asked, inc_num_questions_answered_correctly, inc_num_times_referred_to_advisor
+from database_manager import form_response, add_unseen, inc_num_of_questions_asked, inc_num_questions_answered_correctly, inc_num_times_referred_to_advisor, get_contact
 
 
 # from ...ai import chatbot
@@ -28,20 +28,20 @@ def home():
     return "Home Page"
 
 
-#POST request to add 1 to metric 4
+#PUT request to add 1 to metric 4
 @app.route("/increment-metric-4", methods =["PUT"])
 def add_metric_4():
     result = inc_num_times_referred_to_advisor(mongo)
     return jsonify("count updated for metric 4")
 
-#POST request to add 1 to metric 3
+#PUT request to add 1 to metric 3
 @app.route("/increment-metric-3", methods =["PUT"])
 def add_metric_3():
     result = inc_num_questions_answered_correctly(mongo)
     return jsonify("count updated for metric 3")
 
 
-#POST request to add 1 to metric 2
+#PUT request to add 1 to metric 2
 @app.route("/increment-metric-2", methods =["PUT"])
 def add_metric_2():
     result = inc_num_of_questions_asked(mongo)
@@ -99,18 +99,32 @@ def create_response():
             {"_id": str(fickleID)}
         )  # put _id back in but as a regular string now
         response = found["response"]
-        # response = res["responses"][0]
-
-        return jsonify(
+        if "follow-up" in found:
+            follow_up = found["follow-up"]["name"]
+            # print(follow_up)
+            return jsonify(
             {
                 "department": dept,
                 "category": category,
                 "information": info,
                 "answer": response,
-                "probability": float(probability)
+                "probability": float(probability),
+                "followUp": follow_up
                 
-            }
-        )
+            })
+        else:
+            return jsonify(
+                {
+                    "department": dept,
+                    "category": category,
+                    "information": info,
+                    "answer": response,
+                    "probability": float(probability),
+                    
+                    
+                })
+            
+        
     except:
         print(traceback.print_exc())
         return "we've reached except"

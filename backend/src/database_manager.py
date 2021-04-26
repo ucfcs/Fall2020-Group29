@@ -338,3 +338,12 @@ def inc_num_times_referred_to_advisor():
   updated.update({'_id':str(fickleID)}) # put _id back in but as a regular string now
 
   return jsonify(updated)
+
+def get_contact(mongo):
+  contact = mongo.db.contacts.find_one({"title": "Undergraduate Coordinator"})
+  if contact is None:
+    return jsonify({"result": "no match"})
+  
+  fickleID = contact.pop('_id') 
+  contact.update({'_id':str(fickleID)})
+  return jsonify(contact)
