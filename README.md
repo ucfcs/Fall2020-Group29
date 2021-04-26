@@ -5,6 +5,7 @@
 
 * **Year:** 2021
 * **Sponsor:** Dr. Mark Heinrich, CS/IT Undergraduate Coordinator
+* **Group**: Group #29
 
 ## Team
 
