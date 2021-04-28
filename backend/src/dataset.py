@@ -76,7 +76,7 @@ def fetch_data(db, params):
     """
     
     # Fetch the data from the database.
-    raw_data = jsonify(return_all(db))
+    data = return_all(db, 'questions')
 
     data_ints = []
     data_dept = []
@@ -84,29 +84,25 @@ def fetch_data(db, params):
     data_info = []
 
     # Arrange the training data.
-    with open(raw_data) as json_file:
+    for q in data:
+        for pattern in q['patterns']:
 
-        data = json.load(json_file)
-
-        for p in data['questions']:
-            for pattern in p['patterns']:
-
-                # Extract the data.
-                data_ints.append([pattern, p['tags'][0]])
-                data_dept.append([pattern, p['tags'][1]])
-                data_cat.append([pattern, p['tags'][2]])
-                data_info.append([pattern, p['tags'][3]])
+            # Extract the data.
+            data_ints.append([q['tags'][0], pattern] )
+            data_dept.append([q['tags'][1], pattern])
+            data_cat.append([q['tags'][2], pattern])
+            data_info.append([q['tags'][3], pattern])
 
     # Save training data as DataFrames.
-    df_ints = pd.DataFrame(data_ints, columns =['pattern', 'tag'])
-    df_dept = pd.DataFrame(data_dept, columns =['pattern', 'tag'])
-    df_cat = pd.DataFrame(data_cat, columns =['pattern', 'tag'])
-    df_info = pd.DataFrame(data_info, columns =['pattern', 'tag'])
+    df_ints = pd.DataFrame(data_ints, columns =['tag', 'pattern'])
+    df_dept = pd.DataFrame(data_dept, columns =['tag', 'pattern'])
+    df_cat = pd.DataFrame(data_cat, columns =['tag', 'pattern'])
+    df_info = pd.DataFrame(data_info, columns =['tag', 'pattern'])
 
     # Save training data as CSV files.
-    df_ints.to_csv(params["file_ints"])
-    df_dept.to_csv(params["file_dept"])
-    df_cat.to_csv(params["file_cat"])
-    df_info.to_csv(params["file_info"])
+    df_ints.to_csv(params["file_ints"], index=False)
+    df_dept.to_csv(params["file_dept"], index=False)
+    df_cat.to_csv(params["file_cat"], index=False)
+    df_info.to_csv(params["file_info"], index=False)
 
     return True

@@ -175,7 +175,7 @@ def update_q():
 @app.route("/retrain_model", methods=["GET"])
 @jwt_required(optional=DEV)
 def retrain_model():
-    train(db=mongo)
+    train(kind='auto', db=mongo)
     return jsonify(message="Model successfully retrained")
 
 @app.route("/add_tag", methods=["POST"])
