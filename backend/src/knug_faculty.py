@@ -71,12 +71,14 @@ def login():
 ######################################################## Get Data #####################################################
 
 @app.route("/get_questions", methods=["GET"])
+@jwt_required(optional=DEV)
 def get_questions():
 
     questions = return_all(mongo, "questions")
     return jsonify(questions=questions)
 
 @app.route("/get_tags", methods=["GET"])
+@jwt_required(optional=DEV)
 def get_tags():
 
     tags = return_all(mongo, "tags")
@@ -114,12 +116,14 @@ def get_tags():
     })
 
 @app.route("/get_contacts", methods=["GET"])
+@jwt_required(optional=DEV)
 def get_contacts():
 
     contacts = return_all(mongo, "contacts")
     return jsonify(contacts=contacts)
 
 @app.route("/get_documents", methods=["GET"])
+@jwt_required(optional=DEV)
 def get_documents():
     files = return_all(mongo, "files")
     documents = []
@@ -133,6 +137,7 @@ def get_documents():
     return jsonify(documents=documents)
 
 @app.route("/get_users", methods=["GET"])
+@jwt_required(optional=DEV)
 def get_users():
 
     users = return_all(mongo, "users")
