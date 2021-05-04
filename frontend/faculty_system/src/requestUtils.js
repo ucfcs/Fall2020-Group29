@@ -1,6 +1,6 @@
 // Constant used to set whether we should run the system in development mode or production mode.
 // Should always be set to false before merging to main or building frontend.
-const DEV_MODE = true;
+export const DEV_MODE = false;
 
 // Function used to grab the JSON Web Token from session storage.
 // Used by any api calls for Authorization.

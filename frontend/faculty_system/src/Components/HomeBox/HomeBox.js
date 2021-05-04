@@ -1,4 +1,5 @@
 import React from 'react';
+import {DEV_MODE} from '../../requestUtils'
 import { ContentBox } from './ContentBox/ContentBox';
 import {sections, retrain, check_needs_training, update_needs_training, logOut} from './home'
 import {confirmAlert} from 'react-confirm-alert';
@@ -118,6 +119,9 @@ export class HomeBox extends React.Component {
     }
 
     render() {
+        if (!DEV_MODE && window.sessionStorage.getItem('token') === null) {
+            logOut();
+        }
         return (
             <div id='home-box'>
                 <div id='sidebox'>
