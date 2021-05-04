@@ -18,7 +18,8 @@ export function login(nID, pass, callback) {
           res.json().then((res)=> {
             callback({
               success:true,
-              token:res['token']
+              token:res['token'],
+              isAdmin:res['isAdmin']
             });
           });
         } else {

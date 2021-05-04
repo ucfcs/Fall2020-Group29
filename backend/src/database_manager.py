@@ -173,7 +173,12 @@ def check_valid_user(mongo, nid):
   result = mongo.db.users.find_one({
     "NID":nid
   })
-  return result is not None
+  if result is None:
+    return False, False
+  elif result['IsAdmin']:
+    return True, True
+  else:
+    return True, False
 
 def add_user(mongo, user):
   new_user = user

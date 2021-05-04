@@ -9,6 +9,10 @@ export const sections = [
   // 'Statistics'
 ]
 
+export const adminOnly = [
+  'Users'
+]
+
 export function retrain(callback) {
     let options = {
         method: 'GET',

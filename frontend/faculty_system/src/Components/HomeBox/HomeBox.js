@@ -1,7 +1,7 @@
 import React from 'react';
 import {DEV_MODE} from '../../requestUtils'
 import { ContentBox } from './ContentBox/ContentBox';
-import {sections, retrain, check_needs_training, update_needs_training, logOut} from './home'
+import {sections, adminOnly, retrain, check_needs_training, update_needs_training, logOut} from './home'
 import {confirmAlert} from 'react-confirm-alert';
 import './homebox.css';
 import knugHeader from '../images/KnugBot_Logo_White.png';
@@ -11,6 +11,7 @@ export class HomeBox extends React.Component {
 
     constructor(props) {
         super(props);
+        console.log(this.props.isAdmin);
         this.contentRef = React.createRef();
 
         this.hasChanges = this.hasChanges.bind(this);
@@ -134,13 +135,14 @@ export class HomeBox extends React.Component {
                             />
                         </div>
                         <div id='navboxes'>
-                            {sections.map(section=>
-                                <NavBox 
+                            {sections.map(section=> {
+                                if (!adminOnly.includes(section) || this.props.isAdmin)
+                                    return <NavBox 
                                     sectionName={section} 
                                     selected={this.state.selection === ('navbox-'+(section.toLowerCase()))}
                                     clicked={this.handleSelected}
-                                />
-                            )}
+                                    />
+                            })}
                         </div>
                     </div>
                     <img id='knugget' src={knugget} />

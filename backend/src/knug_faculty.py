@@ -55,11 +55,11 @@ def login():
     try:
         server = Server(domain, port=port)
         conn = Connection(server, username + "@" + domain, password)
-        
-        if conn.bind() and check_valid_user(mongo, username):
+        isValid, isAdmin = check_valid_user(mongo, username)
+        if conn.bind() and isValid:   
             access_token = create_access_token(identity=username)
             conn.unbind()
-            return jsonify(message="Login Successful", token=access_token)
+            return jsonify(message="Login Successful", token=access_token, isAdmin=isAdmin)
         else:
             return jsonify(message="Invalid credentials"), 401
 

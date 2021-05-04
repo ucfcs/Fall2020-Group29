@@ -44,7 +44,7 @@ export class LoginBox extends React.Component {
         if (response.success) {
           this.setState({loading:false}, ()=> {
             window.sessionStorage.setItem('token', response.token);
-            window.location.href = (window.location + 'home');
+            this.props.goToHome(response.isAdmin);
           });
         } else {
           this.setState({loading:false}, ()=> {
